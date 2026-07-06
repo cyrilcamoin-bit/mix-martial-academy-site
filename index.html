@@ -53,7 +53,8 @@
   <header class="site-header">
     <nav class="nav" aria-label="Navigation principale">
       <a class="brand" href="#accueil" aria-label="Mix Martial Academy accueil">
-        <span class="brand-mark">MMA</span>
+        <!-- Remplacer ce badge par le SVG officiel quand Cyril le valide. -->
+        <span class="brand-mark" aria-hidden="true">MMA</span>
         <span><strong>MIX MARTIAL ACADEMY</strong><small>Le Rove</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
@@ -64,7 +65,7 @@
         <a href="#materiel">Mat&eacute;riel</a>
         <a href="#inscription">Inscription</a>
         <a href="#contact">Contact</a>
-        <a class="button button-small" href="#inscription">S'inscrire</a>
+        <a class="button button-small nav-cta" href="#inscription">S'inscrire</a>
       </div>
     </nav>
   </header>
@@ -78,13 +79,29 @@
           <p class="lead">Enfants, ados et adultes. Un cadre s&eacute;rieux pour d&eacute;couvrir, apprendre et progresser en MMA.</p>
           <div class="hero-actions">
             <a class="button" href="#essai">Essayer 3 cours offerts</a>
-            <a class="button button-outline" href="#inscription">S'inscrire</a>
-            <a class="button button-ghost" href="#contact">Nous contacter</a>
+            <a class="button button-outline" href="#horaires">Voir les horaires</a>
+            <a class="button button-ghost" href="#inscription">S'inscrire</a>
+          </div>
+          <div class="hero-proof" aria-label="Points clés du club">
+            <span>Enfants</span>
+            <span>Ados</span>
+            <span>Adultes</span>
           </div>
         </div>
-        <div class="hero-panel" aria-label="R&eacute;sum&eacute; du club">
-          <div class="logo-placeholder">A_COMPLETER_LOGO_VECTORIEL</div>
-          <p>Mix Martial Academy accueille les pratiquants qui veulent d&eacute;couvrir, apprendre et progresser en MMA dans un cadre s&eacute;rieux, s&eacute;curis&eacute; et progressif.</p>
+        <div class="hero-panel fight-card" aria-label="R&eacute;sum&eacute; du club">
+          <div class="octagon-badge" aria-hidden="true">
+            <span>MMA</span>
+          </div>
+          <div>
+            <p class="card-kicker">Le Rove</p>
+            <h2>MMA structur&eacute;, cadre familial.</h2>
+          </div>
+          <ul class="hero-list">
+            <li><strong>Lundi &amp; mercredi</strong><span>Entra&icirc;nements r&eacute;guliers</span></li>
+            <li><strong>3 cours d'essai offerts</strong><span>Sans pr&eacute;venir avant l'essai</span></li>
+            <li><strong>Paiement en 3x</strong><span>Automatiquement via HelloAsso</span></li>
+            <li><strong>Salle Jennifer</strong><span>6 chemin de la Bergerie</span></li>
+          </ul>
         </div>
       </div>
     </section>
@@ -98,6 +115,11 @@
         <div>
           <p>Mix Martial Academy est un club de MMA situ&eacute; au Rove. Le club accueille les enfants, les ados et les adultes dans un cadre structur&eacute;, s&eacute;rieux et progressif.</p>
           <p>L'objectif est simple : apprendre le MMA dans de bonnes conditions, d&eacute;velopper la discipline, la ma&icirc;trise technique, le respect et la confiance.</p>
+          <div class="value-grid" aria-label="Valeurs du club">
+            <span>Discipline</span>
+            <span>Progression</span>
+            <span>Respect</span>
+          </div>
         </div>
         <aside class="accent-box">
           <h3>Encadrement</h3>
@@ -106,12 +128,15 @@
       </div>
     </section>
 
-    <section class="section band" id="essai">
-      <div class="section-head">
-        <p class="eyebrow">Cours d'essai</p>
-        <h2>3 cours d'essai offerts.</h2>
+    <section class="section band trial-section" id="essai">
+      <div class="trial-card">
+        <div class="section-head">
+          <p class="eyebrow">Cours d'essai</p>
+          <h2>3 cours d'essai offerts.</h2>
+        </div>
+        <p>Chaque nouveau pratiquant peut b&eacute;n&eacute;ficier de 3 cours d'essai offerts. Il n'est pas n&eacute;cessaire de pr&eacute;venir le club avant de venir essayer. Il suffit de se pr&eacute;senter au cr&eacute;neau correspondant &agrave; sa section.</p>
+        <a class="button button-light" href="#horaires">Voir les horaires</a>
       </div>
-      <p>Chaque nouveau pratiquant peut b&eacute;n&eacute;ficier de 3 cours d'essai offerts. Il n'est pas n&eacute;cessaire de pr&eacute;venir le club avant de venir essayer. Il suffit de se pr&eacute;senter au cr&eacute;neau correspondant &agrave; sa section.</p>
     </section>
 
     <section class="section" id="horaires">
@@ -133,20 +158,24 @@
     </section>
 
     <section class="section band" id="inscription">
-      <div class="section-head">
-        <p class="eyebrow">Inscription</p>
-        <h2>Inscription d&eacute;finitive via HelloAsso.</h2>
+      <div class="signup-layout">
+        <div class="signup-copy">
+          <div class="section-head">
+            <p class="eyebrow">Inscription</p>
+            <h2>Inscription d&eacute;finitive via HelloAsso.</h2>
+          </div>
+          <p>L'inscription d&eacute;finitive s'effectue via HelloAsso. Le r&egrave;glement est automatiquement r&eacute;parti en 3 paiements sans frais.</p>
+          <p class="alert">L'inscription &agrave; Mix Martial Academy est annuelle, ferme et d&eacute;finitive. Aucun remboursement total ou partiel ne pourra &ecirc;tre effectu&eacute;, y compris en cas d'arr&ecirc;t en cours de saison, d'absence prolong&eacute;e, de changement de situation personnelle ou de blessure.</p>
+          <p>En cas d'&eacute;ch&eacute;ance refus&eacute;e ou non r&eacute;gularis&eacute;e, l'acc&egrave;s aux entra&icirc;nements pourra &ecirc;tre suspendu jusqu'&agrave; r&eacute;gularisation. Les informations et documents n&eacute;cessaires &agrave; l'inscription sont g&eacute;r&eacute;s directement via HelloAsso.</p>
+        </div>
+        <form class="conditions" id="signup-conditions">
+          <fieldset>
+            <legend>Conditions obligatoires avant inscription</legend>
+            <div data-render="conditions"></div>
+          </fieldset>
+          <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Veuillez accepter les conditions pour acc&eacute;der &agrave; l'inscription</a>
+        </form>
       </div>
-      <p>L'inscription d&eacute;finitive s'effectue via HelloAsso. Le r&egrave;glement est automatiquement r&eacute;parti en 3 paiements sans frais.</p>
-      <p class="alert">L'inscription &agrave; Mix Martial Academy est annuelle, ferme et d&eacute;finitive. Aucun remboursement total ou partiel ne pourra &ecirc;tre effectu&eacute;, y compris en cas d'arr&ecirc;t en cours de saison, d'absence prolong&eacute;e, de changement de situation personnelle ou de blessure.</p>
-      <p>En cas d'&eacute;ch&eacute;ance refus&eacute;e ou non r&eacute;gularis&eacute;e, l'acc&egrave;s aux entra&icirc;nements pourra &ecirc;tre suspendu jusqu'&agrave; r&eacute;gularisation. Les informations et documents n&eacute;cessaires &agrave; l'inscription sont g&eacute;r&eacute;s directement via HelloAsso.</p>
-      <form class="conditions" id="signup-conditions">
-        <fieldset>
-          <legend>Conditions obligatoires avant inscription</legend>
-          <div data-render="conditions"></div>
-        </fieldset>
-        <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Veuillez accepter les conditions pour acc&eacute;der &agrave; l'inscription</a>
-      </form>
     </section>
 
     <section class="section" id="materiel">
@@ -161,19 +190,21 @@
       <div class="material-grid" data-render="materials"></div>
     </section>
 
-    <section class="section band" id="discord">
-      <div class="section-head">
-        <p class="eyebrow">Vie du club</p>
-        <h2>Discord officiel du club.</h2>
+    <section class="section band social-section" id="discord">
+      <div class="discord-card">
+        <div class="section-head">
+          <p class="eyebrow">Vie du club</p>
+          <h2>Discord officiel du club.</h2>
+        </div>
+        <p>Les adh&eacute;rents de Mix Martial Academy peuvent rejoindre le Discord officiel du club afin de suivre toutes les informations en temps r&eacute;el.</p>
+        <ul class="compact-list">
+          <li>Annonces importantes et informations de derni&egrave;re minute.</li>
+          <li>Chat adh&eacute;rents, rappels d'entra&icirc;nement, galeries photos et vid&eacute;os.</li>
+          <li>Contenus li&eacute;s aux comp&eacute;titions et entra&icirc;nements, r&egrave;glements et documents utiles.</li>
+        </ul>
+        <p>Le site Internet reste la r&eacute;f&eacute;rence officielle. Le Discord sert &agrave; suivre la vie du club, les infos rapides et les &eacute;changes entre adh&eacute;rents.</p>
+        <a class="button button-outline" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Rejoindre le Discord</a>
       </div>
-      <p>Les adh&eacute;rents de Mix Martial Academy peuvent rejoindre le Discord officiel du club afin de suivre toutes les informations en temps r&eacute;el.</p>
-      <ul class="compact-list">
-        <li>Annonces importantes et informations de derni&egrave;re minute.</li>
-        <li>Chat adh&eacute;rents, rappels d'entra&icirc;nement, galeries photos et vid&eacute;os.</li>
-        <li>Contenus li&eacute;s aux comp&eacute;titions et entra&icirc;nements, r&egrave;glements et documents utiles.</li>
-      </ul>
-      <p>Le site Internet reste la r&eacute;f&eacute;rence officielle. Le Discord sert &agrave; suivre la vie du club, les infos rapides et les &eacute;changes entre adh&eacute;rents.</p>
-      <a class="button button-outline" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Rejoindre le Discord</a>
     </section>
 
     <section class="section" id="contact">
@@ -182,7 +213,7 @@
         <h2>Salle Jennifer, Le Rove.</h2>
       </div>
       <div class="contact-grid">
-        <div>
+        <div class="contact-card">
           <p><strong>WhatsApp :</strong> <a href="https://wa.me/33614306682">+33 6 14 30 66 82</a></p>
           <p><strong>Email :</strong> <a href="mailto:mixmartialacademy@icloud.com">mixmartialacademy@icloud.com</a></p>
           <p><strong>Lieu des cours :</strong> Salle Jennifer, 6 chemin de la Bergerie, 13740 Le Rove</p>

@@ -20,9 +20,15 @@
     data.schedule.forEach(function (day) {
       var card = el("article", "schedule-card");
       card.appendChild(el("h3", "", day.day));
-      var ul = el("ul");
+      var ul = el("ul", "schedule-list");
       day.slots.forEach(function (slot) {
-        ul.appendChild(el("li", "", slot.section + " " + slot.age + " : " + slot.time));
+        var item = el("li", "schedule-row");
+        var label = el("span", "schedule-label");
+        label.appendChild(el("strong", "", slot.section));
+        label.appendChild(el("small", "", slot.age));
+        item.appendChild(label);
+        item.appendChild(el("span", "schedule-time", slot.time));
+        ul.appendChild(item);
       });
       card.appendChild(ul);
       container.appendChild(card);
@@ -32,10 +38,12 @@
   function renderPrices(data) {
     var container = document.querySelector('[data-render="prices"]');
     if (!container) return;
-    data.prices.sections.forEach(function (price) {
-      var card = el("article", "price-card");
+    data.prices.sections.forEach(function (price, index) {
+      var card = el("article", "price-card" + (index === 1 ? " price-card-featured" : ""));
       card.appendChild(el("h3", "", price.section + " - " + price.age));
       card.appendChild(el("span", "price", price.price));
+      card.appendChild(el("p", "price-note", "Licence : " + data.prices.license));
+      card.appendChild(el("p", "price-note", data.prices.paymentRule));
       container.appendChild(card);
     });
   }
@@ -58,7 +66,11 @@
   function renderMaterials(data) {
     var rulesContainer = document.querySelector('[data-render="material-rules"]');
     if (rulesContainer) {
-      rulesContainer.appendChild(list(data.equipment.globalRules));
+      var ruleList = el("div", "chip-list");
+      data.equipment.globalRules.forEach(function (rule) {
+        ruleList.appendChild(el("span", "chip", rule));
+      });
+      rulesContainer.appendChild(ruleList);
       rulesContainer.appendChild(el("p", "note", data.equipment.sectionsRule));
     }
 
@@ -67,9 +79,9 @@
     data.equipment.sections.forEach(function (section) {
       var card = el("article", "material-card");
       card.appendChild(el("h3", "", section.section + " - " + section.age));
-      card.appendChild(el("strong", "", "Obligatoire"));
+      card.appendChild(el("strong", "material-heading", "Obligatoire"));
       card.appendChild(list(section.required));
-      card.appendChild(el("strong", "", "Optionnel"));
+      card.appendChild(el("strong", "material-heading", "Optionnel"));
       card.appendChild(list(section.optional));
       if (section.note) card.appendChild(el("p", "note", section.note));
       materialContainer.appendChild(card);
