@@ -22,6 +22,29 @@ Toutes les données validées sont centralisées dans `js/clubData.js`.
 
 Ne pas modifier les horaires, tarifs, âges, contacts, règles d'inscription, règles de remboursement, matériel ou mentions légales ailleurs que dans ce fichier.
 
+## Modifier le site sans Codex
+
+Le fichier `studio.html` permet de préparer rapidement des ajustements visuels et des textes courts sans backend.
+
+1. Ouvrir `studio.html` dans le navigateur.
+2. Modifier les onglets `Textes`, `Design` ou `Chatbot`.
+3. Vérifier l'aperçu.
+4. Exporter `siteTheme.js` pour les réglages de design/chatbot, ou `custom-export.json` pour conserver toute la configuration.
+5. Remplacer les fichiers correspondants dans le projet si la modification est validée.
+6. Faire un commit puis un push sur `main` pour publier via GitHub Pages.
+
+Les principaux réglages visuels sont centralisés dans `js/siteTheme.js` et appliqués sous forme de variables CSS dans `css/theme.css`.
+
+## Limites du studio
+
+- Le studio ne publie pas directement sur GitHub.
+- Le studio ne demande aucun identifiant.
+- Le studio ne contient aucun token.
+- Le studio ne stocke aucune donnée adhérent.
+- Le studio n'est pas un CMS complet.
+- Les essais sont sauvegardés uniquement dans le `localStorage` du navigateur.
+- Pour publier, il faut remplacer les fichiers exportés puis faire commit/push.
+
 ## Remplacer le logo
 
 Placer le logo officiel dans `assets/logo/`, idéalement en SVG validé par Cyril.

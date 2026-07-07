@@ -1,0 +1,40 @@
+:root {
+  --font-body: Inter, Arial, Helvetica, sans-serif;
+  --font-club-name: "Dream MMA", Impact, Haettenschweiler, "Arial Black", sans-serif;
+  --font-headings: Inter, Arial, Helvetica, sans-serif;
+
+  --color-bg: #050505;
+  --color-bg-soft: #0B0B0D;
+  --color-card: #111114;
+  --color-card-soft: #1A1A1F;
+  --color-text: #F5F5F5;
+  --color-muted: #B8B8B8;
+  --color-off-white: #EBE8E5;
+  --color-red: #C90F13;
+  --color-red-hover: #E12621;
+  --color-red-dark: #7A090B;
+  --color-border: rgba(255,255,255,0.10);
+  --color-border-strong: rgba(255,255,255,0.18);
+
+  --fs-nav: 0.95rem;
+  --fs-hero-title: 4.8rem;
+  --fs-hero-subtitle: 1.25rem;
+  --fs-section-title: 3rem;
+  --fs-card-title: 1.35rem;
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-chatbot: 1rem;
+
+  --max-width: 1180px;
+  --section-padding-desktop: 64px;
+  --section-padding-mobile: 46px;
+  --card-radius: 20px;
+  --button-radius: 999px;
+  --hero-gap: 24px;
+  --grid-gap: 16px;
+  --logo-header-size: 54px;
+  --logo-hero-card-size: 190px;
+  --card-shadow: 0 22px 70px rgba(0,0,0,0.38);
+  --border-opacity: 0.10;
+  --background-glow: 0.28;
+}
