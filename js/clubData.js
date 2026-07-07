@@ -66,7 +66,8 @@
       closingEvent: "La saison 2026/2027 se cl\u00f4turera le lundi 14 juin 2027 par un ap\u00e9ritif offert aux adh\u00e9rents."
     },
     signup: {
-      helloAssoUrl: "#A_COMPLETER_HELLOASSO",
+      helloAssoUrl: "https://www.helloasso.com/associations/mix-martial-academy/adhesions/adhesion-mma-2026-2027",
+      helloAssoWidgetUrl: "https://www.helloasso.com/associations/mix-martial-academy/adhesions/adhesion-mma-2026-2027/widget",
       intro: "L'inscription d\u00e9finitive s'effectue via HelloAsso. Le r\u00e8glement est automatiquement r\u00e9parti en 3 paiements sans frais.",
       nonRefundable: "L'inscription \u00e0 Mix Martial Academy est annuelle, ferme et d\u00e9finitive. Aucun remboursement total ou partiel ne pourra \u00eatre effectu\u00e9, y compris en cas d'arr\u00eat en cours de saison, d'absence prolong\u00e9e, de changement de situation personnelle ou de blessure.",
       unpaidRule: "En cas d'\u00e9ch\u00e9ance refus\u00e9e ou non r\u00e9gularis\u00e9e, l'acc\u00e8s aux entra\u00eenements pourra \u00eatre suspendu jusqu'\u00e0 r\u00e9gularisation.",

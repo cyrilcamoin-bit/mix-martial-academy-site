@@ -15,11 +15,11 @@
   <meta name="twitter:title" content="Mix Martial Academy - Club de MMA au Rove">
   <meta name="twitter:description" content="MMA au Rove, proche Marseille et de la C&ocirc;te Bleue. Enfants, ados et adultes.">
   <link rel="icon" href="assets/logo/mix-martial-academy-le-rove.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=20260707-google">
-  <script src="js/clubData.js?v=20260707-google" defer></script>
-  <script src="js/inscription.js?v=20260707-google" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=20260707-helloasso">
+  <script src="js/clubData.js?v=20260707-helloasso" defer></script>
+  <script src="js/inscription.js?v=20260707-helloasso" defer></script>
   <script src="js/navigation.js?v=20260707-ux" defer></script>
-  <script src="js/chatbot.js?v=20260707-social" defer></script>
+  <script src="js/chatbot.js?v=20260707-helloasso" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -177,8 +177,20 @@
             <input id="condition-global" type="checkbox" required>
             <span>Je reconnais avoir lu et accept&eacute; les conditions d'inscription de Mix Martial Academy : adh&eacute;sion annuelle ferme et d&eacute;finitive, absence de remboursement total ou partiel, paiement automatiquement en 3 fois via HelloAsso, suspension possible en cas d'&eacute;ch&eacute;ance refus&eacute;e non r&eacute;gularis&eacute;e, acceptation du r&egrave;glement int&eacute;rieur, du mat&eacute;riel obligatoire et de la r&egrave;gle des gants 16 oz.</span>
           </label>
-          <p class="note helloasso-placeholder" id="helloasso-placeholder" hidden>Le lien officiel HelloAsso doit encore &ecirc;tre ajout&eacute;.</p>
-          <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Acceptez les conditions pour acc&eacute;der &agrave; HelloAsso</a>
+          <section class="helloasso-widget-section" aria-labelledby="helloasso-widget-title">
+            <div class="section-head">
+              <p class="eyebrow">HelloAsso</p>
+              <h2 id="helloasso-widget-title">Finaliser mon inscription</h2>
+            </div>
+            <p class="note">Apr&egrave;s acceptation des conditions, le formulaire s&eacute;curis&eacute; HelloAsso s'affichera ci-dessous.</p>
+            <div class="helloasso-widget-card is-locked" id="helloasso-widget-card">
+              <div class="helloasso-locked" id="helloasso-locked">
+                <span aria-hidden="true">+</span>
+                <p>Acceptez les conditions pour acc&eacute;der au formulaire HelloAsso.</p>
+              </div>
+              <div class="helloasso-widget-container" id="helloasso-widget-container" hidden></div>
+            </div>
+          </section>
         </form>
       </div>
     </div>

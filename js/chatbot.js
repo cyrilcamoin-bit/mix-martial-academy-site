@@ -177,10 +177,7 @@
   }
 
   function helloAssoAnswer(data) {
-    if (data.signup.helloAssoUrl.indexOf("A_COMPLETER") >= 0) {
-      return "Le lien HelloAsso officiel doit encore \u00eatre ajout\u00e9 sur le site. En attendant, vous pouvez contacter le club via le bouton WhatsApp du site ou par email.";
-    }
-    return "L'inscription d\u00e9finitive se fait via HelloAsso. Le r\u00e8glement est automatiquement r\u00e9parti en 3 paiements sans frais. Le lien officiel HelloAsso est accessible depuis le bouton d'inscription du site.";
+    return "L'inscription se fait directement dans l'onglet Tarifs & Inscriptions gr\u00e2ce au formulaire s\u00e9curis\u00e9 HelloAsso. Le r\u00e8glement est automatiquement r\u00e9parti en 3 fois sans frais.";
   }
 
   function socialAnswer(data, text) {
@@ -206,7 +203,7 @@
 
     switch (intent) {
       case "payment":
-        return "Oui. " + data.prices.paymentRule;
+        return helloAssoAnswer(data);
       case "registration":
         return helloAssoAnswer(data);
       case "pricing":

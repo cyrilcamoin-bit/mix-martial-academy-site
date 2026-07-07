@@ -28,17 +28,12 @@ Placer le logo officiel dans `assets/logo/`, idéalement en SVG validé par Cyri
 
 Remplacer ensuite le placeholder `A_COMPLETER_LOGO_VECTORIEL` dans `index.html`.
 
-## Ajouter le lien HelloAsso
+## Inscription HelloAsso
 
-Dans `js/clubData.js`, remplacer :
+Le widget officiel HelloAsso est configuré dans `js/clubData.js`.
 
-```js
-helloAssoUrl: "#A_COMPLETER_HELLOASSO"
-```
-
-par l'URL officielle HelloAsso.
-
-Le bouton d'inscription reste bloqué tant que toutes les conditions obligatoires ne sont pas cochées.
+Le formulaire HelloAsso reste verrouillé tant que les conditions d'inscription ne sont pas acceptées.
+Après acceptation, le widget s'affiche directement dans l'onglet `Tarifs & Inscriptions`.
 
 ## Déployer sur GitHub Pages
 

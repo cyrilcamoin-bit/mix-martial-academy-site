@@ -137,30 +137,60 @@
     });
   }
 
+  var helloAssoResizeReady = false;
+
+  function setupHelloAssoResize() {
+    if (helloAssoResizeReady) return;
+    helloAssoResizeReady = true;
+    window.addEventListener("message", function (event) {
+      if (event.origin && event.origin !== "https://www.helloasso.com") return;
+      var height = event.data && Number(event.data.height);
+      var iframe = document.getElementById("haWidget");
+      if (!iframe || !Number.isFinite(height)) return;
+      iframe.style.height = Math.max(750, height) + "px";
+    });
+  }
+
+  function loadHelloAssoWidget(data, container) {
+    if (!container || container.querySelector("#haWidget")) return;
+    setupHelloAssoResize();
+    var label = el("p", "helloasso-secure-label", "Formulaire s\u00e9curis\u00e9 HelloAsso");
+    var iframe = document.createElement("iframe");
+    iframe.id = "haWidget";
+    iframe.title = "Formulaire d'inscription HelloAsso Mix Martial Academy";
+    iframe.allowTransparency = "true";
+    iframe.scrolling = "auto";
+    iframe.src = data.signup.helloAssoWidgetUrl;
+    iframe.style.width = "100%";
+    iframe.style.height = "750px";
+    iframe.style.border = "none";
+    container.appendChild(label);
+    container.appendChild(iframe);
+  }
+
   function setupSignup(data) {
     var form = document.getElementById("signup-conditions");
-    var link = document.getElementById("helloasso-link");
-    var placeholder = document.getElementById("helloasso-placeholder");
-    if (!form || !link) return;
+    var card = document.getElementById("helloasso-widget-card");
+    var locked = document.getElementById("helloasso-locked");
+    var widgetContainer = document.getElementById("helloasso-widget-container");
+    if (!form || !card || !locked || !widgetContainer) return;
     var inputs = Array.prototype.slice.call(form.querySelectorAll('input[type="checkbox"]'));
-    link.href = data.signup.helloAssoUrl;
 
     function update() {
       var complete = inputs.every(function (input) { return input.checked; });
-      var missingHelloAsso = data.signup.helloAssoUrl.indexOf("A_COMPLETER") >= 0;
-      link.classList.toggle("disabled", !complete);
-      link.classList.toggle("placeholder-active", complete && missingHelloAsso);
-      link.setAttribute("aria-disabled", String(!complete));
-      link.textContent = complete ? "Continuer vers HelloAsso" : "Acceptez les conditions pour acc\u00e9der \u00e0 HelloAsso";
-      if (placeholder) placeholder.hidden = !(complete && missingHelloAsso);
+      card.classList.toggle("is-locked", !complete);
+      card.classList.toggle("is-ready", complete);
+      locked.hidden = complete;
+      widgetContainer.hidden = !complete;
+      if (complete) {
+        loadHelloAssoWidget(data, widgetContainer);
+      } else {
+        widgetContainer.replaceChildren();
+      }
     }
 
     inputs.forEach(function (input) {
       input.addEventListener("change", update);
-    });
-    link.addEventListener("click", function (event) {
-      if (link.getAttribute("aria-disabled") === "true") event.preventDefault();
-      if (link.classList.contains("placeholder-active")) event.preventDefault();
     });
     update();
   }
