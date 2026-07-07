@@ -90,7 +90,7 @@
   }
 
   function icon(key, label) {
-    return '<img src="assets/icons/' + key + '.svg" alt="" aria-hidden="true"><span>' + label + "</span>";
+    return '<img src="assets/icons/' + key + '.svg?v=20260707-social" alt="" aria-hidden="true"><span>' + label + "</span>";
   }
 
   function renderSocials(data) {

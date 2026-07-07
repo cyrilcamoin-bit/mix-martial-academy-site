@@ -120,8 +120,7 @@
     },
     contacts: {
       email: "mixmartialacademy@icloud.com",
-      whatsapp: "+33614306682",
-      whatsappDisplay: "+33 6 14 30 66 82",
+      whatsappDisplay: "disponible via le bouton de contact",
       whatsappUrl: "https://wa.me/33614306682",
       instagram: "https://www.instagram.com/mixmartialacademy?igsh=MTNoOGF2YmtyMWVtZw%3D%3D&utm_source=qr",
       facebook: "https://www.facebook.com/share/17r8JUsXai/?mibextid=wwXIfr",
@@ -144,7 +143,7 @@
     chatbot: {
       name: "CHAT BOT Mix Martial Academy",
       welcome: "Bonjour \ud83d\udc4b Comment puis-je vous aider ?",
-      fallback: "Je n'ai pas encore cette information. Pour une r\u00e9ponse pr\u00e9cise, contactez le club par WhatsApp ou par email.",
+      fallback: "Je n'ai pas encore cette information. Pour une r\u00e9ponse pr\u00e9cise, contactez le club via le bouton WhatsApp du site ou par email.",
       materialQuestion: "Pour vous donner la bonne liste de mat\u00e9riel, pouvez-vous me pr\u00e9ciser la section concern\u00e9e : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans, ou adulte 17 ans et + ?",
       mixedCourses: "Oui, les cours sont mixtes. Les filles et les gar\u00e7ons s'entra\u00eenent ensemble dans les sections enfants, ados et adultes."
     },

@@ -139,7 +139,7 @@
   }
 
   function tooYoungAnswer(age) {
-    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club par WhatsApp pour confirmer.";
+    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club via le bouton WhatsApp du site ou par email pour confirmer.";
   }
 
   function scheduleAnswer(data, section, age) {
@@ -178,7 +178,7 @@
 
   function helloAssoAnswer(data) {
     if (data.signup.helloAssoUrl.indexOf("A_COMPLETER") >= 0) {
-      return "Le lien HelloAsso officiel doit encore \u00eatre ajout\u00e9 sur le site. En attendant, vous pouvez contacter le club par WhatsApp.";
+      return "Le lien HelloAsso officiel doit encore \u00eatre ajout\u00e9 sur le site. En attendant, vous pouvez contacter le club via le bouton WhatsApp du site ou par email.";
     }
     return "L'inscription d\u00e9finitive se fait via HelloAsso. Le r\u00e8glement est automatiquement r\u00e9parti en 3 paiements sans frais. Le lien officiel HelloAsso est accessible depuis le bouton d'inscription du site.";
   }
@@ -235,7 +235,7 @@
       case "address":
         return "Les cours ont lieu \u00e0 la " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
       case "contact":
-        return "Vous pouvez contacter le club par WhatsApp au " + data.contacts.whatsappDisplay + " ou par email \u00e0 " + data.contacts.email + ".";
+        return "Vous pouvez contacter le club via le bouton WhatsApp du site ou par email \u00e0 " + data.contacts.email + ".";
       case "social":
         return socialAnswer(data, text);
       case "discord":
@@ -245,7 +245,7 @@
       case "legal":
         return legalAnswer(data);
       default:
-        return data.chatbot.fallback + " WhatsApp : " + data.contacts.whatsappDisplay + " / Email : " + data.contacts.email;
+        return data.chatbot.fallback + " Email : " + data.contacts.email + ".";
     }
   }
 
