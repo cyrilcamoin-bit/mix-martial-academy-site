@@ -22,6 +22,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -178,9 +179,14 @@ input {
 }
 
 .nav-links a:hover,
-.nav-links a:focus-visible {
+.nav-links a:focus-visible,
+.nav-links a.is-active {
   color: var(--text);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-links a.is-active {
+  border: 1px solid rgba(201, 15, 19, 0.32);
 }
 
 .nav-toggle {
@@ -191,6 +197,18 @@ input {
   width: min(var(--max), calc(100% - 32px));
   margin: 0 auto;
   padding: 64px 0;
+}
+
+.section-tight {
+  padding-top: 26px;
+}
+
+.view-panel {
+  display: none;
+}
+
+.view-panel.is-active {
+  display: block;
 }
 
 .band {
@@ -388,6 +406,33 @@ p {
   flex-wrap: wrap;
   gap: 0.65rem;
   margin-top: 1.3rem;
+}
+
+.sub-tabs,
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.2rem 0;
+}
+
+.sub-tab {
+  min-height: 42px;
+  padding: 0.55rem 0.9rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sub-tab:hover,
+.sub-tab:focus-visible,
+.sub-tab.is-active {
+  color: var(--text);
+  background: rgba(201, 15, 19, 0.18);
+  border-color: rgba(201, 15, 19, 0.45);
 }
 
 .hero-proof span,
@@ -703,6 +748,15 @@ p {
   max-width: 860px;
 }
 
+.season-note {
+  max-width: 860px;
+  margin-top: 1rem;
+}
+
+.socials-spaced {
+  margin-top: 1.2rem;
+}
+
 .contact-grid {
   grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
 }
@@ -767,6 +821,19 @@ p {
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid var(--line);
   border-radius: 16px;
+}
+
+.legal-details {
+  padding: 1.1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.legal-details summary {
+  color: var(--text);
+  font-weight: 950;
+  cursor: pointer;
 }
 
 .legal dt {
@@ -1000,7 +1067,8 @@ p {
   }
 
   .hero-actions,
-  .socials {
+  .socials,
+  .contact-actions {
     flex-direction: column;
   }
 

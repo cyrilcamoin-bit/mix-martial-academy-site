@@ -14,9 +14,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Mix Martial Academy - Club de MMA au Rove">
   <meta name="twitter:description" content="MMA au Rove, proche Marseille et de la C&ocirc;te Bleue. Enfants, ados et adultes.">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20260707-ux2">
   <script src="js/clubData.js" defer></script>
-  <script src="js/inscription.js" defer></script>
+  <script src="js/inscription.js?v=20260707-ux2" defer></script>
+  <script src="js/navigation.js?v=20260707-ux2" defer></script>
   <script src="js/chatbot.js" defer></script>
   <script type="application/ld+json">
   {
@@ -58,11 +59,11 @@
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <div class="nav-links" id="nav-links">
-        <a href="#club">Le club</a>
-        <a href="#horaires">Horaires</a>
-        <a href="#tarifs">Tarifs</a>
+        <a href="#accueil">Accueil</a>
+        <a href="#cours">Cours</a>
+        <a href="#inscription">Tarifs / inscription</a>
         <a href="#materiel">Mat&eacute;riel</a>
-        <a href="#inscription">Inscription</a>
+        <a href="#club">Vie du club</a>
         <a href="#contact">Contact</a>
         <a class="button button-small nav-cta" href="#inscription">S'inscrire</a>
       </div>
@@ -70,16 +71,17 @@
   </header>
 
   <main id="main">
-    <section class="hero section" id="accueil">
+    <section class="view-panel is-active" id="accueil" data-view="accueil">
+    <div class="hero section">
       <div class="hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">Club de MMA au Rove</p>
           <h1>MIX MARTIAL ACADEMY</h1>
-          <p class="lead">Enfants, ados et adultes. Un cadre s&eacute;rieux pour d&eacute;couvrir, apprendre et progresser en MMA.</p>
+          <p class="lead">Club de MMA au Rove. Enfants, ados et adultes dans un cadre s&eacute;rieux pour apprendre et progresser.</p>
           <div class="hero-actions">
-            <a class="button" href="#essai">Essayer 3 cours offerts</a>
-            <a class="button button-outline" href="#horaires">Voir les horaires</a>
-            <a class="button button-ghost" href="#inscription">S'inscrire</a>
+            <a class="button" href="#cours">Voir les cours</a>
+            <a class="button button-outline" href="#inscription">S'inscrire</a>
+            <a class="button button-ghost" href="#contact">Nous contacter</a>
           </div>
           <div class="hero-proof" aria-label="Points clés du club">
             <span>Enfants</span>
@@ -101,12 +103,14 @@
           </ul>
         </div>
       </div>
+    </div>
     </section>
 
-    <section class="section" id="club">
+    <section class="view-panel" id="cours" data-view="cours">
+    <div class="section">
       <div class="section-head">
-        <p class="eyebrow">Le club</p>
-        <h2>Un MMA s&eacute;rieux, accessible et structur&eacute;.</h2>
+        <p class="eyebrow">Cours &amp; horaires</p>
+        <h2>Apprendre le MMA dans un cadre structur&eacute;.</h2>
       </div>
       <div class="two-columns">
         <div>
@@ -123,38 +127,39 @@
           <p>Fort d'une solide exp&eacute;rience dans les sports de combat et l'accompagnement d'athl&egrave;tes de niveau international, Cyril Camoin propose un encadrement s&eacute;rieux et progressif, centr&eacute; sur l'efficacit&eacute;, la ma&icirc;trise technique et l'esprit du MMA.</p>
         </aside>
       </div>
-    </section>
+    </div>
 
-    <section class="section band trial-section" id="essai">
+    <div class="section section-tight">
+      <div class="section-head">
+        <p class="eyebrow">Horaires</p>
+        <h2>Lundi et mercredi.</h2>
+      </div>
+      <div class="schedule-grid" data-render="schedule"></div>
+    </div>
+
+    <div class="section band trial-section">
       <div class="trial-card">
         <div class="section-head">
           <p class="eyebrow">Cours d'essai</p>
           <h2>3 cours d'essai offerts.</h2>
         </div>
         <p>Chaque nouveau pratiquant peut b&eacute;n&eacute;ficier de 3 cours d'essai offerts. Il n'est pas n&eacute;cessaire de pr&eacute;venir le club avant de venir essayer. Il suffit de se pr&eacute;senter au cr&eacute;neau correspondant &agrave; sa section.</p>
-        <a class="button button-light" href="#horaires">Voir les horaires</a>
+        <a class="button button-light" href="#inscription">Voir les tarifs</a>
       </div>
+    </div>
     </section>
 
-    <section class="section" id="horaires">
+    <section class="view-panel" id="inscription" data-view="inscription">
+    <div class="section">
       <div class="section-head">
-        <p class="eyebrow">Horaires</p>
-        <h2>Lundi et mercredi.</h2>
-      </div>
-      <div class="schedule-grid" data-render="schedule"></div>
-      <p class="note">La saison 2026/2027 se cl&ocirc;turera le lundi 14 juin 2027 par un ap&eacute;ritif offert aux adh&eacute;rents.</p>
-    </section>
-
-    <section class="section" id="tarifs">
-      <div class="section-head">
-        <p class="eyebrow">Tarifs</p>
+        <p class="eyebrow">Tarifs &amp; inscription</p>
         <h2>Adh&eacute;sion annuelle.</h2>
       </div>
       <div class="price-grid" data-render="prices"></div>
       <p class="note">Licence : <strong>37 &euro; hors adh&eacute;sion</strong>. Le r&egrave;glement de l'adh&eacute;sion se fait automatiquement en 3 fois sans frais via HelloAsso.</p>
-    </section>
+    </div>
 
-    <section class="section band" id="inscription">
+    <div class="section band">
       <div class="signup-layout">
         <div class="signup-copy">
           <div class="section-head">
@@ -173,9 +178,11 @@
           <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Veuillez accepter les conditions pour acc&eacute;der &agrave; l'inscription</a>
         </form>
       </div>
+    </div>
     </section>
 
-    <section class="section" id="materiel">
+    <section class="view-panel" id="materiel" data-view="materiel">
+    <div class="section">
       <div class="section-head">
         <p class="eyebrow">Mat&eacute;riel</p>
         <h2>Protections obligatoires.</h2>
@@ -184,10 +191,17 @@
       <p>Mix Martial Academy a n&eacute;goci&eacute; avec RDX SPORT afin de faire b&eacute;n&eacute;ficier les adh&eacute;rents de tarifs avantageux sur du mat&eacute;riel de qualit&eacute;.</p>
       <p class="alert">Une fois la commande valid&eacute;e, il n'est plus possible de modifier, &eacute;changer ou retourner un article. Les tailles doivent donc &ecirc;tre v&eacute;rifi&eacute;es avant validation.</p>
       <div class="rules" data-render="material-rules"></div>
+      <div class="sub-tabs" role="tablist" aria-label="Sections mat&eacute;riel">
+        <button class="sub-tab is-active" type="button" data-material-tab="enfant">Enfants</button>
+        <button class="sub-tab" type="button" data-material-tab="ado">Ados</button>
+        <button class="sub-tab" type="button" data-material-tab="adulte">Adultes</button>
+      </div>
       <div class="material-grid" data-render="materials"></div>
+    </div>
     </section>
 
-    <section class="section band social-section" id="discord">
+    <section class="view-panel" id="club" data-view="club">
+    <div class="section band social-section">
       <div class="discord-card">
         <div class="section-head">
           <p class="eyebrow">Vie du club</p>
@@ -202,9 +216,13 @@
         <p>Le site Internet reste la r&eacute;f&eacute;rence officielle. Le Discord sert &agrave; suivre la vie du club, les infos rapides et les &eacute;changes entre adh&eacute;rents.</p>
         <a class="button button-outline" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Rejoindre le Discord</a>
       </div>
+      <p class="note season-note">La saison 2026/2027 se cl&ocirc;turera le lundi 14 juin 2027 par un ap&eacute;ritif offert aux adh&eacute;rents.</p>
+      <div class="socials socials-spaced" data-render="socials"></div>
+    </div>
     </section>
 
-    <section class="section" id="contact">
+    <section class="view-panel" id="contact" data-view="contact">
+    <div class="section">
       <div class="section-head">
         <p class="eyebrow">Contact</p>
         <h2>Salle Jennifer, Le Rove.</h2>
@@ -215,25 +233,30 @@
           <p><strong>Email :</strong> <a href="mailto:mixmartialacademy@icloud.com">mixmartialacademy@icloud.com</a></p>
           <p><strong>Lieu des cours :</strong> Salle Jennifer, 6 chemin de la Bergerie, 13740 Le Rove</p>
         </div>
-        <div class="socials" data-render="socials"></div>
+        <div class="contact-actions">
+          <a class="button" href="https://wa.me/33614306682" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="button button-outline" href="mailto:mixmartialacademy@icloud.com">Email</a>
+          <a class="button button-ghost" href="https://www.instagram.com/mixmartialacademy?igsh=MTNoOGF2YmtyMWVtZw%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+          <a class="button button-ghost" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Discord</a>
+        </div>
       </div>
-    </section>
+    </div>
 
     <section class="section legal" id="mentions-legales">
-      <div class="section-head">
-        <p class="eyebrow">Mentions l&eacute;gales</p>
-        <h2>Informations officielles.</h2>
-      </div>
-      <dl data-render="legal"></dl>
-      <h3>Politique de confidentialit&eacute; V1</h3>
-      <p>Le site public Mix Martial Academy ne stocke pas de donn&eacute;es adh&eacute;rents en V1. Les inscriptions, paiements et documents sont g&eacute;r&eacute;s via HelloAsso.</p>
-      <p>Les liens vers WhatsApp, Instagram, Facebook, TikTok, Discord et HelloAsso redirigent vers des services tiers soumis &agrave; leurs propres politiques de confidentialit&eacute;.</p>
+      <details class="legal-details">
+        <summary>Mentions l&eacute;gales et confidentialit&eacute;</summary>
+        <dl data-render="legal"></dl>
+        <h3>Politique de confidentialit&eacute; V1</h3>
+        <p>Le site public Mix Martial Academy ne stocke pas de donn&eacute;es adh&eacute;rents en V1. Les inscriptions, paiements et documents sont g&eacute;r&eacute;s via HelloAsso.</p>
+        <p>Les liens vers WhatsApp, Instagram, Facebook, TikTok, Discord et HelloAsso redirigent vers des services tiers soumis &agrave; leurs propres politiques de confidentialit&eacute;.</p>
+      </details>
+    </section>
     </section>
   </main>
 
   <footer class="site-footer">
     <p>&copy; <span id="year">2026</span> MIX MARTIAL ACADEMY - Club de MMA au Rove.</p>
-    <a href="#mentions-legales">Mentions l&eacute;gales</a>
+    <a href="#contact">Mentions l&eacute;gales</a>
   </footer>
 
   <section class="chatbot" id="chatbot" aria-label="Assistant Mix Martial Academy">

@@ -76,8 +76,10 @@
 
     var materialContainer = document.querySelector('[data-render="materials"]');
     if (!materialContainer) return;
-    data.equipment.sections.forEach(function (section) {
-      var card = el("article", "material-card");
+    data.equipment.sections.forEach(function (section, index) {
+      var card = el("article", "material-card" + (index === 0 ? " is-active" : ""));
+      card.setAttribute("data-material-panel", section.key);
+      if (index !== 0) card.hidden = true;
       card.appendChild(el("h3", "", section.section + " - " + section.age));
       card.appendChild(el("strong", "material-heading", "Obligatoire"));
       card.appendChild(list(section.required));
