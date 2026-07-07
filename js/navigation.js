@@ -1,9 +1,10 @@
 (function () {
-  var validViews = ["accueil", "cours", "tarifs", "materiel", "club", "contact"];
+  var validViews = ["accueil", "cours", "tarifs", "materiel", "contact"];
 
   function getViewFromHash() {
     var hash = window.location.hash.replace("#", "");
     if (hash === "tarifs-inscription") return "tarifs";
+    if (hash === "club") return "contact";
     return validViews.indexOf(hash) >= 0 ? hash : "accueil";
   }
 
@@ -40,40 +41,8 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function setupMaterialTabs() {
-    var tabs = Array.prototype.slice.call(document.querySelectorAll("[data-material-tab]"));
-    var panels = Array.prototype.slice.call(document.querySelectorAll("[data-material-panel]"));
-    if (!tabs.length || !panels.length) return;
-
-    function activate(key) {
-      tabs.forEach(function (tab) {
-        var active = tab.getAttribute("data-material-tab") === key;
-        tab.classList.toggle("is-active", active);
-        tab.setAttribute("aria-selected", String(active));
-      });
-      panels.forEach(function (panel) {
-        var active = panel.getAttribute("data-material-panel") === key;
-        panel.classList.toggle("is-active", active);
-        panel.hidden = !active;
-      });
-    }
-
-    tabs.forEach(function (tab) {
-      tab.setAttribute("role", "tab");
-      tab.addEventListener("click", function () {
-        activate(tab.getAttribute("data-material-tab"));
-      });
-    });
-
-    panels.forEach(function (panel) {
-      panel.setAttribute("role", "tabpanel");
-    });
-    activate("enfant");
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
     setActiveView(getViewFromHash());
-    setupMaterialTabs();
   });
 
   window.addEventListener("hashchange", function () {

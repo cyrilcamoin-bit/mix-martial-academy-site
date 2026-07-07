@@ -75,22 +75,10 @@
   }
 
   function renderMaterials(data) {
-    var rulesContainer = document.querySelector('[data-render="material-rules"]');
-    if (rulesContainer) {
-      var ruleList = el("div", "chip-list");
-      data.equipment.globalRules.forEach(function (rule) {
-        ruleList.appendChild(el("span", "chip", rule));
-      });
-      rulesContainer.appendChild(ruleList);
-      rulesContainer.appendChild(el("p", "note", data.equipment.sectionsRule));
-    }
-
     var materialContainer = document.querySelector('[data-render="materials"]');
     if (!materialContainer) return;
-    data.equipment.sections.forEach(function (section, index) {
-      var card = el("article", "material-card" + (index === 0 ? " is-active" : ""));
-      card.setAttribute("data-material-panel", section.key);
-      if (index !== 0) card.hidden = true;
+    data.equipment.sections.forEach(function (section) {
+      var card = el("article", "material-card");
       card.appendChild(el("h3", "", section.section + " - " + section.age));
       card.appendChild(el("strong", "material-heading", "Obligatoire"));
       card.appendChild(list(section.required));
@@ -101,8 +89,8 @@
     });
   }
 
-  function icon(label) {
-    return '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 3.2 1.9 4 4.4.6-3.2 3.1.8 4.4-3.9-2.1-3.9 2.1.8-4.4-3.2-3.1 4.4-.6L12 5.2Z"/></svg><span>' + label + "</span>";
+  function icon(key, label) {
+    return '<img src="assets/icons/' + key + '.svg" alt="" aria-hidden="true"><span>' + label + "</span>";
   }
 
   function renderSocials(data) {
@@ -122,7 +110,7 @@
       a.target = "_blank";
       a.rel = "noopener";
       a.setAttribute("aria-label", data.socialLabels[key]);
-      a.innerHTML = icon(data.socialLabels[key].replace("Suivre le club sur ", "").replace("Nous \u00e9crire sur ", "").replace("Rejoindre le ", ""));
+      a.innerHTML = icon(key, data.socialLabels[key].replace("Suivre le club sur ", "").replace("Nous \u00e9crire sur ", "").replace("Rejoindre le ", ""));
       container.appendChild(a);
     });
   }

@@ -566,6 +566,11 @@ p {
   overflow-wrap: anywhere;
 }
 
+.hero-list .location-row span {
+  color: var(--off-white);
+  line-height: 1.45;
+}
+
 .trial-section {
   padding-top: 48px;
   padding-bottom: 48px;
@@ -836,6 +841,10 @@ p {
   border-radius: 12px;
 }
 
+.material-grid .material-card {
+  align-self: stretch;
+}
+
 .material-heading {
   display: inline-flex;
   margin-top: 0.4rem;
@@ -854,17 +863,28 @@ p {
   border-left: 2px solid rgba(201, 15, 19, 0.55);
 }
 
+.contact-section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 1rem;
+  align-items: start;
+}
+
 .discord-card {
-  max-width: 860px;
+  min-height: 100%;
 }
 
 .season-note {
-  max-width: 860px;
-  margin-top: 1rem;
+  margin: 0 0 1rem;
 }
 
 .socials-spaced {
   margin-top: 1.2rem;
+}
+
+.contact-side {
+  display: grid;
+  gap: 1rem;
 }
 
 .contact-grid {
@@ -908,6 +928,13 @@ p {
   width: 20px;
   height: 20px;
   fill: currentColor;
+}
+
+.social-link img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .legal {
@@ -1147,6 +1174,7 @@ p {
   .hero-grid,
   .two-columns,
   .contact-grid,
+  .contact-section-grid,
   .signup-layout,
   .schedule-grid,
   .price-grid,

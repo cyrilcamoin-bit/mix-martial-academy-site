@@ -15,10 +15,10 @@
   <meta name="twitter:title" content="Mix Martial Academy - Club de MMA au Rove">
   <meta name="twitter:description" content="MMA au Rove, proche Marseille et de la C&ocirc;te Bleue. Enfants, ados et adultes.">
   <link rel="icon" href="assets/logo/mix-martial-academy-le-rove.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=20260707-simple">
+  <link rel="stylesheet" href="css/style.css?v=20260707-ux">
   <script src="js/clubData.js?v=20260707-chatbot" defer></script>
-  <script src="js/inscription.js?v=20260707-signup" defer></script>
-  <script src="js/navigation.js?v=20260707-signup" defer></script>
+  <script src="js/inscription.js?v=20260707-ux" defer></script>
+  <script src="js/navigation.js?v=20260707-ux" defer></script>
   <script src="js/chatbot.js?v=20260707-engine" defer></script>
   <script type="application/ld+json">
   {
@@ -62,10 +62,9 @@
       <div class="nav-links" id="nav-links">
         <a href="#accueil">Accueil</a>
         <a href="#cours">Cours</a>
-        <a href="#tarifs">Tarifs</a>
+        <a class="button button-small nav-cta" href="#tarifs">Tarifs &amp; Inscriptions</a>
         <a href="#materiel">Mat&eacute;riel</a>
-        <a href="#club">Vie du club</a>
-        <a href="#contact">Contact</a>
+        <a href="#contact">Contact &amp; R&eacute;seaux</a>
         <a class="button button-small nav-cta" href="#tarifs-inscription">S'inscrire</a>
       </div>
     </nav>
@@ -78,16 +77,11 @@
         <div class="hero-copy">
           <p class="eyebrow">Club de MMA au Rove</p>
           <h1 class="club-name-font" aria-label="MIX MARTIAL ACADEMY">mix martial academy</h1>
-          <p class="lead">Club de MMA au Rove. Enfants, ados et adultes dans un cadre s&eacute;rieux pour apprendre et progresser.</p>
+          <p class="lead">Club de MMA au Rove. Enfants, Ados &amp; Adultes dans un cadre familial pour apprendre, progresser et performer.</p>
           <div class="hero-actions">
             <a class="button" href="#cours">Voir les cours</a>
             <a class="button button-outline" href="#tarifs-inscription">S'inscrire</a>
             <a class="button button-ghost" href="#contact">Nous contacter</a>
-          </div>
-          <div class="hero-proof" aria-label="Points clés du club">
-            <span>Enfants</span>
-            <span>Ados</span>
-            <span>Adultes</span>
           </div>
         </div>
         <div class="hero-panel fight-card" aria-label="R&eacute;sum&eacute; du club">
@@ -97,10 +91,10 @@
             <h2>MMA structur&eacute;, cadre familial.</h2>
           </div>
           <ul class="hero-list">
-            <li><strong>Lundi &amp; mercredi</strong><span>Entra&icirc;nements r&eacute;guliers</span></li>
+            <li><strong>Lundi &amp; Mercredi</strong><span>Entra&icirc;nements r&eacute;guliers</span></li>
             <li><strong>3 cours d'essai offerts</strong><span>Sans pr&eacute;venir avant l'essai</span></li>
             <li><strong>Paiement en 3x</strong><span>Automatiquement via HelloAsso</span></li>
-            <li><strong>Salle Jennifer</strong><span>6 chemin de la Bergerie</span></li>
+            <li class="location-row"><strong>Lieu</strong><span>Salle Jennifer<br>6 chemin de la Bergerie<br>13740 LE ROVE</span></li>
           </ul>
         </div>
       </div>
@@ -125,7 +119,7 @@
         </div>
         <aside class="accent-box">
           <h3>Encadrement</h3>
-          <p>Fort d'une solide exp&eacute;rience dans les sports de combat et l'accompagnement d'athl&egrave;tes de niveau international, Cyril Camoin propose un encadrement s&eacute;rieux et progressif, centr&eacute; sur l'efficacit&eacute;, la ma&icirc;trise technique et l'esprit du MMA.</p>
+          <p>Fort d'une solide exp&eacute;rience dans les sports de combat et l'accompagnement d'athl&egrave;tes internationaux, on vous propose un encadrement s&eacute;rieux et progressif, centr&eacute; sur l'efficacit&eacute;, la ma&icirc;trise technique et l'esprit du MMA.</p>
         </aside>
       </div>
     </div>
@@ -133,7 +127,7 @@
     <div class="section section-tight">
       <div class="section-head">
         <p class="eyebrow">Horaires</p>
-        <h2>Lundi et mercredi.</h2>
+        <h2>Lundi &amp; Mercredi.</h2>
       </div>
       <div class="schedule-grid" data-render="schedule"></div>
     </div>
@@ -153,7 +147,7 @@
     <section class="view-panel" id="tarifs" data-view="tarifs">
     <div class="section">
       <div class="section-head">
-        <p class="eyebrow">Tarifs</p>
+        <p class="eyebrow">Tarifs &amp; Inscriptions</p>
         <h2>Choisissez votre section.</h2>
       </div>
       <div class="price-grid" data-render="prices"></div>
@@ -200,55 +194,39 @@
       </div>
       <p>La pratique du MMA n&eacute;cessite un &eacute;quipement de protection adapt&eacute;. Le club comprend que l'achat du mat&eacute;riel peut repr&eacute;senter un investissement, mais ces protections sont indispensables pour garantir la s&eacute;curit&eacute; de tous.</p>
       <p>Mix Martial Academy a n&eacute;goci&eacute; avec RDX SPORT afin de faire b&eacute;n&eacute;ficier les adh&eacute;rents de tarifs avantageux sur du mat&eacute;riel de qualit&eacute;.</p>
-      <p class="alert">Une fois la commande valid&eacute;e, il n'est plus possible de modifier, &eacute;changer ou retourner un article. Les tailles doivent donc &ecirc;tre v&eacute;rifi&eacute;es avant validation.</p>
-      <div class="rules" data-render="material-rules"></div>
-      <div class="sub-tabs" role="tablist" aria-label="Sections mat&eacute;riel">
-        <button class="sub-tab is-active" type="button" data-material-tab="enfant">Enfants</button>
-        <button class="sub-tab" type="button" data-material-tab="ado">Ados</button>
-        <button class="sub-tab" type="button" data-material-tab="adulte">Adultes</button>
-      </div>
       <div class="material-grid" data-render="materials"></div>
     </div>
     </section>
 
-    <section class="view-panel" id="club" data-view="club">
-    <div class="section band social-section">
-      <div class="discord-card">
-        <div class="section-head">
-          <p class="eyebrow">Vie du club</p>
-          <h2>Discord officiel du club.</h2>
-        </div>
-        <p>Les adh&eacute;rents de Mix Martial Academy peuvent rejoindre le Discord officiel du club afin de suivre toutes les informations en temps r&eacute;el.</p>
-        <ul class="compact-list">
-          <li>Annonces importantes et informations de derni&egrave;re minute.</li>
-          <li>Chat adh&eacute;rents, rappels d'entra&icirc;nement, galeries photos et vid&eacute;os.</li>
-          <li>Contenus li&eacute;s aux comp&eacute;titions et entra&icirc;nements, r&egrave;glements et documents utiles.</li>
-        </ul>
-        <p>Le site Internet reste la r&eacute;f&eacute;rence officielle. Le Discord sert &agrave; suivre la vie du club, les infos rapides et les &eacute;changes entre adh&eacute;rents.</p>
-        <a class="button button-outline" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Rejoindre le Discord</a>
-      </div>
-      <p class="note season-note">La saison 2026/2027 se cl&ocirc;turera le lundi 14 juin 2027 par un ap&eacute;ritif offert aux adh&eacute;rents.</p>
-      <div class="socials socials-spaced" data-render="socials"></div>
-    </div>
-    </section>
-
     <section class="view-panel" id="contact" data-view="contact">
-    <div class="section">
+    <div class="section band social-section">
       <div class="section-head">
-        <p class="eyebrow">Contact</p>
-        <h2>Salle Jennifer, Le Rove.</h2>
+        <p class="eyebrow">Contact &amp; R&eacute;seaux</p>
+        <h2>Discord, r&eacute;seaux et contact club.</h2>
       </div>
-      <div class="contact-grid">
-        <div class="contact-card">
-          <p><strong>WhatsApp :</strong> <a href="https://wa.me/33614306682">+33 6 14 30 66 82</a></p>
-          <p><strong>Email :</strong> <a href="mailto:mixmartialacademy@icloud.com">mixmartialacademy@icloud.com</a></p>
-          <p><strong>Lieu des cours :</strong> Salle Jennifer, 6 chemin de la Bergerie, 13740 Le Rove</p>
+      <div class="contact-section-grid">
+        <div class="discord-card">
+          <div class="section-head">
+            <p class="eyebrow">Vie du club</p>
+            <h2>Discord officiel du club.</h2>
+          </div>
+          <p>Les adh&eacute;rents de Mix Martial Academy peuvent rejoindre le Discord officiel du club afin de suivre toutes les informations en temps r&eacute;el.</p>
+          <ul class="compact-list">
+            <li>Annonces importantes et informations de derni&egrave;re minute.</li>
+            <li>Chat adh&eacute;rents, rappels d'entra&icirc;nement, galeries photos et vid&eacute;os.</li>
+            <li>Contenus li&eacute;s aux comp&eacute;titions et entra&icirc;nements, r&egrave;glements et documents utiles.</li>
+          </ul>
+          <p>Le site Internet reste la r&eacute;f&eacute;rence officielle. Le Discord sert &agrave; suivre la vie du club, les infos rapides et les &eacute;changes entre adh&eacute;rents.</p>
+          <a class="button button-outline" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Rejoindre le Discord</a>
         </div>
-        <div class="contact-actions">
-          <a class="button" href="https://wa.me/33614306682" target="_blank" rel="noopener">WhatsApp</a>
-          <a class="button button-outline" href="mailto:mixmartialacademy@icloud.com">Email</a>
-          <a class="button button-ghost" href="https://www.instagram.com/mixmartialacademy?igsh=MTNoOGF2YmtyMWVtZw%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
-          <a class="button button-ghost" href="https://discord.gg/Nc3tzzVFrZ" target="_blank" rel="noopener">Discord</a>
+        <div class="contact-side">
+          <p class="note season-note">La saison 2026/2027 se cl&ocirc;turera le lundi 14 juin 2027 par un ap&eacute;ritif offert aux adh&eacute;rents.</p>
+          <div class="contact-card">
+            <p><strong>WhatsApp :</strong> <a href="https://wa.me/33614306682">+33 6 14 30 66 82</a></p>
+            <p><strong>Email :</strong> <a href="mailto:mixmartialacademy@icloud.com">mixmartialacademy@icloud.com</a></p>
+            <p><strong>Lieu des cours :</strong> Salle Jennifer, 6 chemin de la Bergerie, 13740 Le Rove</p>
+          </div>
+          <div class="socials socials-spaced" data-render="socials"></div>
         </div>
       </div>
     </div>
