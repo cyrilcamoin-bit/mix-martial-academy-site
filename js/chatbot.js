@@ -15,6 +15,38 @@
     return "Mat\u00e9riel " + match.section + " (" + match.age + ") : obligatoire : " + match.required.join(", ") + ". Optionnel : " + match.optional.join(", ") + "." + (match.note ? " " + match.note : "");
   }
 
+  function extractAge(question) {
+    var match = question.match(/\b(\d{1,2})\s*(?:ans?|an)?\b/);
+    if (!match) return null;
+    return Number(match[1]);
+  }
+
+  function slotForAge(data, age) {
+    if (age >= 6 && age <= 11) return data.schedule[0].slots[0];
+    if (age >= 12 && age <= 16) return data.schedule[0].slots[1];
+    if (age >= 17) return data.schedule[0].slots[2];
+    return null;
+  }
+
+  function isMixedCourseQuestion(q) {
+    return q.includes("mixte") ||
+      q.includes("fille") ||
+      q.includes("filles") ||
+      q.includes("garcon") ||
+      q.includes("garcons");
+  }
+
+  function mixedCourseAnswer(raw, q) {
+    var data = window.CLUB_DATA;
+    var age = extractAge(q);
+    var slot = age === null ? null : slotForAge(data, age);
+
+    if (!slot) return data.chatbot.mixedCourses;
+
+    var ageText = age >= 6 && age <= 11 && q.includes("fille") ? "une fille de " + age + " ans" : age + " ans";
+    return "Oui, les cours sont mixtes. Pour " + ageText + ", la section concern\u00e9e est " + slot.section + " " + slot.age + ". Les cours ont lieu le lundi et le mercredi de " + slot.time + ".";
+  }
+
   function getAnswer(raw) {
     var data = window.CLUB_DATA;
     var q = normalize(raw);
@@ -26,6 +58,7 @@
       return data.chatbot.materialQuestion;
     }
 
+    if (isMixedCourseQuestion(q)) return mixedCourseAnswer(raw, q);
     if (q.includes("materiel") || q.includes("equipement") || q.includes("protection") || q.includes("gant")) {
       awaitingMaterialSection = true;
       return data.chatbot.materialQuestion;
