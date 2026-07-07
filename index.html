@@ -14,10 +14,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Mix Martial Academy - Club de MMA au Rove">
   <meta name="twitter:description" content="MMA au Rove, proche Marseille et de la C&ocirc;te Bleue. Enfants, ados et adultes.">
-  <link rel="stylesheet" href="css/style.css?v=20260707-ux2">
+  <link rel="stylesheet" href="css/style.css?v=20260707-signup">
   <script src="js/clubData.js?v=20260707-mixite" defer></script>
-  <script src="js/inscription.js?v=20260707-ux2" defer></script>
-  <script src="js/navigation.js?v=20260707-ux2" defer></script>
+  <script src="js/inscription.js?v=20260707-signup" defer></script>
+  <script src="js/navigation.js?v=20260707-signup" defer></script>
   <script src="js/chatbot.js?v=20260707-precision" defer></script>
   <script type="application/ld+json">
   {
@@ -61,11 +61,11 @@
       <div class="nav-links" id="nav-links">
         <a href="#accueil">Accueil</a>
         <a href="#cours">Cours</a>
-        <a href="#inscription">Tarifs / inscription</a>
+        <a href="#tarifs">Tarifs</a>
         <a href="#materiel">Mat&eacute;riel</a>
         <a href="#club">Vie du club</a>
         <a href="#contact">Contact</a>
-        <a class="button button-small nav-cta" href="#inscription">S'inscrire</a>
+        <a class="button button-small nav-cta" href="#tarifs-inscription">S'inscrire</a>
       </div>
     </nav>
   </header>
@@ -80,7 +80,7 @@
           <p class="lead">Club de MMA au Rove. Enfants, ados et adultes dans un cadre s&eacute;rieux pour apprendre et progresser.</p>
           <div class="hero-actions">
             <a class="button" href="#cours">Voir les cours</a>
-            <a class="button button-outline" href="#inscription">S'inscrire</a>
+            <a class="button button-outline" href="#tarifs-inscription">S'inscrire</a>
             <a class="button button-ghost" href="#contact">Nous contacter</a>
           </div>
           <div class="hero-proof" aria-label="Points clés du club">
@@ -144,38 +144,48 @@
           <h2>3 cours d'essai offerts.</h2>
         </div>
         <p>Chaque nouveau pratiquant peut b&eacute;n&eacute;ficier de 3 cours d'essai offerts. Il n'est pas n&eacute;cessaire de pr&eacute;venir le club avant de venir essayer. Il suffit de se pr&eacute;senter au cr&eacute;neau correspondant &agrave; sa section.</p>
-        <a class="button button-light" href="#inscription">Voir les tarifs</a>
+        <a class="button button-light" href="#tarifs">Voir les tarifs</a>
       </div>
     </div>
     </section>
 
-    <section class="view-panel" id="inscription" data-view="inscription">
+    <section class="view-panel" id="tarifs" data-view="tarifs">
     <div class="section">
       <div class="section-head">
-        <p class="eyebrow">Tarifs &amp; inscription</p>
-        <h2>Adh&eacute;sion annuelle.</h2>
+        <p class="eyebrow">Tarifs</p>
+        <h2>Choisissez votre section.</h2>
       </div>
       <div class="price-grid" data-render="prices"></div>
       <p class="note">Licence : <strong>37 &euro; hors adh&eacute;sion</strong>. Le r&egrave;glement de l'adh&eacute;sion se fait automatiquement en 3 fois sans frais via HelloAsso.</p>
     </div>
 
-    <div class="section band">
-      <div class="signup-layout">
-        <div class="signup-copy">
-          <div class="section-head">
-            <p class="eyebrow">Inscription</p>
-            <h2>Inscription d&eacute;finitive via HelloAsso.</h2>
-          </div>
-          <p>L'inscription d&eacute;finitive s'effectue via HelloAsso. Le r&egrave;glement est automatiquement r&eacute;parti en 3 paiements sans frais.</p>
-          <p class="alert">L'inscription &agrave; Mix Martial Academy est annuelle, ferme et d&eacute;finitive. Aucun remboursement total ou partiel ne pourra &ecirc;tre effectu&eacute;, y compris en cas d'arr&ecirc;t en cours de saison, d'absence prolong&eacute;e, de changement de situation personnelle ou de blessure.</p>
-          <p>En cas d'&eacute;ch&eacute;ance refus&eacute;e ou non r&eacute;gularis&eacute;e, l'acc&egrave;s aux entra&icirc;nements pourra &ecirc;tre suspendu jusqu'&agrave; r&eacute;gularisation. Les informations et documents n&eacute;cessaires &agrave; l'inscription sont g&eacute;r&eacute;s directement via HelloAsso.</p>
+    <div class="section section-tight">
+      <div class="section-head">
+        <p class="eyebrow">Avant de valider</p>
+        <h2>Ce qu'il faut savoir.</h2>
+      </div>
+      <div class="condition-card-grid" data-render="condition-cards"></div>
+    </div>
+
+    <div class="section band signup-section" id="tarifs-inscription">
+      <div class="signup-flow">
+        <div class="section-head">
+          <p class="eyebrow">Validation</p>
+          <h2>Inscription d&eacute;finitive via HelloAsso.</h2>
         </div>
+        <p>L'inscription d&eacute;finitive s'effectue via HelloAsso. Les informations et documents n&eacute;cessaires &agrave; l'inscription sont g&eacute;r&eacute;s directement via HelloAsso.</p>
         <form class="conditions" id="signup-conditions">
-          <fieldset>
-            <legend>Conditions obligatoires avant inscription</legend>
-            <div data-render="conditions"></div>
-          </fieldset>
-          <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Veuillez accepter les conditions pour acc&eacute;der &agrave; l'inscription</a>
+          <details class="conditions-details" open>
+            <summary>Conditions d'inscription</summary>
+            <div class="condition-card-grid condition-card-grid-compact" data-render="condition-cards-detail"></div>
+            <ul class="condition-list" data-render="condition-list"></ul>
+          </details>
+          <label class="condition condition-global">
+            <input id="condition-global" type="checkbox" required>
+            <span>Je reconnais avoir lu et accept&eacute; les conditions d'inscription de Mix Martial Academy : adh&eacute;sion annuelle ferme et d&eacute;finitive, absence de remboursement total ou partiel, paiement automatiquement en 3 fois via HelloAsso, suspension possible en cas d'&eacute;ch&eacute;ance refus&eacute;e non r&eacute;gularis&eacute;e, acceptation du r&egrave;glement int&eacute;rieur, du mat&eacute;riel obligatoire et de la r&egrave;gle des gants 16 oz.</span>
+          </label>
+          <p class="note helloasso-placeholder" id="helloasso-placeholder" hidden>Le lien officiel HelloAsso doit encore &ecirc;tre ajout&eacute;.</p>
+          <a class="button disabled" id="helloasso-link" href="#A_COMPLETER_HELLOASSO" aria-disabled="true">Acceptez les conditions pour acc&eacute;der &agrave; HelloAsso</a>
         </form>
       </div>
     </div>

@@ -49,17 +49,28 @@
   }
 
   function renderConditions(data) {
-    var container = document.querySelector('[data-render="conditions"]');
-    if (!container) return;
-    data.signup.conditions.forEach(function (condition, index) {
-      var label = el("label", "condition");
-      var input = document.createElement("input");
-      input.type = "checkbox";
-      input.id = "condition-" + index;
-      input.required = true;
-      label.appendChild(input);
-      label.appendChild(el("span", "", condition));
-      container.appendChild(label);
+    var cards = [
+      ["Adh\u00e9sion annuelle", "L'inscription est annuelle, ferme et d\u00e9finitive."],
+      ["Aucun remboursement", "Aucun remboursement total ou partiel ne pourra \u00eatre effectu\u00e9, y compris en cas d'arr\u00eat, d'absence prolong\u00e9e, de blessure ou de changement de situation personnelle."],
+      ["Paiement HelloAsso", data.prices.paymentRule],
+      ["\u00c9ch\u00e9ance refus\u00e9e", data.signup.unpaidRule],
+      ["R\u00e8glement et mat\u00e9riel", "L'inscription vaut acceptation du r\u00e8glement int\u00e9rieur, du mat\u00e9riel obligatoire selon la section, et de la r\u00e8gle des gants de boxe 16 oz uniquement."]
+    ];
+
+    document.querySelectorAll('[data-render="condition-cards"], [data-render="condition-cards-detail"]').forEach(function (container) {
+      var visibleCards = container.getAttribute("data-render") === "condition-cards" ? cards.slice(0, 4) : cards;
+      visibleCards.forEach(function (card) {
+        var article = el("article", "condition-card");
+        article.appendChild(el("h3", "", card[0]));
+        article.appendChild(el("p", "", card[1]));
+        container.appendChild(article);
+      });
+    });
+
+    var listContainer = document.querySelector('[data-render="condition-list"]');
+    if (!listContainer) return;
+    data.signup.conditions.forEach(function (condition) {
+      listContainer.appendChild(el("li", "", condition));
     });
   }
 
@@ -140,15 +151,19 @@
   function setupSignup(data) {
     var form = document.getElementById("signup-conditions");
     var link = document.getElementById("helloasso-link");
+    var placeholder = document.getElementById("helloasso-placeholder");
     if (!form || !link) return;
     var inputs = Array.prototype.slice.call(form.querySelectorAll('input[type="checkbox"]'));
     link.href = data.signup.helloAssoUrl;
 
     function update() {
       var complete = inputs.every(function (input) { return input.checked; });
+      var missingHelloAsso = data.signup.helloAssoUrl.indexOf("A_COMPLETER") >= 0;
       link.classList.toggle("disabled", !complete);
+      link.classList.toggle("placeholder-active", complete && missingHelloAsso);
       link.setAttribute("aria-disabled", String(!complete));
-      link.textContent = complete ? "S'inscrire via HelloAsso" : "Veuillez accepter les conditions pour acc\u00e9der \u00e0 l'inscription";
+      link.textContent = complete ? "Continuer vers HelloAsso" : "Acceptez les conditions pour acc\u00e9der \u00e0 HelloAsso";
+      if (placeholder) placeholder.hidden = !(complete && missingHelloAsso);
     }
 
     inputs.forEach(function (input) {
@@ -156,6 +171,7 @@
     });
     link.addEventListener("click", function (event) {
       if (link.getAttribute("aria-disabled") === "true") event.preventDefault();
+      if (link.classList.contains("placeholder-active")) event.preventDefault();
     });
     update();
   }

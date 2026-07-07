@@ -1,12 +1,14 @@
 (function () {
-  var validViews = ["accueil", "cours", "inscription", "materiel", "club", "contact"];
+  var validViews = ["accueil", "cours", "tarifs", "materiel", "club", "contact"];
 
   function getViewFromHash() {
     var hash = window.location.hash.replace("#", "");
+    if (hash === "tarifs-inscription") return "tarifs";
     return validViews.indexOf(hash) >= 0 ? hash : "accueil";
   }
 
   function setActiveView(view) {
+    var hash = window.location.hash.replace("#", "");
     document.querySelectorAll("[data-view]").forEach(function (panel) {
       var active = panel.getAttribute("data-view") === view;
       panel.classList.toggle("is-active", active);
@@ -25,6 +27,14 @@
     if (navToggle && navLinks) {
       navToggle.setAttribute("aria-expanded", "false");
       navLinks.classList.remove("open");
+    }
+
+    if (hash === "tarifs-inscription") {
+      var target = document.getElementById("tarifs-inscription");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
