@@ -16,17 +16,21 @@
     return Number(match[1]);
   }
 
-  function sectionFromAge(age) {
-    if (age >= 6 && age <= 11) return "enfant";
-    if (age >= 12 && age <= 16) return "ado";
-    if (age >= 17) return "adulte";
-    return null;
+  function getSectionByAge(data, age) {
+    if (age < 6) return { tooYoung: true };
+    var sectionKey = age <= 11 ? "enfant" : age <= 16 ? "ado" : "adulte";
+    return {
+      tooYoung: false,
+      key: sectionKey,
+      slot: slotBySection(data, sectionKey),
+      price: priceBySection(data, sectionKey),
+      equipment: equipmentBySection(data, sectionKey)
+    };
   }
 
   function sectionFromText(q) {
     var age = extractAge(q);
-    var ageSection = age === null ? null : sectionFromAge(age);
-    if (ageSection) return ageSection;
+    if (age !== null) return null;
 
     if (q.includes("enfant") || q.includes("enfants") || q.includes("petit") || q.includes("6-11") || q.includes("6 11")) return "enfant";
     if (q.includes("ado") || q.includes("ados") || q.includes("12-16") || q.includes("12 16")) return "ado";
@@ -86,6 +90,26 @@
     return "Pour " + contextText(q, age, sectionKey) + ", la section concern\u00e9e est " + slot.section + " " + slot.age + ". Les cours ont lieu le " + dayText(data) + " de " + slot.time + ".";
   }
 
+  function tooYoungAnswer(data, age) {
+    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club par WhatsApp pour confirmer.";
+  }
+
+  function mixedTextForSection(sectionKey) {
+    return sectionKey === "adulte" ? "Les cours sont mixtes." : "Les cours sont mixtes, filles et gar\u00e7ons ensemble.";
+  }
+
+  function ageScheduleAnswer(data, age, info) {
+    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Les entra\u00eenements ont lieu le " + dayText(data) + " de " + info.slot.time + ".";
+  }
+
+  function agePriceAnswer(data, age, info) {
+    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Tarif : " + info.price.price + " + licence " + data.prices.license.replace(" hors adh\u00e9sion", "") + ". " + data.prices.paymentRule;
+  }
+
+  function ageSummaryAnswer(data, age, info) {
+    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". " + mixedTextForSection(info.key) + " Les entra\u00eenements ont lieu le " + dayText(data) + " de " + info.slot.time + ". Tarif : " + info.price.price + " + licence " + data.prices.license.replace(" hors adh\u00e9sion", "") + ".";
+  }
+
   function priceAnswer(data, q, sectionKey) {
     var age = extractAge(q);
     var price = priceBySection(data, sectionKey);
@@ -107,6 +131,11 @@
     var intro = age === null ? "Pour " + contextText(q || "", age, sectionKey) : "Pour " + contextText(q || "", age, sectionKey);
     var required = match.required.map(lowerFirst).join(", ");
     return intro + ", le mat\u00e9riel obligatoire est : " + required + "." + (match.note ? " " + match.note : "");
+  }
+
+  function ageMaterialAnswer(data, age, info) {
+    var required = info.equipment.required.map(lowerFirst).join(", ");
+    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Le mat\u00e9riel obligatoire est : " + required + "." + (info.equipment.note ? " " + info.equipment.note : "");
   }
 
   function fullScheduleAnswer(data) {
@@ -155,7 +184,18 @@
   function getAnswer(raw) {
     var data = window.CLUB_DATA;
     var q = normalize(raw);
+    var age = extractAge(q);
+    var ageInfo = age === null ? null : getSectionByAge(data, age);
     var sectionKey = sectionFromText(q);
+
+    if (ageInfo) {
+      awaitingMaterialSection = false;
+      if (ageInfo.tooYoung) return tooYoungAnswer(data, age);
+      if (isMaterialQuestion(q)) return ageMaterialAnswer(data, age, ageInfo);
+      if (isPriceQuestion(q)) return agePriceAnswer(data, age, ageInfo);
+      if (isScheduleQuestion(q)) return ageScheduleAnswer(data, age, ageInfo);
+      return ageSummaryAnswer(data, age, ageInfo);
+    }
 
     if (awaitingMaterialSection) {
       if (sectionKey) return materialAnswer(sectionKey, q);
