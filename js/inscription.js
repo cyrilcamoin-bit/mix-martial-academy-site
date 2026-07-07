@@ -90,7 +90,7 @@
   }
 
   function icon(key, label) {
-    return '<img src="assets/icons/' + key + '.svg?v=20260707-social" alt="" aria-hidden="true"><span>' + label + "</span>";
+    return '<img src="assets/icons/' + key + '.svg?v=20260707-google" alt="" aria-hidden="true"><span>' + label + "</span>";
   }
 
   function renderSocials(data) {
@@ -101,7 +101,8 @@
       ["instagram", data.contacts.instagram],
       ["facebook", data.contacts.facebook],
       ["tiktok", data.contacts.tiktokUrl],
-      ["discord", data.contacts.discord]
+      ["discord", data.contacts.discord],
+      ["google", data.contacts.google]
     ];
     links.forEach(function (item) {
       var key = item[0];

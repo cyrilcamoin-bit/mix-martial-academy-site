@@ -126,7 +126,8 @@
       facebook: "https://www.facebook.com/share/17r8JUsXai/?mibextid=wwXIfr",
       tiktok: "mixmartialacademy",
       tiktokUrl: "https://www.tiktok.com/@mixmartialacademy",
-      discord: "https://discord.gg/Nc3tzzVFrZ"
+      discord: "https://discord.gg/Nc3tzzVFrZ",
+      google: "https://share.google/qgk76FdKA32oLiv02"
     },
     discord: {
       title: "Discord officiel du club",
@@ -138,7 +139,8 @@
       instagram: "Suivre le club sur Instagram",
       facebook: "Suivre le club sur Facebook",
       tiktok: "Suivre le club sur TikTok",
-      discord: "Rejoindre le Discord"
+      discord: "Rejoindre le Discord",
+      google: "Page Google"
     },
     chatbot: {
       name: "CHAT BOT Mix Martial Academy",
