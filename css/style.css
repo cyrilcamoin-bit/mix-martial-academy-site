@@ -16,19 +16,13 @@
   --max: 1180px;
 }
 
-/*
-  DREAM MMA font ready-to-enable:
-  1. Put the local font file in assets/fonts/DREAMMMA.woff2.
-  2. Uncomment this block.
-
 @font-face {
   font-family: "Dream MMA";
-  src: url("../assets/fonts/DREAMMMA.woff2") format("woff2");
+  src: url("../assets/fonts/dream_mma/Dream%20MMA.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
-*/
 
 * {
   box-sizing: border-box;
