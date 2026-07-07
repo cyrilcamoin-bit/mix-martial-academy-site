@@ -1,5 +1,5 @@
 (function () {
-  var awaitingMaterialSection = false;
+  var lastIntent = null;
   var quickActions = [
     ["Horaires", "Quels sont les horaires ?"],
     ["Tarifs", "Quels sont les tarifs ?"],
@@ -9,7 +9,7 @@
     ["Contact", "Comment contacter le club ?"]
   ];
 
-  function normalize(text) {
+  function normalizeText(text) {
     return text.toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -18,132 +18,110 @@
       .trim();
   }
 
-  function extractAge(question) {
-    var match = question.match(/\b(\d{1,2})\s*(?:ans?|an)?\b/);
+  function hasAny(text, words) {
+    return words.some(function (word) {
+      return text.includes(word);
+    });
+  }
+
+  function isAddressQuestion(text) {
+    return hasAny(text, [
+      "adresse",
+      "lieu",
+      "salle jennifer",
+      "chemin de la bergerie",
+      "c est ou",
+      "ou est",
+      "ou sont",
+      "ou se trouve",
+      "ou ont lieu",
+      "ou se passent",
+      "ou se deroulent",
+      "lieu des cours"
+    ]);
+  }
+
+  function isUnpaidQuestion(text) {
+    return hasAny(text, ["impaye", "echeance refusee", "carte refusee", "prelevement refuse", "si je ne paie pas", "paiement non regularise", "non regularise"]) ||
+      (text.includes("paiement") && text.includes("refuse")) ||
+      (text.includes("echeance") && text.includes("refuse"));
+  }
+
+  function extractAge(text) {
+    var match = text.match(/\b(\d{1,2})\s*(?:ans?|an)\b/);
     if (!match) return null;
     return Number(match[1]);
   }
 
-  function getSectionByAge(data, age) {
-    if (age < 6) return { tooYoung: true };
-    var sectionKey = age <= 11 ? "enfant" : age <= 16 ? "ado" : "adulte";
-    return {
-      tooYoung: false,
-      key: sectionKey,
-      slot: slotBySection(data, sectionKey),
-      price: priceBySection(data, sectionKey),
-      equipment: equipmentBySection(data, sectionKey)
-    };
+  function bySection(data, key) {
+    var slot = data.schedule[0].slots.find(function (item) {
+      var section = normalizeText(item.section);
+      if (key === "children") return section.includes("enfants");
+      if (key === "teens") return section.includes("ados");
+      return section.includes("adultes");
+    });
+    var price = data.prices.sections.find(function (item) {
+      return slot && item.section === slot.section;
+    });
+    var equipmentKey = key === "children" ? "enfant" : key === "teens" ? "ado" : "adulte";
+    var equipment = data.equipment.sections.find(function (item) {
+      return item.key === equipmentKey;
+    });
+    return { key: key, slot: slot, price: price, equipment: equipment };
   }
 
-  function sectionFromText(q) {
-    var age = extractAge(q);
-    if (age !== null) return null;
+  function getSectionByAge(data, age) {
+    if (age < 6) return { key: "tooYoung", tooYoung: true };
+    if (age <= 11) return bySection(data, "children");
+    if (age <= 16) return bySection(data, "teens");
+    return bySection(data, "adults");
+  }
 
-    if (q.includes("enfant") || q.includes("enfants") || q.includes("petit") || q.includes("6-11") || q.includes("6 11")) return "enfant";
-    if (q.includes("ado") || q.includes("ados") || q.includes("12-16") || q.includes("12 16")) return "ado";
-    if (q.includes("adulte") || q.includes("adultes") || q.includes("majeur") || q.includes("17+") || q.includes("17 +")) return "adulte";
+  function detectSection(data, text, age) {
+    if (age !== null) return getSectionByAge(data, age);
+    if (hasAny(text, ["enfant", "enfants", "petit", "6-11", "6 11"])) return bySection(data, "children");
+    if (hasAny(text, ["ado", "ados", "12-16", "12 16"])) return bySection(data, "teens");
+    if (hasAny(text, ["adulte", "adultes", "majeur", "17+", "17 +"])) return bySection(data, "adults");
     return null;
   }
 
-  function slotBySection(data, sectionKey) {
-    return data.schedule[0].slots.find(function (slot) {
-      return normalize(slot.section).startsWith(sectionKey === "ado" ? "ado" : sectionKey);
-    });
+  function detectIntent(text) {
+    if (hasAny(text, ["horaires", "tous les horaires", "quels sont les horaires", "planning complet", "horaires enfants ados adultes", "horaires de tout le monde"])) return "fullSchedule";
+    if (hasAny(text, ["tous les tarifs", "tarifs enfants ados adultes", "prix enfants ados adultes"])) return "fullPricing";
+    if (hasAny(text, ["plusieurs fois", "3 fois", "trois fois", "facilite de paiement", "paiement echelonne", "combien de fois", "reglement en plusieurs fois", "helloasso 3 fois"])) return "payment";
+    if (hasAny(text, ["inscription", "inscrire", "helloasso", "lien inscription", "dossier inscription", "documents inscription"])) return "registration";
+    if (hasAny(text, ["tarif", "prix", "combien", "cout", "cotisation", "adhesion"])) return "pricing";
+    if (hasAny(text, ["licence", "licence federale", "prix licence", "licence comprise", "licence incluse"])) return "license";
+    if (hasAny(text, ["essai", "essayer", "venir essayer", "seance d essai", "faut prevenir", "besoin de prevenir", "reserver essai"])) return "trial";
+    if (hasAny(text, ["mixte", "fille", "filles", "garcon", "garcons"])) return "mixed";
+    if (hasAny(text, ["rdx", "commander materiel", "commande materiel", "commande equipement", "echange materiel", "retour materiel", "remboursement materiel", "changer taille", "modifier commande"])) return "rdx";
+    if (hasAny(text, ["gants 16", "16 oz", "gants de boxe", "gants plus petits", "taille gants", "mes gants"])) return "gloves";
+    if (hasAny(text, ["materiel", "equipement", "protection", "protege", "coquille", "gants", "casque", "quoi acheter"])) return "equipment";
+    if (hasAny(text, ["siren", "siret", "rna", "association", "mentions legales", "ape", "siege social"])) return "legal";
+    if (hasAny(text, ["fin de saison", "quand finit la saison", "aperitif", "apero", "dernier cours", "saison 2026", "saison 2027"])) return "season";
+    if (hasAny(text, ["remboursement", "rembourse", "rembourser", "arreter", "arret", "blessure", "absence", "demenagement", "changement de situation", "annuler inscription", "si j arrete"])) return "refund";
+    if (isUnpaidQuestion(text)) return "unpaid";
+    if (hasAny(text, ["horaire", "horraire", "heure", "planning", "quand", "quel jour", "cours quand", "entrainement", "lundi", "mercredi", "venir", "vient"])) return "schedule";
+    if (hasAny(text, ["discord", "groupe", "communaute", "infos club", "annonces", "photos", "videos"])) return "discord";
+    if (hasAny(text, ["instagram", "facebook", "tiktok", "reseaux", "reseau"])) return "social";
+    if (isAddressQuestion(text)) return "address";
+    if (hasAny(text, ["contact", "telephone", "whatsapp", "mail", "email", "joindre", "appeler"])) return "contact";
+    return "fallback";
   }
 
-  function equipmentBySection(data, sectionKey) {
-    return data.equipment.sections.find(function (item) {
-      return item.key === sectionKey;
-    });
-  }
-
-  function priceBySection(data, sectionKey) {
-    var slot = slotBySection(data, sectionKey);
-    if (!slot) return null;
-    return data.prices.sections.find(function (price) {
-      return price.section === slot.section;
-    });
-  }
-
-  function dayText(data) {
-    var days = data.schedule.map(function (day) {
-      return day.day.toLowerCase();
-    });
-    return days.map(function (day, index) {
-      return index === 0 ? day : "le " + day;
+  function days(data) {
+    return data.schedule.map(function (day, index) {
+      return (index === 0 ? "le " : "le ") + day.day.toLowerCase();
     }).join(" et ");
   }
 
-  function contextText(q, age, sectionKey) {
-    if (age !== null) {
-      if (sectionKey === "enfant" && (q.includes("fils") || q.includes("fil") || q.includes("garcon"))) return "un enfant de " + age + " ans";
-      if (sectionKey === "enfant" && q.includes("fille")) return "un enfant de " + age + " ans";
-      if (sectionKey === "ado" && q.includes("ado")) return "un ado de " + age + " ans";
-      if (sectionKey === "adulte") return age + " ans";
-      return age + " ans";
-    }
-    if (sectionKey === "enfant") return "les enfants 6 \u00e0 11 ans";
-    if (sectionKey === "ado") return "les ados 12 \u00e0 16 ans";
-    return "les adultes 17 ans et +";
+  function licenseAmount(data) {
+    return data.prices.license.replace(" hors adh\u00e9sion", "");
   }
 
-  function scheduleAnswer(data, q, sectionKey) {
-    var age = extractAge(q);
-    var slot = slotBySection(data, sectionKey);
-    if (!slot) return fullScheduleAnswer(data);
-    if (age !== null && sectionKey === "adulte") {
-      return "\u00c0 " + age + " ans, la section concern\u00e9e est " + slot.section + " " + slot.age + ". Les cours ont lieu le " + dayText(data) + " de " + slot.time + ".";
-    }
-    return "Pour " + contextText(q, age, sectionKey) + ", la section concern\u00e9e est " + slot.section + " " + slot.age + ". Les cours ont lieu le " + dayText(data) + " de " + slot.time + ".";
-  }
-
-  function tooYoungAnswer(data, age) {
-    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club par WhatsApp pour confirmer.";
-  }
-
-  function mixedTextForSection(sectionKey) {
-    return sectionKey === "adulte" ? "Les cours sont mixtes." : "Les cours sont mixtes, filles et gar\u00e7ons ensemble.";
-  }
-
-  function ageScheduleAnswer(data, age, info) {
-    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Les entra\u00eenements ont lieu le " + dayText(data) + " de " + info.slot.time + ".";
-  }
-
-  function agePriceAnswer(data, age, info) {
-    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Tarif : " + info.price.price + " + licence " + data.prices.license.replace(" hors adh\u00e9sion", "") + ". " + data.prices.paymentRule;
-  }
-
-  function ageSummaryAnswer(data, age, info) {
-    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". " + mixedTextForSection(info.key) + " Les entra\u00eenements ont lieu le " + dayText(data) + " de " + info.slot.time + ". Tarif : " + info.price.price + " + licence " + data.prices.license.replace(" hors adh\u00e9sion", "") + ".";
-  }
-
-  function priceAnswer(data, q, sectionKey) {
-    var age = extractAge(q);
-    var price = priceBySection(data, sectionKey);
-    if (!price) return fullPriceAnswer(data);
-    var label = age === null ? contextText(q, age, sectionKey) : contextText(q, age, sectionKey);
-    return "Pour " + label + ", le tarif est de " + price.price + ". La licence f\u00e9d\u00e9rale de " + data.prices.license.replace(" hors adh\u00e9sion", "") + " est \u00e0 ajouter. " + data.prices.paymentRule;
-  }
-
-  function lowerFirst(text) {
-    return text.charAt(0).toLowerCase() + text.slice(1);
-  }
-
-  function materialAnswer(sectionKey, q) {
-    var data = window.CLUB_DATA;
-    var age = extractAge(q || "");
-    var match = equipmentBySection(data, sectionKey);
-    if (!match) return data.chatbot.materialQuestion;
-    awaitingMaterialSection = false;
-    var intro = age === null ? "Pour " + contextText(q || "", age, sectionKey) : "Pour " + contextText(q || "", age, sectionKey);
-    var required = match.required.map(lowerFirst).join(", ");
-    return intro + ", le mat\u00e9riel obligatoire est : " + required + "." + (match.note ? " " + match.note : "");
-  }
-
-  function ageMaterialAnswer(data, age, info) {
-    var required = info.equipment.required.map(lowerFirst).join(", ");
-    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + info.slot.section + " " + info.slot.age + ". Le mat\u00e9riel obligatoire est : " + required + "." + (info.equipment.note ? " " + info.equipment.note : "");
+  function sectionLabel(section) {
+    if (section.key === "adults") return "les Adultes " + section.slot.age;
+    return "la section " + section.slot.section + " " + section.slot.age;
   }
 
   function fullScheduleAnswer(data) {
@@ -154,100 +132,137 @@
     }).join(". ");
   }
 
-  function fullPriceAnswer(data) {
+  function fullPricingAnswer(data) {
     return data.prices.sections.map(function (price) {
       return price.section + " " + price.age + " : " + price.price;
     }).join(". ") + ". Licence : " + data.prices.license + ". " + data.prices.paymentRule;
   }
 
-  function isMaterialQuestion(q) {
-    return q.includes("materiel") || q.includes("equipement") || q.includes("protection") || q.includes("gant");
+  function tooYoungAnswer(age) {
+    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club par WhatsApp pour confirmer.";
   }
 
-  function isPriceQuestion(q) {
-    return q.includes("tarif") || q.includes("prix") || q.includes("cout") || q.includes("combien");
+  function scheduleAnswer(data, section, age) {
+    if (!section) return "Pour vous donner le bon horaire, pouvez-vous pr\u00e9ciser la section : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans ou adulte 17 ans et + ?";
+    if (section.tooYoung) return tooYoungAnswer(age);
+    var intro = age !== null ? "\u00c0 " + age + " ans, la section concern\u00e9e est " + section.slot.section + " " + section.slot.age + "." : "Pour " + sectionLabel(section) + ".";
+    return intro + " Les cours ont lieu " + days(data) + " de " + section.slot.time + ".";
   }
 
-  function isScheduleQuestion(q) {
-    return q.includes("horaire") || q.includes("horraire") || q.includes("heure") || q.includes("planning") ||
-      q.includes("cours") || q.includes("cour") || q.includes("venir") || q.includes("vient") ||
-      q.includes("seance") || q.includes("entrainement") || q.includes("lundi") || q.includes("mercredi") ||
-      q.includes("quand");
+  function pricingAnswer(data, section, age) {
+    if (!section) return fullPricingAnswer(data);
+    if (section.tooYoung) return tooYoungAnswer(age);
+    return "Pour " + sectionLabel(section) + ", le tarif est de " + section.price.price + ". La licence f\u00e9d\u00e9rale de " + licenseAmount(data) + " est \u00e0 ajouter. " + data.prices.paymentRule;
   }
 
-  function asksFullSchedule(q) {
-    return q.includes("quels sont les horaires") || q.includes("tous les horaires") || q.includes("planning complet") ||
-      q.includes("horaires de tout le monde") || q.includes("horaires enfants ados adultes");
+  function ageSummaryAnswer(data, section, age) {
+    if (section.tooYoung) return tooYoungAnswer(age);
+    var mixed = section.key === "adults" ? "Les cours sont mixtes." : "Les cours sont mixtes, filles et gar\u00e7ons ensemble.";
+    return "\u00c0 " + age + " ans, la section concern\u00e9e est " + section.slot.section + " " + section.slot.age + ". " + mixed + " Les entra\u00eenements ont lieu " + days(data) + " de " + section.slot.time + ". Tarif : " + section.price.price + " + licence " + licenseAmount(data) + ".";
   }
 
-  function isMixedCourseQuestion(q) {
-    return q.includes("mixte") || q.includes("fille") || q.includes("filles") ||
-      q.includes("garcon") || q.includes("garcons");
+  function mixedAnswer(data, section, age) {
+    if (section && section.tooYoung) return tooYoungAnswer(age);
+    if (section && age !== null) return "Oui, les cours sont mixtes. \u00c0 " + age + " ans, la section concern\u00e9e est " + section.slot.section + " " + section.slot.age + ". Les cours ont lieu " + days(data) + " de " + section.slot.time + ".";
+    return data.chatbot.mixedCourses;
   }
 
-  function mixedCourseAnswer() {
-    return window.CLUB_DATA.chatbot.mixedCourses;
+  function equipmentAnswer(data, section, age) {
+    if (!section) return data.chatbot.materialQuestion;
+    if (section.tooYoung) return tooYoungAnswer(age);
+    var required = section.equipment.required.map(function (item) {
+      return item.charAt(0).toLowerCase() + item.slice(1);
+    }).join(", ");
+    return "Pour " + sectionLabel(section) + ", le mat\u00e9riel obligatoire est : " + required + "." + (section.equipment.note ? " " + section.equipment.note : "");
   }
 
-  function isContactQuestion(q) {
-    return q.includes("contact") || q.includes("contacter") || q.includes("joindre") ||
-      q.includes("whatsapp") || q.includes("telephone") || q.includes("tel") ||
-      q.includes("email") || q.includes("mail");
+  function helloAssoAnswer(data) {
+    if (data.signup.helloAssoUrl.indexOf("A_COMPLETER") >= 0) {
+      return "Le lien HelloAsso officiel doit encore \u00eatre ajout\u00e9 sur le site. En attendant, vous pouvez contacter le club par WhatsApp.";
+    }
+    return "L'inscription d\u00e9finitive se fait via HelloAsso. Le r\u00e8glement est automatiquement r\u00e9parti en 3 paiements sans frais. Le lien officiel HelloAsso est accessible depuis le bouton d'inscription du site.";
   }
 
-  function contactAnswer(data) {
-    return "Vous pouvez contacter le club sur WhatsApp au " + data.contacts.whatsappDisplay + " ou par email : " + data.contacts.email + ".";
+  function socialAnswer(data, text) {
+    if (text.includes("instagram")) return "Instagram : " + data.contacts.instagram;
+    if (text.includes("facebook")) return "Facebook : " + data.contacts.facebook;
+    if (text.includes("tiktok")) return "TikTok : " + data.contacts.tiktokUrl;
+    if (text.includes("discord")) return discordAnswer(data);
+    return "R\u00e9seaux du club : Instagram " + data.contacts.instagram + " ; Facebook " + data.contacts.facebook + " ; TikTok " + data.contacts.tiktokUrl + " ; Discord " + data.contacts.discord + ".";
   }
 
-  function getAnswer(raw) {
+  function discordAnswer(data) {
+    return "Le club dispose d'un Discord officiel pour les adh\u00e9rents. Il sert \u00e0 suivre les annonces, les infos de derni\u00e8re minute, le chat adh\u00e9rents, les photos/vid\u00e9os, les contenus li\u00e9s aux entra\u00eenements et comp\u00e9titions, ainsi que les documents utiles. Lien : " + data.contacts.discord;
+  }
+
+  function legalAnswer(data) {
+    return data.legal.associationName + " est une association d\u00e9clar\u00e9e. SIREN : " + data.legal.siren + ". SIRET : " + data.legal.siret + ". RNA : " + data.legal.rna + ". APE : " + data.legal.ape + ". Si\u00e8ge social : " + data.legal.legalAddress + ".";
+  }
+
+  function generateAnswer(data, intent, section, age, text) {
+    if (section && age !== null && !["pricing", "schedule", "equipment", "mixed"].includes(intent)) {
+      if (intent === "fallback") return ageSummaryAnswer(data, section, age);
+    }
+
+    switch (intent) {
+      case "payment":
+        return "Oui. " + data.prices.paymentRule;
+      case "registration":
+        return helloAssoAnswer(data);
+      case "pricing":
+      case "fullPricing":
+        return pricingAnswer(data, section, age);
+      case "license":
+        return "La licence f\u00e9d\u00e9rale est de " + licenseAmount(data) + " et elle est hors adh\u00e9sion. Elle est donc \u00e0 ajouter au tarif annuel.";
+      case "schedule":
+        return scheduleAnswer(data, section, age);
+      case "fullSchedule":
+        return fullScheduleAnswer(data);
+      case "mixed":
+        return mixedAnswer(data, section, age);
+      case "trial":
+        return data.trial.text;
+      case "equipment":
+        return equipmentAnswer(data, section, age);
+      case "gloves":
+        return "Pour les gants de boxe, seuls les gants 16 oz sont autoris\u00e9s pendant les entra\u00eenements. Les gants plus petits ne sont pas autoris\u00e9s pour des raisons de s\u00e9curit\u00e9.";
+      case "rdx":
+        return data.equipment.rdx + " Attention : une fois la commande valid\u00e9e, il n'est plus possible de modifier, \u00e9changer ou retourner un article.";
+      case "refund":
+        return data.signup.nonRefundable;
+      case "unpaid":
+        return data.signup.unpaidRule;
+      case "address":
+        return "Les cours ont lieu \u00e0 la " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
+      case "contact":
+        return "Vous pouvez contacter le club par WhatsApp au " + data.contacts.whatsappDisplay + " ou par email \u00e0 " + data.contacts.email + ".";
+      case "social":
+        return socialAnswer(data, text);
+      case "discord":
+        return discordAnswer(data);
+      case "season":
+        return data.season.closingEvent;
+      case "legal":
+        return legalAnswer(data);
+      default:
+        return data.chatbot.fallback + " WhatsApp : " + data.contacts.whatsappDisplay + " / Email : " + data.contacts.email;
+    }
+  }
+
+  function answerQuestion(raw) {
     var data = window.CLUB_DATA;
-    var q = normalize(raw);
-    var age = extractAge(q);
-    var ageInfo = age === null ? null : getSectionByAge(data, age);
-    var sectionKey = sectionFromText(q);
+    var text = normalizeText(raw);
+    var age = extractAge(text);
+    var section = detectSection(data, text, age);
+    var intent = detectIntent(text);
 
-    if (ageInfo) {
-      awaitingMaterialSection = false;
-      if (ageInfo.tooYoung) return tooYoungAnswer(data, age);
-      if (isMaterialQuestion(q)) return ageMaterialAnswer(data, age, ageInfo);
-      if (isPriceQuestion(q)) return agePriceAnswer(data, age, ageInfo);
-      if (isScheduleQuestion(q)) return ageScheduleAnswer(data, age, ageInfo);
-      return ageSummaryAnswer(data, age, ageInfo);
+    if (intent === "fallback" && section && lastIntent && ["schedule", "pricing", "equipment", "mixed"].includes(lastIntent)) {
+      intent = lastIntent;
     }
 
-    if (awaitingMaterialSection) {
-      if (sectionKey) return materialAnswer(sectionKey, q);
-      if (isMaterialQuestion(q)) return data.chatbot.materialQuestion;
-      awaitingMaterialSection = false;
-    }
-
-    if (asksFullSchedule(q)) return fullScheduleAnswer(data);
-    if (isMaterialQuestion(q) && sectionKey) return materialAnswer(sectionKey, q);
-    if (isMaterialQuestion(q)) {
-      awaitingMaterialSection = true;
-      return data.chatbot.materialQuestion;
-    }
-    if (isPriceQuestion(q) && sectionKey) return priceAnswer(data, q, sectionKey);
-    if (isScheduleQuestion(q) && sectionKey) return scheduleAnswer(data, q, sectionKey);
-    if (isMixedCourseQuestion(q)) return mixedCourseAnswer();
-    if (q.includes("essai") || q.includes("tester") || q.includes("decouvrir")) return data.trial.text;
-    if (q.includes("inscription") || q.includes("inscrire") || q.includes("helloasso") || q.includes("paiement")) return data.signup.intro;
-    if (isPriceQuestion(q)) return fullPriceAnswer(data);
-    if (isScheduleQuestion(q)) return "Pour vous donner le bon horaire, pouvez-vous pr\u00e9ciser la section : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans ou adulte 17 ans et + ?";
-    if (q.includes("licence")) return "La licence est de " + data.prices.license + ".";
-    if (q.includes("age") || q.includes("section")) return "Sections : enfants 6 \u00e0 11 ans, ados 12 \u00e0 16 ans, adultes 17 ans et +.";
-    if (q.includes("rembours")) return data.signup.nonRefundable;
-    if (q.includes("impaye") || q.includes("echeance") || q.includes("refuse")) return data.signup.unpaidRule;
-    if (q.includes("discord")) return data.discord.text + " " + data.discord.role + " Lien : " + data.contacts.discord;
-    if (q.includes("adresse") || q.includes("lieu") || q.includes("salle")) return "Lieu des cours : " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
-    if (isContactQuestion(q)) return contactAnswer(data);
-    if (q.includes("whatsapp") || q.includes("telephone") || q.includes("tel")) return "WhatsApp : " + data.contacts.whatsappDisplay + " - " + data.contacts.whatsappUrl;
-    if (q.includes("email") || q.includes("mail")) return "Email : " + data.contacts.email;
-    if (q.includes("instagram")) return "Instagram : " + data.contacts.instagram;
-    if (q.includes("facebook")) return "Facebook : " + data.contacts.facebook;
-    if (q.includes("tiktok")) return "TikTok : " + data.contacts.tiktokUrl;
-    if (q.includes("saison") || q.includes("fin")) return data.season.closingEvent;
-    return data.chatbot.fallback + " WhatsApp : " + data.contacts.whatsappDisplay + " / Email : " + data.contacts.email;
+    var answer = generateAnswer(data, intent, section, age, text);
+    if (intent !== "fallback") lastIntent = intent;
+    return answer;
   }
 
   function addMessage(container, text, fromUser) {
@@ -260,7 +275,7 @@
 
   function askQuestion(container, question) {
     addMessage(container, question, true);
-    addMessage(container, getAnswer(question), false);
+    addMessage(container, answerQuestion(question), false);
   }
 
   function addQuickActions(container) {
