@@ -9,17 +9,6 @@
     ["Contact", "Comment contacter le club ?"]
   ];
 
-  if (window.SITE_THEME && window.SITE_THEME.chatbot && window.SITE_THEME.chatbot.quickActions) {
-    quickActions = [
-      [window.SITE_THEME.chatbot.quickActions.hours || "Horaires", "Quels sont les horaires ?"],
-      [window.SITE_THEME.chatbot.quickActions.prices || "Tarifs", "Quels sont les tarifs ?"],
-      [window.SITE_THEME.chatbot.quickActions.signup || "Inscription", "Comment s'inscrire ?"],
-      [window.SITE_THEME.chatbot.quickActions.equipment || "Mat\u00e9riel", "Quel mat\u00e9riel faut-il ?"],
-      [window.SITE_THEME.chatbot.quickActions.trial || "Cours d'essai", "Comment faire un cours d'essai ?"],
-      [window.SITE_THEME.chatbot.quickActions.contact || "Contact", "Comment contacter le club ?"]
-    ];
-  }
-
   function normalizeText(text) {
     return text.toLowerCase()
       .normalize("NFD")
