@@ -1,5 +1,13 @@
 (function () {
   var awaitingMaterialSection = false;
+  var quickActions = [
+    ["Horaires", "Quels sont les horaires ?"],
+    ["Tarifs", "Quels sont les tarifs ?"],
+    ["Inscription", "Comment s'inscrire ?"],
+    ["Mat\u00e9riel", "Quel mat\u00e9riel faut-il ?"],
+    ["Cours d'essai", "Comment faire un cours d'essai ?"],
+    ["Contact", "Comment contacter le club ?"]
+  ];
 
   function normalize(text) {
     return text.toLowerCase()
@@ -168,7 +176,7 @@
   }
 
   function asksFullSchedule(q) {
-    return q.includes("tous les horaires") || q.includes("planning complet") ||
+    return q.includes("quels sont les horaires") || q.includes("tous les horaires") || q.includes("planning complet") ||
       q.includes("horaires de tout le monde") || q.includes("horaires enfants ados adultes");
   }
 
@@ -179,6 +187,16 @@
 
   function mixedCourseAnswer() {
     return window.CLUB_DATA.chatbot.mixedCourses;
+  }
+
+  function isContactQuestion(q) {
+    return q.includes("contact") || q.includes("contacter") || q.includes("joindre") ||
+      q.includes("whatsapp") || q.includes("telephone") || q.includes("tel") ||
+      q.includes("email") || q.includes("mail");
+  }
+
+  function contactAnswer(data) {
+    return "Vous pouvez contacter le club sur WhatsApp au " + data.contacts.whatsappDisplay + " ou par email : " + data.contacts.email + ".";
   }
 
   function getAnswer(raw) {
@@ -212,16 +230,17 @@
     if (isPriceQuestion(q) && sectionKey) return priceAnswer(data, q, sectionKey);
     if (isScheduleQuestion(q) && sectionKey) return scheduleAnswer(data, q, sectionKey);
     if (isMixedCourseQuestion(q)) return mixedCourseAnswer();
+    if (q.includes("essai") || q.includes("tester") || q.includes("decouvrir")) return data.trial.text;
+    if (q.includes("inscription") || q.includes("inscrire") || q.includes("helloasso") || q.includes("paiement")) return data.signup.intro;
     if (isPriceQuestion(q)) return fullPriceAnswer(data);
     if (isScheduleQuestion(q)) return "Pour vous donner le bon horaire, pouvez-vous pr\u00e9ciser la section : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans ou adulte 17 ans et + ?";
     if (q.includes("licence")) return "La licence est de " + data.prices.license + ".";
     if (q.includes("age") || q.includes("section")) return "Sections : enfants 6 \u00e0 11 ans, ados 12 \u00e0 16 ans, adultes 17 ans et +.";
-    if (q.includes("essai") || q.includes("tester") || q.includes("decouvrir")) return data.trial.text;
-    if (q.includes("inscription") || q.includes("helloasso") || q.includes("paiement")) return data.signup.intro + " " + data.prices.paymentRule;
     if (q.includes("rembours")) return data.signup.nonRefundable;
     if (q.includes("impaye") || q.includes("echeance") || q.includes("refuse")) return data.signup.unpaidRule;
     if (q.includes("discord")) return data.discord.text + " " + data.discord.role + " Lien : " + data.contacts.discord;
     if (q.includes("adresse") || q.includes("lieu") || q.includes("salle")) return "Lieu des cours : " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
+    if (isContactQuestion(q)) return contactAnswer(data);
     if (q.includes("whatsapp") || q.includes("telephone") || q.includes("tel")) return "WhatsApp : " + data.contacts.whatsappDisplay + " - " + data.contacts.whatsappUrl;
     if (q.includes("email") || q.includes("mail")) return "Email : " + data.contacts.email;
     if (q.includes("instagram")) return "Instagram : " + data.contacts.instagram;
@@ -239,6 +258,29 @@
     container.scrollTop = container.scrollHeight;
   }
 
+  function askQuestion(container, question) {
+    addMessage(container, question, true);
+    addMessage(container, getAnswer(question), false);
+  }
+
+  function addQuickActions(container) {
+    var actions = document.createElement("div");
+    actions.className = "quick-actions";
+    actions.setAttribute("aria-label", "Questions rapides");
+    quickActions.forEach(function (item) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "quick-action";
+      button.setAttribute("data-quick-label", item[0]);
+      button.textContent = item[0];
+      button.addEventListener("click", function () {
+        askQuestion(container, item[1]);
+      });
+      actions.appendChild(button);
+    });
+    container.appendChild(actions);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     var data = window.CLUB_DATA;
     var toggle = document.querySelector(".chatbot-toggle");
@@ -254,6 +296,7 @@
       toggle.setAttribute("aria-expanded", "true");
       if (!messages.dataset.started) {
         addMessage(messages, data.chatbot.welcome, false);
+        addQuickActions(messages);
         messages.dataset.started = "true";
       }
       input.focus();
@@ -273,9 +316,8 @@
       event.preventDefault();
       var question = input.value.trim();
       if (!question) return;
-      addMessage(messages, question, true);
       input.value = "";
-      addMessage(messages, getAnswer(question), false);
+      askQuestion(messages, question);
     });
   });
 })();

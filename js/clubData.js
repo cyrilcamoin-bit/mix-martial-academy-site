@@ -142,8 +142,8 @@
       discord: "Rejoindre le Discord"
     },
     chatbot: {
-      name: "Assistant Mix Martial Academy",
-      welcome: "Bonjour, je suis l'assistant de Mix Martial Academy. Je peux vous renseigner sur les horaires, les tarifs, les 3 cours d'essai offerts, l'inscription, le mat\u00e9riel, le Discord et les contacts du club.",
+      name: "CHAT BOT Mix Martial Academy",
+      welcome: "Bonjour \ud83d\udc4b Comment puis-je vous aider ?",
       fallback: "Je n'ai pas encore cette information. Pour une r\u00e9ponse pr\u00e9cise, contactez le club par WhatsApp ou par email.",
       materialQuestion: "Pour vous donner la bonne liste de mat\u00e9riel, pouvez-vous me pr\u00e9ciser la section concern\u00e9e : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans, ou adulte 17 ans et + ?",
       mixedCourses: "Oui, les cours sont mixtes. Les filles et les gar\u00e7ons s'entra\u00eenent ensemble dans les sections enfants, ados et adultes."
