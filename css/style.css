@@ -16,6 +16,20 @@
   --max: 1180px;
 }
 
+/*
+  DREAM MMA font ready-to-enable:
+  1. Put the local font file in assets/fonts/DREAMMMA.woff2.
+  2. Uncomment this block.
+
+@font-face {
+  font-family: "Dream MMA";
+  src: url("../assets/fonts/DREAMMMA.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
 * {
   box-sizing: border-box;
 }
@@ -53,6 +67,14 @@ body::before {
 
 a {
   color: inherit;
+}
+
+.club-name-font {
+  font-family: "Dream MMA", Impact, Haettenschweiler, "Arial Black", sans-serif;
+  letter-spacing: 0.04em;
+  line-height: 0.96;
+  text-rendering: geometricPrecision;
+  text-transform: uppercase;
 }
 
 button,
@@ -153,7 +175,7 @@ input {
   display: block;
   color: var(--text);
   font-size: 0.95rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.04em;
   line-height: 1.1;
 }
 
@@ -265,7 +287,7 @@ input {
   font-size: 5.8rem;
   font-weight: 950;
   line-height: 0.92;
-  letter-spacing: -0.055em;
+  letter-spacing: 0.04em;
   text-wrap: balance;
 }
 
