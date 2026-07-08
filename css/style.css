@@ -1443,6 +1443,30 @@ p {
     margin-right: 0;
   }
 
+  #accueil .hero-list,
+  #accueil .hero-list li,
+  #accueil .hero-list strong,
+  #accueil .hero-list span,
+  #accueil .hero-list .location-row,
+  #accueil .hero-list .location-row strong,
+  #accueil .hero-list .location-row span {
+    text-align: center;
+  }
+
+  #accueil .hero-list li {
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  #accueil .hero-list strong,
+  #accueil .hero-list span {
+    display: block;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .hero-panel h2 {
     font-size: clamp(1.55rem, 8vw, 2.2rem);
   }
