@@ -1008,7 +1008,7 @@ p {
   right: 18px;
   bottom: 18px;
   z-index: 30;
-  max-width: calc(100vw - 24px);
+  max-width: calc(100% - 24px);
 }
 
 .chatbot-toggle,
@@ -1029,7 +1029,7 @@ p {
 }
 
 .chatbot-panel {
-  width: min(380px, calc(100vw - 32px));
+  width: min(380px, calc(100% - 32px));
   max-height: min(580px, calc(100vh - 96px));
   display: flex;
   flex-direction: column;
@@ -1210,7 +1210,7 @@ p {
     border: 1px solid var(--line);
     border-radius: 18px;
     box-shadow: var(--shadow);
-    max-width: calc(100vw - 32px);
+    max-width: calc(100% - 32px);
   }
 
   .nav-links.open {
@@ -1256,10 +1256,19 @@ p {
     padding-bottom: 28px;
     overflow: visible;
     text-align: center;
+    width: min(calc(100% - 24px), var(--max));
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-grid {
+    width: 100%;
+    max-width: 100%;
     gap: 1rem;
+    justify-items: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero::before {
@@ -1272,9 +1281,13 @@ p {
   }
 
   .hero-copy {
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
     overflow: visible;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-mobile-logo {
@@ -1293,6 +1306,7 @@ p {
   }
 
   .hero h1 {
+    width: 100%;
     max-width: 100%;
     overflow: visible;
     margin-left: auto;
@@ -1302,10 +1316,16 @@ p {
     letter-spacing: 0;
     text-align: center;
     text-wrap: nowrap;
+    overflow-wrap: normal;
   }
 
   .hero-title-word {
     display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
   }
 
   .hero .lead {
@@ -1319,9 +1339,13 @@ p {
   .hero-actions {
     display: grid;
     grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 360px;
     gap: 0.5rem;
     margin-top: 0.9rem;
     justify-items: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-actions .button {
@@ -1350,6 +1374,9 @@ p {
   }
 
   .hero-panel.fight-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 0;
     padding: 0;
     background: transparent;
@@ -1366,9 +1393,14 @@ p {
   }
 
   .hero-list {
+    width: 100%;
+    min-width: 0;
+    max-width: 420px;
     grid-template-columns: 1fr;
     gap: 0.5rem;
     justify-items: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-list li {
@@ -1431,7 +1463,7 @@ p {
 
 @media (max-width: 640px) {
   .nav {
-    width: min(100% - 20px, var(--max));
+    width: min(calc(100% - 20px), var(--max));
     min-height: 58px;
     gap: 0.56rem;
   }
@@ -1461,7 +1493,7 @@ p {
 
   .nav-links {
     inset: 58px 10px auto 10px;
-    max-width: calc(100vw - 20px);
+    max-width: calc(100% - 20px);
     padding: 0.55rem;
     border-radius: 14px;
   }
@@ -1472,7 +1504,10 @@ p {
   }
 
   .section {
-    width: min(100% - 24px, var(--max));
+    width: min(calc(100% - 24px), var(--max));
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     padding: 46px 0;
   }
 
@@ -1547,8 +1582,12 @@ p {
     flex-direction: column;
     align-items: center;
     gap: 0.35rem;
-    padding: 1.15rem 0 5rem;
+    width: min(calc(100% - 24px), var(--max));
+    max-width: 100%;
+    padding: 1.15rem 0 5.75rem;
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .site-footer p {
@@ -1583,17 +1622,25 @@ p {
   .chatbot {
     right: 10px;
     bottom: 10px;
+    max-width: calc(100% - 20px);
   }
 
   .chatbot-panel {
-    width: calc(100vw - 24px);
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 58px;
+    width: auto;
     max-height: min(540px, calc(100vh - 86px));
   }
 }
 
 @media (max-width: 480px) {
   .section {
-    width: min(100% - 20px, var(--max));
+    width: min(calc(100% - 20px), var(--max));
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     padding: 38px 0;
   }
 
@@ -1602,15 +1649,40 @@ p {
   }
 
   .hero {
+    width: min(calc(100% - 20px), var(--max));
+    max-width: 100%;
     min-height: auto;
     padding-top: 18px;
-    padding-bottom: 54px;
+    padding-bottom: 46px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .hero h1 {
-    font-size: clamp(2.28rem, 12vw, 2.9rem);
+  .hero h1,
+  .hero-title,
+  .club-name-font.hero-title {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    text-align: center;
+    font-size: clamp(2.55rem, 13.6vw, 3.45rem);
     line-height: 0.82;
-    letter-spacing: 0;
+    letter-spacing: 0.01em;
+    overflow-wrap: normal;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero h1 span,
+  .hero-title span,
+  .hero-title .title-line,
+  .hero-title-word {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   h2 {
@@ -1624,8 +1696,12 @@ p {
   }
 
   .hero-actions {
+    width: 100%;
+    max-width: 340px;
     gap: 0.46rem;
     margin-top: 0.78rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-actions .button {
@@ -1672,6 +1748,7 @@ p {
   .chatbot {
     right: 8px;
     bottom: 6px;
+    max-width: calc(100% - 16px);
   }
 
   .chatbot-form {
@@ -1690,7 +1767,7 @@ p {
 
 @media (max-width: 380px) {
   .nav {
-    width: min(100% - 16px, var(--max));
+    width: min(calc(100% - 16px), var(--max));
     min-height: 54px;
   }
 
@@ -1719,15 +1796,16 @@ p {
 
   .nav-links {
     inset: 54px 8px auto 8px;
-    max-width: calc(100vw - 16px);
+    max-width: calc(100% - 16px);
   }
 
   .section {
-    width: min(100% - 18px, var(--max));
+    width: min(calc(100% - 18px), var(--max));
   }
 
   .hero h1 {
-    font-size: clamp(2.08rem, 11.8vw, 2.52rem);
+    width: min(calc(100% - 18px), var(--max));
+    font-size: clamp(2.28rem, 13vw, 2.9rem);
   }
 
   .hero .eyebrow {
@@ -1762,10 +1840,12 @@ p {
   .chatbot {
     right: 8px;
     bottom: 6px;
-    max-width: calc(100vw - 18px);
+    max-width: calc(100% - 18px);
   }
 
   .chatbot-panel {
-    width: calc(100vw - 18px);
+    left: 9px;
+    right: 9px;
+    width: auto;
   }
 }
