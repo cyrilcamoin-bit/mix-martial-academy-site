@@ -699,6 +699,19 @@ p {
   scroll-margin-top: 92px;
 }
 
+#tarifs .pricing-section {
+  padding-bottom: 30px;
+}
+
+#tarifs .reminder-section {
+  padding-top: 18px;
+  padding-bottom: 38px;
+}
+
+#tarifs .signup-section {
+  padding-top: 46px;
+}
+
 .signup-flow {
   max-width: 980px;
   margin: 0 auto;
