@@ -1255,6 +1255,7 @@ p {
     padding-top: 22px;
     padding-bottom: 28px;
     overflow: visible;
+    text-align: center;
   }
 
   .hero-grid {
@@ -1273,18 +1274,20 @@ p {
   .hero-copy {
     max-width: 100%;
     overflow: visible;
+    text-align: center;
   }
 
   .hero-mobile-logo {
     display: block;
     width: 54px;
     height: 54px;
-    margin: 0 0 0.78rem;
+    margin: 0 auto 0.78rem;
     object-fit: contain;
     filter: drop-shadow(0 10px 22px rgba(201, 15, 19, 0.22));
   }
 
   .hero .eyebrow {
+    justify-content: center;
     margin-bottom: 0.58rem;
     font-size: 0.7rem;
   }
@@ -1292,9 +1295,12 @@ p {
   .hero h1 {
     max-width: 100%;
     overflow: visible;
+    margin-left: auto;
+    margin-right: auto;
     font-size: clamp(2.58rem, 12.2vw, 3.58rem);
     line-height: 0.84;
     letter-spacing: 0;
+    text-align: center;
     text-wrap: nowrap;
   }
 
@@ -1304,9 +1310,10 @@ p {
 
   .hero .lead {
     max-width: 35rem;
-    margin-top: 0.78rem;
+    margin: 0.78rem auto 0;
     font-size: clamp(0.96rem, 3.4vw, 1.05rem);
     line-height: 1.42;
+    text-align: center;
   }
 
   .hero-actions {
@@ -1314,6 +1321,7 @@ p {
     grid-template-columns: 1fr;
     gap: 0.5rem;
     margin-top: 0.9rem;
+    justify-items: center;
   }
 
   .hero-actions .button {
@@ -1360,13 +1368,16 @@ p {
   .hero-list {
     grid-template-columns: 1fr;
     gap: 0.5rem;
+    justify-items: center;
   }
 
   .hero-list li {
     display: grid;
     align-content: start;
+    justify-items: center;
     gap: 0.18rem;
     min-height: 0;
+    width: 100%;
     padding: 0.66rem 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.105);
     border-radius: 14px;
@@ -1380,7 +1391,7 @@ p {
   .hero-list span {
     flex: none;
     min-width: 0;
-    text-align: left;
+    text-align: center;
   }
 
   .hero-list strong {
