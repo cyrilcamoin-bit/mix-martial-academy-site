@@ -471,7 +471,6 @@ p {
 .price-card,
 .schedule-card,
 .material-card,
-.conditions,
 .contact-card,
 .discord-card,
 .trial-card {
@@ -486,7 +485,6 @@ p {
 
 .hero-panel,
 .accent-box,
-.conditions,
 .contact-card,
 .discord-card,
 .trial-card {
@@ -710,124 +708,10 @@ p {
   max-width: 640px;
 }
 
-.condition-card-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.condition-card-grid-compact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: 1rem;
-}
-
-.condition-card {
-  min-height: 100%;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-}
-
-.condition-card h3 {
-  margin-bottom: 0.45rem;
-  font-size: 1rem;
-}
-
-.condition-card p {
-  margin: 0;
-  font-size: 0.92rem;
-}
-
-.signup-flow .conditions {
-  padding: 0;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.conditions-details {
-  padding: 1.1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-.conditions-details summary {
-  color: var(--text);
-  font-weight: 950;
-  cursor: pointer;
-}
-
-.conditions fieldset {
-  margin: 0 0 1.1rem;
-  padding: 0;
-  border: 0;
-}
-
-.conditions legend {
-  margin-bottom: 0.6rem;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 950;
-}
-
-.condition {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  padding: 0.72rem 0;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  cursor: pointer;
-}
-
-.condition input {
-  flex: 0 0 auto;
-  width: 21px;
-  height: 21px;
-  margin-top: 0.16rem;
-  accent-color: var(--red);
-}
-
-.condition-global {
-  margin: 1rem 0;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-}
-
-.condition-list {
-  display: grid;
-  gap: 0.45rem;
-  margin: 1rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.condition-list li {
-  padding-left: 0.9rem;
-  color: var(--muted);
-  border-left: 2px solid rgba(201, 15, 19, 0.46);
-  font-size: 0.9rem;
-}
-
-.helloasso-widget-section {
-  margin-top: 1.4rem;
-}
-
-.helloasso-widget-section .section-head {
-  margin-bottom: 0.55rem;
-}
-
-.helloasso-widget-section .note {
-  margin-bottom: 1rem;
-}
-
 .helloasso-widget-card {
   overflow: hidden;
-  min-height: 190px;
+  min-height: 750px;
+  margin-top: 1.15rem;
   padding: 1rem;
   background:
     radial-gradient(circle at 16% 0%, rgba(201, 15, 19, 0.18), transparent 34%),
@@ -837,36 +721,6 @@ p {
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
 }
 
-.helloasso-widget-card.is-locked {
-  display: grid;
-  place-items: center;
-}
-
-.helloasso-locked {
-  display: grid;
-  justify-items: center;
-  gap: 0.8rem;
-  max-width: 560px;
-  padding: 1.4rem;
-  color: var(--off-white);
-  text-align: center;
-}
-
-.helloasso-locked span {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: var(--text);
-  font-size: 1.7rem;
-  font-weight: 950;
-  line-height: 1;
-  background: rgba(201, 15, 19, 0.2);
-  border: 1px solid rgba(201, 15, 19, 0.45);
-  border-radius: 50%;
-}
-
-.helloasso-locked p,
 .helloasso-secure-label {
   margin: 0;
 }
@@ -1246,9 +1100,7 @@ p {
   .signup-layout,
   .schedule-grid,
   .price-grid,
-  .material-grid,
-  .condition-card-grid,
-  .condition-card-grid-compact {
+  .material-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1323,7 +1175,6 @@ p {
 
   .hero-panel,
   .accent-box,
-  .conditions,
   .contact-card,
   .discord-card,
   .trial-card {

@@ -48,32 +48,6 @@
     });
   }
 
-  function renderConditions(data) {
-    var cards = [
-      ["Adh\u00e9sion annuelle", "L'inscription est annuelle, ferme et d\u00e9finitive."],
-      ["Aucun remboursement", "Aucun remboursement total ou partiel ne pourra \u00eatre effectu\u00e9, y compris en cas d'arr\u00eat, d'absence prolong\u00e9e, de blessure ou de changement de situation personnelle."],
-      ["Paiement HelloAsso", data.prices.paymentRule],
-      ["\u00c9ch\u00e9ance refus\u00e9e", data.signup.unpaidRule],
-      ["R\u00e8glement et mat\u00e9riel", "L'inscription vaut acceptation du r\u00e8glement int\u00e9rieur, du mat\u00e9riel obligatoire selon la section, et de la r\u00e8gle des gants de boxe 16 oz uniquement."]
-    ];
-
-    document.querySelectorAll('[data-render="condition-cards"], [data-render="condition-cards-detail"]').forEach(function (container) {
-      var visibleCards = container.getAttribute("data-render") === "condition-cards" ? cards.slice(0, 4) : cards;
-      visibleCards.forEach(function (card) {
-        var article = el("article", "condition-card");
-        article.appendChild(el("h3", "", card[0]));
-        article.appendChild(el("p", "", card[1]));
-        container.appendChild(article);
-      });
-    });
-
-    var listContainer = document.querySelector('[data-render="condition-list"]');
-    if (!listContainer) return;
-    data.signup.conditions.forEach(function (condition) {
-      listContainer.appendChild(el("li", "", condition));
-    });
-  }
-
   function renderMaterials(data) {
     var materialContainer = document.querySelector('[data-render="materials"]');
     if (!materialContainer) return;
@@ -169,30 +143,8 @@
   }
 
   function setupSignup(data) {
-    var form = document.getElementById("signup-conditions");
-    var card = document.getElementById("helloasso-widget-card");
-    var locked = document.getElementById("helloasso-locked");
     var widgetContainer = document.getElementById("helloasso-widget-container");
-    if (!form || !card || !locked || !widgetContainer) return;
-    var inputs = Array.prototype.slice.call(form.querySelectorAll('input[type="checkbox"]'));
-
-    function update() {
-      var complete = inputs.every(function (input) { return input.checked; });
-      card.classList.toggle("is-locked", !complete);
-      card.classList.toggle("is-ready", complete);
-      locked.hidden = complete;
-      widgetContainer.hidden = !complete;
-      if (complete) {
-        loadHelloAssoWidget(data, widgetContainer);
-      } else {
-        widgetContainer.replaceChildren();
-      }
-    }
-
-    inputs.forEach(function (input) {
-      input.addEventListener("change", update);
-    });
-    update();
+    loadHelloAssoWidget(data, widgetContainer);
   }
 
   function setupNav() {
@@ -210,7 +162,6 @@
     var data = window.CLUB_DATA;
     renderSchedule(data);
     renderPrices(data);
-    renderConditions(data);
     renderMaterials(data);
     renderSocials(data);
     renderLegal(data);
