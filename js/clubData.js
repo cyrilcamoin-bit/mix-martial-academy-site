@@ -164,10 +164,11 @@
       privacy: "Le site public ne doit pas stocker de donn\u00e9es adh\u00e9rents en V1. Les inscriptions et documents sont g\u00e9r\u00e9s via HelloAsso."
     },
     seo: {
-      title: "Mix Martial Academy - Club de MMA au Rove",
-      description: "Club de MMA au Rove pour enfants, ados et adultes. 3 cours d'essai offerts, entra\u00eenements lundi et mercredi, inscription via HelloAsso.",
+      title: "Mix Martial Academy - Club de MMA au Rove | Enfants, Ados & Adultes",
+      description: "Club de MMA au Rove pour enfants, ados et adultes. 3 cours d'essai offerts \u00e0 la Salle Jennifer, proche C\u00f4te Bleue, lundi et mercredi.",
       visibleLocationText: "Club de MMA au Rove, proche Marseille et de la C\u00f4te Bleue.",
-      localTargets: ["Le Rove", "Gignac-la-Nerthe", "Ensu\u00e8s-la-Redonne", "Marseille", "L'Estaque", "Les Pennes-Mirabeau", "Ch\u00e2teauneuf-les-Martigues", "Vitrolles", "Marignane", "Carry-le-Rouet", "Sausset-les-Pins", "C\u00f4te Bleue"],
+      localAreaText: "Mix Martial Academy est situ\u00e9 au Rove et accueille les pratiquants de MMA venant du Rove, de la C\u00f4te Bleue et des communes voisines.",
+      localTargets: ["Le Rove", "C\u00f4te Bleue", "Gignac-la-Nerthe", "Ensu\u00e8s-la-Redonne", "Marseille L'Estaque", "Les Pennes-Mirabeau", "Ch\u00e2teauneuf-les-Martigues", "Vitrolles", "Marignane", "Carry-le-Rouet", "Sausset-les-Pins"],
       forbiddenTermsForPublicBranding: ["Electro Gym Fit", "electro-gymfit", "\u00e9lectrostimulation"],
       seoRule: "Ne pas afficher une longue liste de villes en fa\u00e7ade. Les utiliser naturellement dans les m\u00e9tadonn\u00e9es, contenus SEO et donn\u00e9es structur\u00e9es."
     }

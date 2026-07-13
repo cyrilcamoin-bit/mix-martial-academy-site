@@ -89,6 +89,8 @@
     if (hasAny(text, ["horaires", "tous les horaires", "quels sont les horaires", "planning complet", "horaires enfants ados adultes", "horaires de tout le monde"])) return "fullSchedule";
     if (hasAny(text, ["tous les tarifs", "tarifs enfants ados adultes", "prix enfants ados adultes"])) return "fullPricing";
     if (hasAny(text, ["plusieurs fois", "3 fois", "trois fois", "facilite de paiement", "paiement echelonne", "combien de fois", "reglement en plusieurs fois", "helloasso 3 fois"])) return "payment";
+    if ((hasAny(text, ["combien", "cout", "prix", "tarif"]) && hasAny(text, ["inscription", "adhesion", "cotisation"])) || hasAny(text, ["cout inscription", "prix inscription", "tarif inscription"])) return "pricing";
+    if (hasAny(text, ["y a t il des cours", "cours enfant", "cours enfants", "cours ado", "cours ados", "cours adulte", "cours adultes"])) return "schedule";
     if (hasAny(text, ["inscription", "inscrire", "helloasso", "lien inscription", "dossier inscription", "documents inscription"])) return "registration";
     if (hasAny(text, ["tarif", "prix", "combien", "cout", "cotisation", "adhesion"])) return "pricing";
     if (hasAny(text, ["licence", "licence federale", "prix licence", "licence comprise", "licence incluse"])) return "license";
@@ -102,6 +104,7 @@
     if (hasAny(text, ["remboursement", "rembourse", "rembourser", "arreter", "arret", "blessure", "absence", "demenagement", "changement de situation", "annuler inscription", "si j arrete"])) return "refund";
     if (isUnpaidQuestion(text)) return "unpaid";
     if (hasAny(text, ["horaire", "horraire", "heure", "planning", "quand", "quel jour", "cours quand", "entrainement", "lundi", "mercredi", "venir", "vient"])) return "schedule";
+    if (hasAny(text, ["cote bleue", "proche cote bleue", "au rove", "est ce au rove", "le rove", "gignac", "ensues", "estaque", "pennes", "chateauneuf", "vitrolles", "marignane", "carry", "sausset", "proche de", "autour du rove"])) return "localArea";
     if (hasAny(text, ["discord", "groupe", "communaute", "infos club", "annonces", "photos", "videos"])) return "discord";
     if (hasAny(text, ["instagram", "facebook", "tiktok", "reseaux", "reseau"])) return "social";
     if (isAddressQuestion(text)) return "address";
@@ -196,6 +199,10 @@
     return data.legal.associationName + " est une association d\u00e9clar\u00e9e. SIREN : " + data.legal.siren + ". SIRET : " + data.legal.siret + ". RNA : " + data.legal.rna + ". APE : " + data.legal.ape + ". Si\u00e8ge social : " + data.legal.legalAddress + ".";
   }
 
+  function localAreaAnswer(data) {
+    return data.seo.localAreaText + " Les cours ont lieu \u00e0 la " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
+  }
+
   function generateAnswer(data, intent, section, age, text) {
     if (section && age !== null && !["pricing", "schedule", "equipment", "mixed"].includes(intent)) {
       if (intent === "fallback") return ageSummaryAnswer(data, section, age);
@@ -215,6 +222,8 @@
         return scheduleAnswer(data, section, age);
       case "fullSchedule":
         return fullScheduleAnswer(data);
+      case "localArea":
+        return localAreaAnswer(data);
       case "mixed":
         return mixedAnswer(data, section, age);
       case "trial":
