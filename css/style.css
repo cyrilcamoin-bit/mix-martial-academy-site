@@ -1856,7 +1856,7 @@ p {
   }
 
   .nav-toggle {
-    min-height: 36px;
+    min-height: 44px;
     padding: 0 0.68rem;
     flex: 0 0 auto;
     font-size: 0.9rem;
@@ -1870,7 +1870,7 @@ p {
   }
 
   .nav-links a {
-    min-height: 38px;
+    min-height: 44px;
     padding: 0.5rem 0.62rem;
   }
 
@@ -2162,7 +2162,7 @@ p {
   }
 
   .nav-toggle {
-    min-height: 34px;
+    min-height: 44px;
     padding: 0 0.58rem;
     font-size: 0.84rem;
   }
