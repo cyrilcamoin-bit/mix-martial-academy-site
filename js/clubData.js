@@ -65,6 +65,17 @@
       endDate: "Lundi 14 juin 2027",
       closingEvent: "La saison 2026/2027 se cl\u00f4turera le lundi 14 juin 2027 par un ap\u00e9ritif offert aux adh\u00e9rents."
     },
+    medicalDocuments: {
+      season: "2026/2027",
+      officialPage: "https://www.fmmaf.fr/documents-medicaux/",
+      juniorCertificate: "https://www.fmmaf.fr/wp-content/uploads/2024/05/FMMAF_Certificat-medical-de-non-contre-indication-MMA-1.pdf-1.pdf",
+      competitionCertificate: "https://www.fmmaf.fr/wp-content/uploads/2022/10/FMMAF_Certificat-me%CC%81dical-de-non-contre-indication-MMA-1.pdf",
+      ecgFrcvForm: "https://www.fmmaf.fr/wp-content/uploads/2026/08/FMMAF-Fiche-danalyse-ECG-FRCV.pdf",
+      ophthalmologyCertificate: "https://www.fmmaf.fr/wp-content/uploads/2022/10/FMMAF_Certificat-me%CC%81dical_ophtalmologique-1.pdf",
+      licenseManagement: "La gestion des licences des adh\u00e9rents est effectu\u00e9e directement par Mix Martial Academy.",
+      privacy: "Aucune donn\u00e9e m\u00e9dicale n'est collect\u00e9e ni stock\u00e9e sur le site du club.",
+      sourceRule: "La page Documents m\u00e9dicaux de la FMMAF est la source de v\u00e9rit\u00e9."
+    },
     signup: {
       helloAssoUrl: "https://www.helloasso.com/associations/mix-martial-academy/adhesions/adhesion-mma-2026-2027",
       helloAssoWidgetUrl: "https://www.helloasso.com/associations/mix-martial-academy/adhesions/adhesion-mma-2026-2027/widget",

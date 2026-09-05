@@ -722,6 +722,352 @@ p {
   color: var(--off-white);
 }
 
+/* Documents médicaux */
+.medical-view {
+  overflow-x: clip;
+}
+
+.medical-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4.5rem);
+  min-height: 610px;
+  padding-top: 76px;
+  padding-bottom: 64px;
+}
+
+.medical-hero::before {
+  content: "";
+  position: absolute;
+  inset: 30px 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 78% 44%, rgba(201, 15, 19, 0.23), transparent 19rem),
+    linear-gradient(135deg, transparent 0 46%, rgba(255, 255, 255, 0.045) 46% 46.35%, transparent 46.35% 100%);
+}
+
+.medical-hero-copy {
+  min-width: 0;
+  max-width: 780px;
+}
+
+.medical-hero h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(2.9rem, 6vw, 4.9rem);
+  font-weight: 950;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.medical-hero h1 span {
+  display: block;
+  margin-top: 0.16em;
+  color: var(--red-hover);
+}
+
+.medical-info-box,
+.medical-copy-card,
+.medical-know-box,
+.medical-circuit-card,
+.medical-checklist-card,
+.medical-final-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    var(--card);
+  box-shadow: var(--shadow);
+}
+
+.medical-info-box {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--red);
+}
+
+.medical-info-box strong {
+  color: var(--text);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.medical-info-box p {
+  margin: 0.35rem 0 0;
+  color: var(--off-white);
+}
+
+.medical-primary-link {
+  max-width: 100%;
+}
+
+.medical-hero-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: min(100%, 390px);
+  aspect-ratio: 1;
+  justify-self: end;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, rgba(201, 15, 19, 0.24), rgba(17, 17, 20, 0.94) 58%),
+    var(--card);
+  border: 1px solid rgba(201, 15, 19, 0.42);
+  clip-path: polygon(22% 0, 78% 0, 100% 22%, 100% 78%, 78% 100%, 22% 100%, 0 78%, 0 22%);
+}
+
+.medical-hero-mark::before {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  clip-path: inherit;
+}
+
+.medical-hero-mark img {
+  width: 42%;
+  margin-bottom: 0.8rem;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.5));
+}
+
+.medical-hero-mark span,
+.medical-hero-mark strong {
+  position: relative;
+  color: var(--off-white);
+  text-transform: uppercase;
+}
+
+.medical-hero-mark span {
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+}
+
+.medical-hero-mark strong {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  letter-spacing: 0.04em;
+}
+
+.medical-club-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.medical-copy-card,
+.medical-know-box {
+  padding: 1.35rem;
+}
+
+.medical-copy-card p:first-child {
+  margin-top: 0;
+}
+
+.medical-license-note {
+  margin: 1.1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  color: var(--off-white);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.medical-know-box {
+  border-color: rgba(201, 15, 19, 0.38);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(201, 15, 19, 0.2), transparent 12rem),
+    var(--card);
+}
+
+.medical-know-box h3 {
+  color: var(--red-hover);
+}
+
+.medical-competition-section {
+  margin-top: 34px;
+}
+
+.medical-circuit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.medical-circuit-card {
+  min-width: 0;
+  padding: 1.15rem;
+}
+
+.medical-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.medical-card-head .card-kicker,
+.medical-card-head h3 {
+  margin: 0;
+}
+
+.medical-card-head h3 {
+  font-size: 1.55rem;
+}
+
+.medical-circuit-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  color: var(--text);
+  background: rgba(201, 15, 19, 0.18);
+  border: 1px solid rgba(201, 15, 19, 0.42);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 950;
+}
+
+.medical-document-list,
+.medical-checklist-card ul {
+  display: grid;
+  gap: 0.72rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.medical-document-list > li {
+  min-width: 0;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.medical-document-list strong,
+.medical-validity {
+  display: block;
+}
+
+.medical-document-list strong {
+  color: var(--off-white);
+  line-height: 1.42;
+}
+
+.medical-validity {
+  margin-top: 0.4rem;
+  color: var(--red-hover);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.medical-download {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.82rem;
+}
+
+.medical-warning {
+  margin-top: 0.9rem;
+  padding: 0.9rem;
+  color: var(--off-white);
+  background: rgba(201, 15, 19, 0.15);
+  border: 1px solid rgba(225, 38, 33, 0.55);
+  border-left: 4px solid var(--red-hover);
+  border-radius: 14px;
+}
+
+.medical-warning strong {
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.medical-warning p {
+  margin: 0.3rem 0 0;
+  color: var(--off-white);
+  font-size: 0.9rem;
+}
+
+.medical-doctor-section {
+  padding-bottom: 40px;
+}
+
+.medical-download-grid,
+.medical-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.medical-external-note,
+.medical-checklist-intro {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.medical-checklist-section {
+  padding-bottom: 64px;
+}
+
+.medical-checklist-card {
+  padding: 1.1rem;
+}
+
+.medical-checklist-card h3 {
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.medical-checklist-card li {
+  position: relative;
+  padding-left: 1.65rem;
+  color: var(--off-white);
+}
+
+.medical-checklist-card li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--red-hover);
+  font-weight: 950;
+}
+
+.medical-final-section {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.medical-final-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 1.5rem;
+  border-color: rgba(201, 15, 19, 0.38);
+}
+
+.medical-final-card h2 {
+  font-size: clamp(1.7rem, 3.5vw, 2.45rem);
+}
+
+.medical-final-card p:last-child {
+  margin-bottom: 0;
+}
+
 .signup-layout {
   align-items: start;
 }
@@ -1186,7 +1532,7 @@ p {
   }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1180px) {
   .nav-toggle {
     display: inline-flex;
     align-items: center;
@@ -1876,5 +2222,96 @@ p {
     left: 9px;
     right: 9px;
     width: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  .medical-hero,
+  .medical-club-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .medical-hero {
+    min-height: auto;
+  }
+
+  .medical-hero-mark {
+    width: min(320px, 70vw);
+    justify-self: center;
+  }
+
+  .medical-circuit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .medical-hero {
+    width: min(calc(100% - 24px), var(--max));
+    gap: 1.2rem;
+    padding-top: 38px;
+    padding-bottom: 34px;
+    text-align: center;
+  }
+
+  .medical-hero .eyebrow {
+    justify-content: center;
+  }
+
+  .medical-hero h1 {
+    font-size: clamp(2.1rem, 9.5vw, 3.15rem);
+    line-height: 1.03;
+  }
+
+  .medical-hero .lead {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .medical-info-box {
+    text-align: left;
+  }
+
+  .medical-download-grid,
+  .medical-checklist-grid,
+  .medical-final-card {
+    grid-template-columns: 1fr;
+  }
+
+  .medical-final-card .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .medical-copy-card,
+  .medical-know-box,
+  .medical-circuit-card,
+  .medical-checklist-card,
+  .medical-final-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .medical-hero-mark {
+    width: min(230px, 68vw);
+  }
+
+  .medical-document-list > li {
+    padding: 0.78rem;
+  }
+
+  .medical-download {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 380px) {
+  .medical-hero {
+    width: min(calc(100% - 18px), var(--max));
+  }
+
+  .medical-hero h1 {
+    font-size: clamp(1.85rem, 9.6vw, 2.35rem);
   }
 }

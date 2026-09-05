@@ -1,5 +1,5 @@
 (function () {
-  var knownSections = ["accueil", "cours", "tarifs", "materiel", "contact"];
+  var knownSections = ["accueil", "cours", "tarifs", "documents-medicaux", "materiel", "contact"];
   var recentEvents = Object.create(null);
 
   function canTrack() {
