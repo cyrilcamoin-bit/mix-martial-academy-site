@@ -68,6 +68,7 @@
     medicalDocuments: {
       season: "2026/2027",
       officialPage: "https://www.fmmaf.fr/documents-medicaux/",
+      leisureCertificate: "https://www.fmmaf.fr/wp-content/uploads/2023/09/FMMAF_Certificat-medical-de-non-contre-indication-MMA-loisir-3.pdf",
       juniorCertificate: "https://www.fmmaf.fr/wp-content/uploads/2024/05/FMMAF_Certificat-medical-de-non-contre-indication-MMA-1.pdf-1.pdf",
       competitionCertificate: "https://www.fmmaf.fr/wp-content/uploads/2022/10/FMMAF_Certificat-me%CC%81dical-de-non-contre-indication-MMA-1.pdf",
       ecgFrcvForm: "https://www.fmmaf.fr/wp-content/uploads/2026/08/FMMAF-Fiche-danalyse-ECG-FRCV.pdf",

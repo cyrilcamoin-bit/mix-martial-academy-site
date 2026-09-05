@@ -947,6 +947,10 @@ p {
   list-style: none;
 }
 
+.medical-leisure-list {
+  margin-top: 1rem;
+}
+
 .medical-document-list > li {
   min-width: 0;
   padding: 0.85rem;
