@@ -15,7 +15,7 @@
       "<section class=\"league-section\"><h3>Catégories de poids</h3>" + weightBlock(category.weights) + "</section>" +
       "<div class=\"league-rules-grid\"><section class=\"league-section allowed\"><h3>Autorisé</h3>" + list(category.allowed) + "</section><section class=\"league-section prohibited\"><h3>Interdit</h3>" + list(category.prohibited) + "</section></div>" +
       "<p class=\"league-disclaimer\">Cette synthèse ne remplace pas le Code sportif FMMAF applicable le jour de la compétition.</p>" +
-      "<div class=\"league-actions\"><a class=\"button button-outline\" href=\"" + data.medicalDocumentsUrl + "\" target=\"_blank\" rel=\"noopener\">Voir les documents médicaux <span aria-hidden=\"true\">↗</span></a><a class=\"button\" href=\"" + data.officialRulesUrl + "\" target=\"_blank\" rel=\"noopener\">Voir le règlement officiel FMMAF <span aria-hidden=\"true\">↗</span></a></div>" +
+      "<div class=\"league-actions\"><a class=\"button button-outline\" href=\"" + data.medicalDocumentsUrl + "\">Voir les documents médicaux <span aria-hidden=\"true\">↗</span></a><a class=\"button\" href=\"" + data.officialRulesUrl + "\">Voir le règlement officiel FMMAF <span aria-hidden=\"true\">↗</span></a></div>" +
       "</article>";
   }
 
