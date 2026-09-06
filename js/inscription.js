@@ -70,26 +70,13 @@
   function renderCommunity(data) {
     var container = document.querySelector('[data-render="community"]');
     if (!container) return;
-    container.replaceChildren();
-    var heading = el("div", "section-head");
-    heading.appendChild(el("p", "eyebrow", "VIE DU CLUB"));
-    heading.appendChild(el("h2", "", data.community.title));
-    container.appendChild(heading);
-    container.appendChild(el("p", "", data.community.text));
-    container.appendChild(el("p", "", data.community.description));
-    var features = list(data.community.features);
-    features.className = "compact-list";
-    container.appendChild(features);
-    container.appendChild(el("p", "", data.community.purpose));
-    var reference = el("p", "community-reference");
-    reference.appendChild(el("strong", "", data.community.role));
-    container.appendChild(reference);
-    var link = el("a", "button button-primary", data.community.button);
-    link.href = data.contacts.whatsappUrl;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    container.appendChild(link);
-    container.appendChild(el("p", "note", data.community.restriction));
+    var card = data.community.card;
+    container.href = data.contacts.whatsappUrl;
+    container.querySelector("h2").textContent = card.title;
+    container.querySelector(".community-summary").textContent = card.text;
+    container.querySelector(".community-reminder").textContent = card.reminder;
+    var button = container.querySelector(".community-cta");
+    button.lastChild.textContent = card.button;
   }
 
   function renderSocials(data) {

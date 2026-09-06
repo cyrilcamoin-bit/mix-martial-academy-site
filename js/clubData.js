@@ -142,6 +142,12 @@
       google: "https://share.google/qgk76FdKA32oLiv02"
     },
     community: {
+      card: {
+        "title": "Rejoindre la communauté WhatsApp",
+        "text": "Retrouvez les infos du club, les échanges entre adhérents et les photos des entraînements.",
+        "reminder": "Le site reste la référence officielle pour toutes les informations permanentes.",
+        "button": "Rejoindre la communauté"
+      },
       "title": "Communauté WhatsApp officielle",
       "text": "Les adhérents et les parents d’adhérents peuvent rejoindre la communauté WhatsApp officielle de Mix Martial Academy — Le Rove.",
       "description": "Elle permet de recevoir les informations importantes du club, d’échanger entre adhérents, de partager les photos et vidéos des entraînements et d’organiser les compétitions.",
