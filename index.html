@@ -36,6 +36,7 @@
   <script src="js/clubData.js?v=20260905-certificat-loisir" defer></script>
   <script src="js/inscription.js?v=20260708-helloasso-direct" defer></script>
   <script src="js/navigation.js?v=20260905-documents-medicaux" defer></script>
+  <script src="js/mmaLeague.js?v=20260906-fmmaf-rules" defer></script>
   <script src="js/chatbot.js?v=20260713-local-seo" defer></script>
   <script src="js/analytics.js?v=20260905-documents-medicaux" defer></script>
   <script type="application/ld+json">
@@ -89,6 +90,7 @@
         <a class="button button-small nav-cta" href="#tarifs">Tarifs &amp; Inscriptions</a>
         <a href="#documents-medicaux">Documents M&eacute;dicaux</a>
         <a href="#materiel">Mat&eacute;riel</a>
+        <a href="#regles-mma-league">R&egrave;gles MMA League</a>
         <a href="#contact">Contact &amp; R&eacute;seaux</a>
       </div>
     </nav>
@@ -360,6 +362,23 @@
       <p>Mix Martial Academy a n&eacute;goci&eacute; avec RDX SPORT afin de faire b&eacute;n&eacute;ficier les adh&eacute;rents de tarifs avantageux sur du mat&eacute;riel de qualit&eacute;.</p>
       <div class="material-grid" data-render="materials"></div>
     </div>
+    </section>
+
+    <section class="view-panel" id="regles-mma-league" data-view="regles-mma-league">
+      <div class="section league-page">
+        <div class="section-head league-intro">
+          <p class="eyebrow">MMA League · FMMAF</p>
+          <h1>R&egrave;gles MMA League</h1>
+          <p class="lead">Choisissez votre cat&eacute;gorie pour consulter les r&egrave;gles, poids, dur&eacute;es, grades et acc&egrave;s aux documents m&eacute;dicaux au m&ecirc;me endroit.</p>
+        </div>
+        <div class="league-tabs" id="mma-league-tabs" role="tablist" aria-label="Choisissez votre cat&eacute;gorie"></div>
+        <div id="mma-league-content"></div>
+        <details class="league-faults">
+          <summary>Voir les fautes g&eacute;n&eacute;rales FMMAF</summary>
+          <ul data-render="mma-league-faults"></ul>
+        </details>
+        <p class="league-source">Source : <a href="https://www.fmmaf.fr/reglementation-sportive/" target="_blank" rel="noopener">r&eacute;glementation sportive FMMAF <span aria-hidden="true">↗</span></a>. Les d&eacute;cisions des officiels et le Code sportif en vigueur pr&eacute;valent.</p>
+      </div>
     </section>
 
     <section class="view-panel" id="contact" data-view="contact">
