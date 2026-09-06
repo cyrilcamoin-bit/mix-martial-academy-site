@@ -67,6 +67,31 @@
     return '<img src="assets/icons/' + key + '.svg?v=20260707-google" alt="" aria-hidden="true"><span>' + label + "</span>";
   }
 
+  function renderCommunity(data) {
+    var container = document.querySelector('[data-render="community"]');
+    if (!container) return;
+    container.replaceChildren();
+    var heading = el("div", "section-head");
+    heading.appendChild(el("p", "eyebrow", "VIE DU CLUB"));
+    heading.appendChild(el("h2", "", data.community.title));
+    container.appendChild(heading);
+    container.appendChild(el("p", "", data.community.text));
+    container.appendChild(el("p", "", data.community.description));
+    var features = list(data.community.features);
+    features.className = "compact-list";
+    container.appendChild(features);
+    container.appendChild(el("p", "", data.community.purpose));
+    var reference = el("p", "community-reference");
+    reference.appendChild(el("strong", "", data.community.role));
+    container.appendChild(reference);
+    var link = el("a", "button button-primary", data.community.button);
+    link.href = data.contacts.whatsappUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    container.appendChild(link);
+    container.appendChild(el("p", "note", data.community.restriction));
+  }
+
   function renderSocials(data) {
     var container = document.querySelector('[data-render="socials"]');
     if (!container) return;
@@ -75,7 +100,6 @@
       ["instagram", data.contacts.instagram],
       ["facebook", data.contacts.facebook],
       ["tiktok", data.contacts.tiktokUrl],
-      ["discord", data.contacts.discord],
       ["google", data.contacts.google]
     ];
     links.forEach(function (item) {
@@ -85,7 +109,7 @@
       a.target = "_blank";
       a.rel = "noopener";
       a.setAttribute("aria-label", data.socialLabels[key]);
-      a.innerHTML = icon(key, data.socialLabels[key].replace("Suivre le club sur ", "").replace("Nous \u00e9crire sur ", "").replace("Rejoindre le ", ""));
+      a.innerHTML = icon(key, key === "whatsapp" ? "WhatsApp" : data.socialLabels[key].replace("Suivre le club sur ", "").replace("Nous \u00e9crire sur ", "").replace("Rejoindre le ", ""));
       container.appendChild(a);
     });
   }
@@ -163,6 +187,7 @@
     renderSchedule(data);
     renderPrices(data);
     renderMaterials(data);
+    renderCommunity(data);
     renderSocials(data);
     renderLegal(data);
     setupSignup(data);

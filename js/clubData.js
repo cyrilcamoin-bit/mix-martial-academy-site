@@ -133,32 +133,40 @@
     },
     contacts: {
       email: "mixmartialacademy@icloud.com",
-      whatsappDisplay: "disponible via le bouton de contact",
-      whatsappUrl: "https://wa.me/33614306682",
+      whatsappDisplay: "communauté officielle réservée aux adhérents et parents d’adhérents",
+      whatsappUrl: "https://chat.whatsapp.com/JvWPNRXcdGnKHcMBMyZba8",
       instagram: "https://www.instagram.com/mixmartialacademy?igsh=MTNoOGF2YmtyMWVtZw%3D%3D&utm_source=qr",
       facebook: "https://www.facebook.com/share/17r8JUsXai/?mibextid=wwXIfr",
       tiktok: "mixmartialacademy",
       tiktokUrl: "https://www.tiktok.com/@mixmartialacademy",
-      discord: "https://discord.gg/Nc3tzzVFrZ",
       google: "https://share.google/qgk76FdKA32oLiv02"
     },
-    discord: {
-      title: "Discord officiel du club",
-      text: "Le Discord officiel permet aux adh\u00e9rents de retrouver les informations en temps r\u00e9el du club, les annonces, le chat adh\u00e9rents, les galeries photos et vid\u00e9os, les contenus li\u00e9s aux comp\u00e9titions et entra\u00eenements, les r\u00e8glements et documents utiles.",
-      role: "Le site Internet reste la r\u00e9f\u00e9rence officielle. Le Discord sert \u00e0 suivre la vie du club, les infos rapides et les \u00e9changes entre adh\u00e9rents."
+    community: {
+      "title": "Communauté WhatsApp officielle",
+      "text": "Les adhérents et les parents d’adhérents peuvent rejoindre la communauté WhatsApp officielle de Mix Martial Academy — Le Rove.",
+      "description": "Elle permet de recevoir les informations importantes du club, d’échanger entre adhérents, de partager les photos et vidéos des entraînements et d’organiser les compétitions.",
+      "features": [
+        "Infos officielles du club",
+        "Chat entre adhérents et parents",
+        "Photos et vidéos par catégories",
+        "Organisation des compétitions"
+      ],
+      "role": "Le site internet reste la référence officielle pour le planning, les tarifs, les inscriptions, le matériel obligatoire, les documents médicaux, le règlement et toutes les informations permanentes.",
+      "purpose": "WhatsApp est l’unique espace d’échanges et d’informations rapides du club.",
+      "button": "💬 Rejoindre la communauté WhatsApp",
+      "restriction": "Réservé aux adhérents et parents d’adhérents de Mix Martial Academy."
     },
     socialLabels: {
-      whatsapp: "Nous \u00e9crire sur WhatsApp",
+      whatsapp: "Rejoindre la communauté WhatsApp",
       instagram: "Suivre le club sur Instagram",
       facebook: "Suivre le club sur Facebook",
       tiktok: "Suivre le club sur TikTok",
-      discord: "Rejoindre le Discord",
       google: "Page Google"
     },
     chatbot: {
       name: "CHAT BOT Mix Martial Academy",
       welcome: "Bonjour \ud83d\udc4b Comment puis-je vous aider ?",
-      fallback: "Je n'ai pas encore cette information. Pour une r\u00e9ponse pr\u00e9cise, contactez le club via le bouton WhatsApp du site ou par email.",
+      fallback: "Je n’ai pas encore cette information. Pour une réponse précise, contactez le club par email. La communauté WhatsApp est réservée aux adhérents et parents d’adhérents.",
       materialQuestion: "Pour vous donner la bonne liste de mat\u00e9riel, pouvez-vous me pr\u00e9ciser la section concern\u00e9e : enfant 6 \u00e0 11 ans, ado 12 \u00e0 16 ans, ou adulte 17 ans et + ?",
       mixedCourses: "Oui, les cours sont mixtes. Les filles et les gar\u00e7ons s'entra\u00eenent ensemble dans les sections enfants, ados et adultes."
     },

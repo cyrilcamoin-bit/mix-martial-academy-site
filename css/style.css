@@ -499,7 +499,7 @@ p {
 .schedule-card,
 .material-card,
 .contact-card,
-.discord-card,
+.community-card,
 .trial-card {
   position: relative;
   border: 1px solid var(--line);
@@ -513,14 +513,14 @@ p {
 .hero-panel,
 .accent-box,
 .contact-card,
-.discord-card,
+.community-card,
 .trial-card {
   padding: 1.35rem;
 }
 
 .hero-panel::after,
 .trial-card::after,
-.discord-card::after {
+.community-card::after {
   content: "";
   position: absolute;
   inset: 1px;
@@ -1232,7 +1232,7 @@ p {
   align-items: start;
 }
 
-.discord-card {
+.community-card {
   min-height: 100%;
 }
 
@@ -2041,7 +2041,7 @@ p {
   .hero-panel,
   .accent-box,
   .contact-card,
-  .discord-card,
+  .community-card,
   .trial-card {
     padding: 1rem;
   }
@@ -2328,7 +2328,7 @@ p {
   .hero-panel,
   .accent-box,
   .contact-card,
-  .discord-card,
+  .community-card,
   .trial-card,
   .schedule-card,
   .price-card,
@@ -2439,4 +2439,16 @@ p {
   .medical-hero h1 {
     font-size: clamp(1.85rem, 9.6vw, 2.35rem);
   }
+}
+
+.community-reference {
+  border-left: 3px solid var(--red, #C90F13);
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.community-card .button {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
 }

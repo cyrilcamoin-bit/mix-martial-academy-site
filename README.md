@@ -57,7 +57,7 @@ Le dépôt GitHub Pages est public par défaut. Tout ce qui y est ajouté doit �
 - 3 cours d'essai offerts.
 - Inscription HelloAsso avec cases obligatoires.
 - Matériel obligatoire par section.
-- Discord et réseaux sociaux.
+- Communauté WhatsApp officielle et réseaux sociaux.
 - Contact et mentions légales.
 - Chatbot FAQ statique sans IA ni API.
 

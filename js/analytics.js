@@ -38,7 +38,6 @@
     if (normalized.indexOf("instagram.com") !== -1) return "click_instagram";
     if (normalized.indexOf("facebook.com") !== -1) return "click_facebook";
     if (normalized.indexOf("tiktok.com") !== -1) return "click_tiktok";
-    if (normalized.indexOf("discord.gg") !== -1 || normalized.indexOf("discord.com") !== -1) return "click_discord";
     return "";
   }
 

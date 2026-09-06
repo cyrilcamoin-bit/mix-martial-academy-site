@@ -48,7 +48,7 @@ Le chatbot doit répondre aux questions fréquentes :
 - HelloAsso ;
 - remboursement ;
 - matériel ;
-- Discord ;
+- communauté WhatsApp ;
 - réseaux ;
 - adresse ;
 - contact.

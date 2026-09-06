@@ -105,7 +105,7 @@
     if (isUnpaidQuestion(text)) return "unpaid";
     if (hasAny(text, ["horaire", "horraire", "heure", "planning", "quand", "quel jour", "cours quand", "entrainement", "lundi", "mercredi", "venir", "vient"])) return "schedule";
     if (hasAny(text, ["cote bleue", "proche cote bleue", "au rove", "est ce au rove", "le rove", "gignac", "ensues", "estaque", "pennes", "chateauneuf", "vitrolles", "marignane", "carry", "sausset", "proche de", "autour du rove"])) return "localArea";
-    if (hasAny(text, ["discord", "groupe", "communaute", "infos club", "annonces", "photos", "videos"])) return "discord";
+    if (hasAny(text, ["whatsapp", "groupe", "communaute", "infos club", "annonces", "photos", "videos"])) return "community";
     if (hasAny(text, ["instagram", "facebook", "tiktok", "reseaux", "reseau"])) return "social";
     if (isAddressQuestion(text)) return "address";
     if (hasAny(text, ["contact", "telephone", "whatsapp", "mail", "email", "joindre", "appeler"])) return "contact";
@@ -142,7 +142,7 @@
   }
 
   function tooYoungAnswer(age) {
-    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club via le bouton WhatsApp du site ou par email pour confirmer.";
+    return "Les cours commencent \u00e0 partir de 6 ans. Pour un enfant de " + age + " ans, il n'y a pas de section pr\u00e9vue actuellement. Vous pouvez contacter le club par email pour confirmer.";
   }
 
   function scheduleAnswer(data, section, age) {
@@ -187,12 +187,12 @@
     if (text.includes("instagram")) return "Instagram : " + data.contacts.instagram;
     if (text.includes("facebook")) return "Facebook : " + data.contacts.facebook;
     if (text.includes("tiktok")) return "TikTok : " + data.contacts.tiktokUrl;
-    if (text.includes("discord")) return discordAnswer(data);
-    return "R\u00e9seaux du club : Instagram " + data.contacts.instagram + " ; Facebook " + data.contacts.facebook + " ; TikTok " + data.contacts.tiktokUrl + " ; Discord " + data.contacts.discord + ".";
+    if (text.includes("whatsapp")) return communityAnswer(data);
+    return "R\u00e9seaux du club : Instagram " + data.contacts.instagram + " ; Facebook " + data.contacts.facebook + " ; TikTok " + data.contacts.tiktokUrl + " ; Communauté WhatsApp " + data.contacts.whatsappUrl + ".";
   }
 
-  function discordAnswer(data) {
-    return "Le club dispose d'un Discord officiel pour les adh\u00e9rents. Il sert \u00e0 suivre les annonces, les infos de derni\u00e8re minute, le chat adh\u00e9rents, les photos/vid\u00e9os, les contenus li\u00e9s aux entra\u00eenements et comp\u00e9titions, ainsi que les documents utiles. Lien : " + data.contacts.discord;
+  function communityAnswer(data) {
+    return data.community.text + " " + data.community.description + " " + data.community.purpose + " " + data.community.role + " " + data.community.restriction + " Lien : " + data.contacts.whatsappUrl;
   }
 
   function legalAnswer(data) {
@@ -241,11 +241,11 @@
       case "address":
         return "Les cours ont lieu \u00e0 la " + data.addresses.trainingPlace + ", " + data.addresses.trainingAddress + ".";
       case "contact":
-        return "Vous pouvez contacter le club via le bouton WhatsApp du site ou par email \u00e0 " + data.contacts.email + ".";
+        return "Vous pouvez contacter le club par email \u00e0 " + data.contacts.email + ".";
       case "social":
         return socialAnswer(data, text);
-      case "discord":
-        return discordAnswer(data);
+      case "community":
+        return communityAnswer(data);
       case "season":
         return data.season.closingEvent;
       case "legal":
@@ -274,7 +274,23 @@
   function addMessage(container, text, fromUser) {
     var message = document.createElement("div");
     message.className = "message" + (fromUser ? " user" : "");
-    message.textContent = text;
+    var communityUrl = window.CLUB_DATA.contacts.whatsappUrl;
+    if (!fromUser && text.includes(communityUrl)) {
+      var parts = text.split(communityUrl);
+      parts.forEach(function (part, index) {
+        if (index) {
+          var link = document.createElement("a");
+          link.href = communityUrl;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = window.CLUB_DATA.community.button;
+          message.appendChild(link);
+        }
+        message.appendChild(document.createTextNode(part));
+      });
+    } else {
+      message.textContent = text;
+    }
     container.appendChild(message);
     container.scrollTop = container.scrollHeight;
   }
