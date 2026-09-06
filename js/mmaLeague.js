@@ -10,7 +10,7 @@
 
   function renderCategory(category, data) {
     return "<article class=\"league-card\" id=\"league-" + category.id + "\" tabindex=\"-1\">" +
-      "<header class=\"league-card-head\"><div><p class=\"eyebrow\">" + category.circuit + "</p><h2>" + category.label + " <span>— " + category.age + "</span></h2></div></header>" +
+      "<header class=\"league-card-head\"><div><h2>" + category.label + " <span>— " + category.age + "</span></h2></div></header>" +
       "<div class=\"league-facts\"><div><strong>Combat</strong><span>" + category.duration + "</span></div><div><strong>Récupération</strong><span>" + category.recovery + "</span></div><div><strong>Grade minimum</strong><span>" + category.grade + "</span></div></div>" +
       "<section class=\"league-section\"><h3>Catégories de poids</h3>" + weightBlock(category.weights) + "</section>" +
       "<div class=\"league-rules-grid\"><section class=\"league-section allowed\"><h3>Autorisé</h3>" + list(category.allowed) + "</section><section class=\"league-section prohibited\"><h3>Interdit</h3>" + list(category.prohibited) + "</section></div>" +
