@@ -32,13 +32,14 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260918-boutique-widget-height">
+  <link rel="stylesheet" href="css/style.css?v=20260918-aides-native">
   <script src="js/clubData.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/navigation.js?v=20260906-mma-league-fix" defer></script>
   <script src="js/mmaLeague.js?v=20260906-mma-league-labels" defer></script>
   <script src="js/chatbot.js?v=20260906-whatsapp" defer></script>
   <script src="js/analytics.js?v=20260906-whatsapp" defer></script>
+  <script src="js/aides.js?v=20260918-native" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -229,6 +230,68 @@
         <p class="note">En validant votre inscription sur HelloAsso, vous acceptez les conditions d'adh&eacute;sion du club.</p>
         <div class="helloasso-widget-card" id="helloasso-widget-card">
           <div class="helloasso-widget-container" id="helloasso-widget-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section section-tight aid-section" id="aides-inscription">
+      <div class="signup-flow">
+        <div class="section-head">
+          <p class="eyebrow">Aides à l'inscription</p>
+          <h2>Déclarer une aide</h2>
+        </div>
+        <p>Vous bénéficiez d'une aide pour l'inscription de votre enfant ? Transmettez simplement les informations nécessaires au club.</p>
+        <p class="note"><strong>Enfants &amp; Ados uniquement.</strong> Dispositifs acceptés : Carte Collégien de Provence, Pass'Sport et Pass CAF Loisirs. Aucun justificatif n'est demandé dans ce formulaire.</p>
+        <p class="note">Le code et le montant sont contrôlés par le club avant remboursement. Si vous utilisez plusieurs dispositifs pour un même enfant, envoyez une déclaration par dispositif.</p>
+        <div class="aid-form-card">
+          <form class="aid-form" id="aid-form" novalidate>
+            <div class="aid-form-grid">
+              <label>
+                <span>Nom de l'adhérent</span>
+                <input type="text" name="nom" autocomplete="family-name" required>
+              </label>
+              <label>
+                <span>Prénom de l'adhérent</span>
+                <input type="text" name="prenom" autocomplete="given-name" required>
+              </label>
+              <label>
+                <span>Catégorie</span>
+                <select name="categorie" required>
+                  <option value="">Choisir</option>
+                  <option value="Enfant">Enfant</option>
+                  <option value="Ado">Ado</option>
+                </select>
+              </label>
+              <label>
+                <span>Nom et prénom du responsable légal</span>
+                <input type="text" name="responsable" autocomplete="name" required>
+              </label>
+              <label>
+                <span>Dispositif</span>
+                <select name="dispositif" required>
+                  <option value="">Choisir</option>
+                  <option value="Carte Collégien de Provence">Carte Collégien de Provence</option>
+                  <option value="Pass’Sport">Pass’Sport</option>
+                  <option value="Pass CAF Loisirs">Pass CAF Loisirs</option>
+                </select>
+              </label>
+              <label>
+                <span>Numéro / code attribué par l'organisme</span>
+                <input type="text" name="code" autocomplete="off" required>
+              </label>
+              <label>
+                <span>Montant de l'aide (€)</span>
+                <input type="number" name="montant" inputmode="decimal" min="0" step="0.01" required>
+              </label>
+            </div>
+            <label class="aid-hp" aria-hidden="true">
+              <span>Site web</span>
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </label>
+            <button class="button aid-submit" type="submit">Envoyer ma demande</button>
+            <p class="aid-security-note">Les informations sont chiffrées avant leur transmission au club.</p>
+            <p class="aid-form-status" id="aid-form-status" role="status" aria-live="polite"></p>
+          </form>
         </div>
       </div>
     </div>

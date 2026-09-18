@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Suivi des aides — Mix Martial Academy</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="css/style.css?v=20260918-aides-admin">
+  <script src="js/aides-admin.js?v=20260918-aides-admin" defer></script>
+</head>
+<body class="admin-aids-page">
+  <main class="admin-aids-shell">
+    <header class="admin-aids-head">
+      <div>
+        <p class="eyebrow">Mix Martial Academy — Le Rove</p>
+        <h1>Suivi des aides</h1>
+        <p class="note">Cet écran n'apparaît pas dans le menu public. Les données sont déchiffrées uniquement dans votre navigateur après chargement de votre clé privée.</p>
+      </div>
+      <img src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy">
+    </header>
+
+    <section class="admin-aids-panel">
+      <h2>Accès aux demandes</h2>
+      <p>Chargez votre fichier de clé privée <strong>mma-aides-private-key.pem</strong>. La clé n'est jamais envoyée au serveur.</p>
+      <div class="admin-aids-actions">
+        <input id="private-key" type="file" accept=".pem,text/plain">
+        <button class="button" id="load-aids" type="button" disabled>Afficher les demandes</button>
+        <button class="button button-outline" id="export-csv" type="button" disabled>Exporter CSV</button>
+      </div>
+      <p id="admin-message" class="note" aria-live="polite">Chargez votre clé privée pour commencer.</p>
+    </section>
+
+    <section class="admin-aids-metrics" aria-label="Résumé">
+      <div class="admin-aids-metric"><span>Demandes</span><strong id="metric-count">0</strong></div>
+      <div class="admin-aids-metric"><span>Total déclaré</span><strong id="metric-total">0,00 €</strong></div>
+      <div class="admin-aids-metric"><span>Remboursé</span><strong id="metric-refunded">0,00 €</strong></div>
+      <div class="admin-aids-metric"><span>Reste</span><strong id="metric-remaining">0,00 €</strong></div>
+    </section>
+
+    <section class="admin-aids-panel">
+      <div class="admin-aids-table-wrap">
+        <table class="admin-aids-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Adhérent</th>
+              <th>Catégorie</th>
+              <th>Responsable légal</th>
+              <th>Dispositif</th>
+              <th>Code</th>
+              <th>Montant</th>
+              <th>Code vérifié</th>
+              <th>Remboursé</th>
+              <th>Date remboursement</th>
+            </tr>
+          </thead>
+          <tbody id="admin-aids-body">
+            <tr><td colspan="10" class="admin-aids-empty">Aucune donnée chargée.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
