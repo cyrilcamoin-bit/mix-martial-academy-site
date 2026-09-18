@@ -2479,3 +2479,54 @@ p {
 }
 
 .community-cta img { flex: 0 0 28px; }
+
+.shop-page { padding-bottom: 64px; }
+.shop-showcase,
+.shop-copy-card,
+.shop-warning,
+.shop-widget-card,
+.shop-closed {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+  overflow: hidden;
+}
+.shop-showcase { max-width: 980px; margin: 0 auto 1.15rem; padding: 1rem; }
+.shop-media-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.shop-media { display: flex; align-items: center; justify-content: center; min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #050505; }
+.shop-photo { background: #050505; }
+.shop-video { background: #3c3b39; }
+.shop-media img,
+.shop-media video { display: block; width: auto; height: auto; max-width: 100%; max-height: 360px; object-fit: contain !important; }
+.shop-countdown { padding: 0.95rem 0.35rem 0.2rem; border-top: 1px solid var(--line); text-align: center; }
+.shop-countdown-title { margin: 0 0 0.75rem; color: var(--text); font-size: 0.78rem; font-weight: 950; letter-spacing: 0.09em; text-transform: uppercase; }
+.shop-countdown-units { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.45rem; }
+.shop-countdown-units > div { padding: 0.6rem 0.3rem; border: 1px solid rgba(201, 15, 19, 0.45); border-radius: 10px; background: rgba(201, 15, 19, 0.1); }
+.shop-countdown-units strong { display: block; color: var(--text); font-size: clamp(1.2rem, 3vw, 1.7rem); line-height: 1; }
+.shop-countdown-units span { display: block; margin-top: 0.32rem; color: var(--muted); font-size: 0.63rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+.shop-countdown-date { margin: 0.75rem 0 0; color: var(--muted); font-size: 0.78rem; }
+.shop-countdown.is-closed { padding-bottom: 0.7rem; }
+.shop-countdown.is-closed .shop-countdown-title { margin-bottom: 0; color: var(--red); }
+.shop-copy-card,
+.shop-warning { padding: clamp(1rem, 3vw, 1.55rem); margin-bottom: 1.15rem; }
+.shop-copy-card h2,
+.shop-warning h2 { margin-top: 0; }
+.shop-copy-card p:last-child,
+.shop-warning p:last-child { margin-bottom: 0; }
+.shop-warning { border-left: 4px solid var(--red); }
+.shop-warning .eyebrow { margin-top: 0; }
+.shop-widget-card { margin-top: 1.15rem; padding: 0.5rem; }
+.shop-widget-card iframe { display: block; max-width: 100%; }
+.shop-closed { padding: 1.25rem; margin-top: 1.15rem; color: var(--text); font-weight: 800; text-align: center; border-color: var(--red); }
+
+@media (max-width: 640px) {
+  .shop-page { padding-bottom: 40px; }
+  .shop-copy-card,
+  .shop-warning { border-radius: 14px; }
+  .shop-showcase { padding: 0.7rem; border-radius: 14px; }
+  .shop-media-grid { grid-template-columns: 1fr; gap: 0.7rem; }
+  .shop-media img,
+  .shop-media video { max-height: none; }
+  .shop-countdown-units { gap: 0.3rem; }
+  .shop-widget-card { padding: 0; border-radius: 14px; }
+}

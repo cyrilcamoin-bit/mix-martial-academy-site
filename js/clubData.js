@@ -95,6 +95,11 @@
         "J'ai compris que seuls les gants de boxe 16 oz sont autoris\u00e9s."
       ]
     },
+    shop: {
+      closingDate: "2026-10-02T12:00:00+02:00",
+      closingMessage: "Commandes clôturées — la commande groupée a été transmise à notre fournisseur.",
+      helloAssoWidgetUrl: "https://www.helloasso.com/associations/mix-martial-academy/boutiques/tenue-officielle/widget"
+    },
     equipment: {
       intro: "La pratique du MMA n\u00e9cessite un \u00e9quipement de protection adapt\u00e9. Le club comprend que l'achat du mat\u00e9riel peut repr\u00e9senter un investissement, mais ces protections sont indispensables pour garantir la s\u00e9curit\u00e9 de tous.",
       rdx: "Mix Martial Academy a n\u00e9goci\u00e9 avec RDX SPORT afin de faire b\u00e9n\u00e9ficier les adh\u00e9rents de tarifs avantageux sur du mat\u00e9riel de qualit\u00e9.",

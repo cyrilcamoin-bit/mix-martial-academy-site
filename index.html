@@ -32,7 +32,7 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260906-whatsapp-compact">
+  <link rel="stylesheet" href="css/style.css?v=20260918-boutique-media-blend">
   <script src="js/clubData.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/navigation.js?v=20260906-mma-league-fix" defer></script>
@@ -88,6 +88,7 @@
         <a href="#accueil">Accueil</a>
         <a href="#cours">Cours</a>
         <a class="button button-small nav-cta" href="#tarifs">Tarifs &amp; Inscriptions</a>
+        <a href="#boutique">Boutique</a>
         <a href="#documents-medicaux">Documents M&eacute;dicaux</a>
         <a href="#materiel">Mat&eacute;riel</a>
         <a href="#regles-mma-league">R&egrave;gles MMA League</a>
@@ -231,6 +232,58 @@
         </div>
       </div>
     </div>
+    </section>
+
+    <section class="view-panel shop-view" id="boutique" data-view="boutique">
+      <div class="section shop-page">
+        <div class="section-head">
+          <p class="eyebrow">Boutique</p>
+          <h1>Tenue officielle</h1>
+        </div>
+
+        <div class="shop-showcase">
+          <div class="shop-media-grid">
+            <figure class="shop-media shop-photo">
+              <img src="assets/images/tenue-officielle-mma-le-rove.jpeg" alt="Rashguard et short officiels Mix Martial Academy Le Rove" loading="lazy" width="1350" height="1200">
+            </figure>
+            <figure class="shop-media shop-video">
+              <video autoplay muted loop playsinline preload="metadata" aria-label="Simulation 3D de la tenue officielle">
+                <source src="assets/images/tenue-officielle-mma-le-rove-3d.mp4" type="video/mp4">
+                Votre navigateur ne prend pas en charge la lecture de cette vidéo.
+              </video>
+            </figure>
+          </div>
+          <div class="shop-countdown" id="shop-countdown" aria-live="polite">
+            <p class="shop-countdown-title" id="shop-countdown-title">Fermeture des commandes dans</p>
+            <div class="shop-countdown-units" id="shop-countdown-units">
+              <div><strong id="shop-days">00</strong><span>Jours</span></div>
+              <div><strong id="shop-hours">00</strong><span>Heures</span></div>
+              <div><strong id="shop-minutes">00</strong><span>Min</span></div>
+              <div><strong id="shop-seconds">00</strong><span>Sec</span></div>
+            </div>
+            <p class="shop-countdown-date">Vendredi 2 octobre 2026 à 12h00</p>
+          </div>
+        </div>
+
+        <div class="shop-copy-card">
+          <h2>Commande groupée officielle</h2>
+          <p>Cette boutique est ouverte temporairement afin de regrouper les commandes de la tenue officielle Mix Martial Academy — Le Rove.</p>
+          <p>À la fermeture de la boutique, l’ensemble des commandes sera transmis à notre fournisseur pour fabrication.</p>
+        </div>
+
+        <aside class="shop-warning" aria-labelledby="shop-warning-title">
+          <p class="eyebrow">Important</p>
+          <h2 id="shop-warning-title">Essayage et tailles</h2>
+          <p>Les tenues sont disponibles à l’essayage au club avant votre commande.</p>
+          <p>Merci de vérifier soigneusement vos tailles de Rashguard et de Short avant de valider votre paiement.</p>
+          <p>Après validation et paiement de la commande, aucun changement de taille, aucune modification et aucune annulation ne pourront être acceptés, la commande étant transmise de manière groupée à notre fournisseur.</p>
+        </aside>
+
+        <div class="helloasso-widget-card shop-widget-card" id="shop-widget-card">
+          <iframe id="haShopWidget" title="Boutique HelloAsso — tenue officielle" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" src="https://www.helloasso.com/associations/mix-martial-academy/boutiques/tenue-officielle/widget" style="width: 100%; height: 750px; border: none;"></iframe>
+        </div>
+        <p class="shop-closed" id="shop-closed" hidden>Commandes clôturées — la commande groupée a été transmise à notre fournisseur.</p>
+      </div>
     </section>
 
     <section class="view-panel medical-view" id="documents-medicaux" data-view="documents-medicaux">
@@ -418,6 +471,52 @@
     </section>
     </section>
   </main>
+
+  <script>
+    window.addEventListener('message', function (e) {
+      var dataHeight = e.data && e.data.height;
+      var widget = document.getElementById('haShopWidget');
+      if (widget && dataHeight > parseFloat(widget.height || 0)) widget.height = dataHeight + 'px';
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+      var shop = window.CLUB_DATA && window.CLUB_DATA.shop;
+      var widgetCard = document.getElementById('shop-widget-card');
+      var closed = document.getElementById('shop-closed');
+      var countdown = document.getElementById('shop-countdown');
+      var countdownTitle = document.getElementById('shop-countdown-title');
+      var countdownUnits = document.getElementById('shop-countdown-units');
+      if (!shop || !countdown || !countdownTitle || !countdownUnits) return;
+      var deadline = new Date(shop.closingDate).getTime();
+      var timer;
+
+      function closeShop() {
+        window.clearInterval(timer);
+        countdown.classList.add('is-closed');
+        countdownTitle.textContent = 'Commandes clôturées';
+        countdownUnits.hidden = true;
+        if (widgetCard) widgetCard.hidden = true;
+        if (closed) { closed.textContent = shop.closingMessage; closed.hidden = false; }
+      }
+
+      function updateCountdown() {
+        var remaining = deadline - Date.now();
+        if (remaining <= 0) { closeShop(); return; }
+        var totalSeconds = Math.floor(remaining / 1000);
+        var values = {
+          days: Math.floor(totalSeconds / 86400),
+          hours: Math.floor(totalSeconds % 86400 / 3600),
+          minutes: Math.floor(totalSeconds % 3600 / 60),
+          seconds: totalSeconds % 60
+        };
+        Object.keys(values).forEach(function (key) {
+          document.getElementById('shop-' + key).textContent = String(values[key]).padStart(2, '0');
+        });
+      }
+
+      updateCountdown();
+      if (Date.now() < deadline) timer = window.setInterval(updateCountdown, 1000);
+    });
+  </script>
 
   <footer class="site-footer">
     <p><span class="footer-copyright">&copy; <span id="year">2026</span> <span class="club-name-font footer-club-name" aria-label="MIX MARTIAL ACADEMY">mix martial academy</span></span><span class="footer-separator"> - </span><span class="footer-tagline">Club de MMA au Rove.</span></p>
