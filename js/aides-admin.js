@@ -6,6 +6,38 @@
   let privateKey = null;
   let rows = [];
 
+  const ADMIN_KEY_BLOB = {"v":1,"iterations":310000,"salt":"Dv2n6e2L9Kq714ffJZnGAg==","iv":"xKYSnBuCKL9XH5zp","ciphertext":"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"};
+
+  async function unlockWithCode(code) {
+    const salt = new Uint8Array(fromBase64(ADMIN_KEY_BLOB.salt));
+    const iv = new Uint8Array(fromBase64(ADMIN_KEY_BLOB.iv));
+    const material = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(code),
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+    const key = await crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        hash: 'SHA-256',
+        salt,
+        iterations: ADMIN_KEY_BLOB.iterations
+      },
+      material,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+    const plaintext = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      fromBase64(ADMIN_KEY_BLOB.ciphertext)
+    );
+    return new TextDecoder().decode(plaintext);
+  }
+
   const $ = (id) => document.getElementById(id);
 
   const fromBase64 = (value) => {
@@ -253,35 +285,35 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const keyInput = $('private-key');
-    keyInput.addEventListener('change', async () => {
-      const file = keyInput.files && keyInput.files[0];
-      if (!file) return;
-      try {
-        const pem = await file.text();
-        privateKey = await importPrivateKey(pem);
-        $('load-aids').disabled = false;
-        setMessage('Clé privée chargée. Vous pouvez afficher les demandes.');
-      } catch (error) {
-        privateKey = null;
-        $('load-aids').disabled = true;
-        setMessage('Cette clé privée n’est pas valide.', true);
-      }
-    });
+    const codeInput = $('admin-code');
+    const unlockButton = $('unlock-admin');
 
-    $('load-aids').addEventListener('click', async () => {
-      if (!privateKey) return;
-      $('load-aids').disabled = true;
+    const unlock = async () => {
+      const code = codeInput.value.trim();
+      if (!code) {
+        setMessage('Saisissez votre code personnel.', true);
+        return;
+      }
+      unlockButton.disabled = true;
       try {
+        const pem = await unlockWithCode(code);
+        privateKey = await importPrivateKey(pem);
+        codeInput.value = '';
+        setMessage('Accès autorisé. Chargement des demandes…');
         await loadRequests();
       } catch (error) {
-        console.error(error);
-        setMessage('Impossible de lire les demandes. Vérifiez l’accès à la base.', true);
+        privateKey = null;
+        setMessage('Code personnel incorrect.', true);
       } finally {
-        $('load-aids').disabled = false;
+        unlockButton.disabled = false;
       }
-    });
+    };
 
+    unlockButton.addEventListener('click', unlock);
+    codeInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') unlock();
+    });
     $('export-csv').addEventListener('click', exportCsv);
+    setTimeout(() => codeInput.focus(), 50);
   });
 })();
