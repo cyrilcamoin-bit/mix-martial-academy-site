@@ -95,7 +95,8 @@
         body: JSON.stringify({
           ...encrypted,
           createdAt: new Date().toISOString(),
-          status: 'a_verifier',
+          verified: false,
+          refunded: false,
           refundedAt: null
         })
       });
