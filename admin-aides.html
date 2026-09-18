@@ -7,7 +7,7 @@
   <title>Suivi des aides — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="css/style.css?v=20260918-aides-admin">
-  <script src="js/aides-admin.js?v=20260918-aides-admin" defer></script>
+  <script src="js/aides-admin.js?v=20260918-code" defer></script>
 </head>
 <body class="admin-aids-page">
   <main class="admin-aids-shell">
@@ -15,20 +15,20 @@
       <div>
         <p class="eyebrow">Mix Martial Academy — Le Rove</p>
         <h1>Suivi des aides</h1>
-        <p class="note">Cet écran n'apparaît pas dans le menu public. Les données sont déchiffrées uniquement dans votre navigateur après chargement de votre clé privée.</p>
+        <p class="note">Cet écran n'apparaît pas dans le menu public. Les données sont déchiffrées uniquement dans votre navigateur après saisie de votre code personnel.</p>
       </div>
       <img src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy">
     </header>
 
     <section class="admin-aids-panel">
       <h2>Accès aux demandes</h2>
-      <p>Chargez votre fichier de clé privée <strong>mma-aides-private-key.pem</strong>. La clé n'est jamais envoyée au serveur.</p>
+      <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
       <div class="admin-aids-actions">
-        <input id="private-key" type="file" accept=".pem,text/plain">
-        <button class="button" id="load-aids" type="button" disabled>Afficher les demandes</button>
+        <input id="admin-code" type="password" autocomplete="current-password" inputmode="text" placeholder="Code personnel">
+        <button class="button" id="unlock-admin" type="button">Ouvrir le suivi</button>
         <button class="button button-outline" id="export-csv" type="button" disabled>Exporter CSV</button>
       </div>
-      <p id="admin-message" class="note" aria-live="polite">Chargez votre clé privée pour commencer.</p>
+      <p id="admin-message" class="note" aria-live="polite">Saisissez votre code personnel.</p>
     </section>
 
     <section class="admin-aids-metrics" aria-label="Résumé">
