@@ -2516,7 +2516,7 @@ p {
 .shop-warning { border-left: 4px solid var(--red); }
 .shop-warning .eyebrow { margin-top: 0; }
 .shop-widget-card { margin-top: 1.15rem; padding: 0.5rem; }
-.shop-widget-card iframe { display: block; max-width: 100%; }
+.shop-widget-card iframe { display: block; width: 100%; max-width: 100%; min-height: 1100px; border: 0; }
 .shop-closed { padding: 1.25rem; margin-top: 1.15rem; color: var(--text); font-weight: 800; text-align: center; border-color: var(--red); }
 
 @media (max-width: 640px) {

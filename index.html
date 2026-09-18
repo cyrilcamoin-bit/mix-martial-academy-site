@@ -32,7 +32,7 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260918-boutique-media-blend">
+  <link rel="stylesheet" href="css/style.css?v=20260918-boutique-widget-height">
   <script src="js/clubData.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/navigation.js?v=20260906-mma-league-fix" defer></script>
@@ -280,7 +280,7 @@
         </aside>
 
         <div class="helloasso-widget-card shop-widget-card" id="shop-widget-card">
-          <iframe id="haShopWidget" title="Boutique HelloAsso — tenue officielle" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" src="https://www.helloasso.com/associations/mix-martial-academy/boutiques/tenue-officielle/widget" style="width: 100%; height: 750px; border: none;"></iframe>
+          <iframe id="haShopWidget" title="Boutique HelloAsso — tenue officielle" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="no" src="https://www.helloasso.com/associations/mix-martial-academy/boutiques/tenue-officielle/widget" style="width: 100%; height: 1100px; min-height: 1100px; border: none;"></iframe>
         </div>
         <p class="shop-closed" id="shop-closed" hidden>Commandes clôturées — la commande groupée a été transmise à notre fournisseur.</p>
       </div>
@@ -472,12 +472,13 @@
     </section>
   </main>
 
-  <script>
-    window.addEventListener('message', function (e) {
-      var dataHeight = e.data && e.data.height;
-      var widget = document.getElementById('haShopWidget');
-      if (widget && dataHeight > parseFloat(widget.height || 0)) widget.height = dataHeight + 'px';
-    });
+    <script>
+      window.addEventListener('message', function (e) {
+        if (e.origin !== 'https://www.helloasso.com') return;
+        var dataHeight = Number(e.data && e.data.height);
+        var widget = document.getElementById('haShopWidget');
+        if (widget && Number.isFinite(dataHeight) && dataHeight > 0) widget.style.height = dataHeight + 'px';
+      });
     document.addEventListener('DOMContentLoaded', function () {
       var shop = window.CLUB_DATA && window.CLUB_DATA.shop;
       var widgetCard = document.getElementById('shop-widget-card');
