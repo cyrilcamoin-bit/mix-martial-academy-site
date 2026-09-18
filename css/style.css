@@ -2530,3 +2530,44 @@ p {
   .shop-countdown-units { gap: 0.3rem; }
   .shop-widget-card { padding: 0; border-radius: 14px; }
 }
+
+
+/* Aides à l'inscription */
+.aid-section{padding-top:12px}
+.aid-form-card{margin-top:22px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:18px;padding:22px}
+.aid-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.aid-form label{display:flex;flex-direction:column;gap:7px}
+.aid-form label span{font-weight:800;letter-spacing:.02em}
+.aid-form input,.aid-form select{width:100%;min-height:48px;border:1px solid var(--border);border-radius:10px;background:#111;color:#fff;padding:11px 12px;font:inherit}
+.aid-form input:focus,.aid-form select:focus{outline:2px solid rgba(200,0,10,.28);border-color:var(--red)}
+.aid-submit{margin-top:20px;width:100%}
+.aid-security-note{margin:12px 0 0;color:var(--muted);font-size:.9rem;text-align:center}
+.aid-form-status{min-height:24px;margin:10px 0 0;text-align:center;font-weight:800}
+.aid-form-status.is-success{color:#20c56b}
+.aid-form-status.is-error{color:#ff5a64}
+.aid-hp{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+.admin-aids-page{min-height:100vh;background:#090909;color:#eee}
+.admin-aids-shell{max-width:1180px;margin:0 auto;padding:28px 18px 60px}
+.admin-aids-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+.admin-aids-head img{width:86px;height:86px;object-fit:contain}
+.admin-aids-panel{background:#141414;border:1px solid #2c2c2c;border-radius:16px;padding:20px;margin-bottom:16px}
+.admin-aids-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.admin-aids-actions input[type=file]{max-width:100%;color:#ddd}
+.admin-aids-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.admin-aids-metric{background:#111;border:1px solid #2c2c2c;border-radius:12px;padding:14px}
+.admin-aids-metric strong{display:block;font-size:1.45rem;margin-top:5px}
+.admin-aids-table-wrap{overflow:auto;border:1px solid #2c2c2c;border-radius:12px}
+.admin-aids-table{width:100%;border-collapse:collapse;min-width:1000px}
+.admin-aids-table th,.admin-aids-table td{padding:10px 12px;border-bottom:1px solid #2c2c2c;text-align:left;vertical-align:middle}
+.admin-aids-table th{background:#191919;position:sticky;top:0;z-index:1}
+.admin-aids-table tr:last-child td{border-bottom:none}
+.admin-aids-status{font-weight:800}
+.admin-aids-status.done{color:#20c56b}
+.admin-aids-status.pending{color:#f6c344}
+.admin-aids-empty{padding:26px;text-align:center;color:#aaa}
+@media(max-width:760px){
+  .aid-form-grid{grid-template-columns:1fr}
+  .aid-form-card{padding:16px}
+  .admin-aids-head{align-items:flex-start}
+  .admin-aids-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
