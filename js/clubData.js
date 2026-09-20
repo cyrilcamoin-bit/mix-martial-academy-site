@@ -56,8 +56,10 @@
       ]
     },
     trial: {
-      title: "3 cours d'essai offerts",
-      text: "Chaque nouveau pratiquant peut b\u00e9n\u00e9ficier de 3 cours d'essai offerts. Il n'est pas n\u00e9cessaire de pr\u00e9venir le club avant de venir essayer. Il suffit de se pr\u00e9senter au cr\u00e9neau correspondant \u00e0 sa section.",
+      title: "Cours d'essai offerts",
+      text: "Du 1er au 13 septembre 2026, chaque nouveau pratiquant peut b\u00e9n\u00e9ficier de 3 cours d'essai offerts. \u00c0 partir du 14 septembre 2026, il reste possible de r\u00e9aliser 1 cours d'essai offert. Il n'est pas n\u00e9cessaire de pr\u00e9venir le club avant de venir essayer : il suffit de se pr\u00e9senter au cr\u00e9neau correspondant \u00e0 sa section.",
+      threeTrialPeriod: "Du 1er au 13 septembre 2026",
+      afterPeriod: "1 cours d'essai offert \u00e0 partir du 14 septembre 2026",
       noNoticeNeeded: true
     },
     season: {
@@ -196,7 +198,7 @@
     },
     seo: {
       title: "Mix Martial Academy - Club de MMA au Rove | Enfants, Ados & Adultes",
-      description: "Club de MMA au Rove pour enfants, ados et adultes. 3 cours d'essai offerts \u00e0 la Salle Jennifer, proche C\u00f4te Bleue, lundi et mercredi.",
+      description: "Club de MMA au Rove pour enfants, ados et adultes. Cours d'essai offerts \u00e0 la Salle Jennifer, proche C\u00f4te Bleue, lundi et mercredi.",
       visibleLocationText: "Club de MMA au Rove, proche Marseille et de la C\u00f4te Bleue.",
       localAreaText: "Mix Martial Academy est situ\u00e9 au Rove et accueille les pratiquants de MMA venant du Rove, de la C\u00f4te Bleue et des communes voisines.",
       localTargets: ["Le Rove", "C\u00f4te Bleue", "Gignac-la-Nerthe", "Ensu\u00e8s-la-Redonne", "Marseille L'Estaque", "Les Pennes-Mirabeau", "Ch\u00e2teauneuf-les-Martigues", "Vitrolles", "Marignane", "Carry-le-Rouet", "Sausset-les-Pins"],
