@@ -35,10 +35,10 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260920-contact-infos-club-2">
+  <link rel="stylesheet" href="css/style.css?v=20260920-accueil-cours-fusion">
   <script src="js/clubData.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
-  <script src="js/navigation.js?v=20260906-mma-league-fix" defer></script>
+  <script src="js/navigation.js?v=20260920-accueil-cours-fusion" defer></script>
   <script src="js/mmaLeague.js?v=20260906-mma-league-labels" defer></script>
   <script src="js/chatbot.js?v=20260906-whatsapp" defer></script>
   <script src="js/analytics.js?v=20260906-whatsapp" defer></script>
@@ -90,7 +90,6 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
       <div class="nav-links" id="nav-links">
         <a href="#accueil">Accueil</a>
-        <a href="#cours">Cours</a>
         <a class="button button-small nav-cta" href="#tarifs">Tarifs &amp; Inscriptions</a>
         <a href="#boutique">Boutique</a>
         <a href="#documents-medicaux">Documents M&eacute;dicaux</a>
@@ -103,85 +102,84 @@
 
   <main id="main">
     <section class="view-panel is-active" id="accueil" data-view="accueil">
-    <div class="hero section">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <img class="hero-mobile-logo" src="assets/logo/mix-martial-academy-le-rove.svg" alt="" aria-hidden="true">
-          <p class="eyebrow">Club de MMA au Rove</p>
-          <h1 class="club-name-font" aria-label="MIX MARTIAL ACADEMY"><span class="hero-title-word">mix</span> <span class="hero-title-word">martial</span> <span class="hero-title-word">academy</span></h1>
-          <p class="lead">Club de MMA au Rove. Enfants, Ados &amp; Adultes dans un cadre familial pour apprendre, progresser et performer.</p>
-          <div class="hero-actions">
-            <a class="button" href="#cours">Voir les cours</a>
-            <a class="button button-outline" href="#tarifs-inscription">S'inscrire</a>
-            <a class="button button-ghost" href="#contact">Nous contacter</a>
+      <div class="hero section home-hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <img class="hero-mobile-logo" src="assets/logo/mix-martial-academy-le-rove.svg" alt="" aria-hidden="true">
+            <p class="eyebrow">Club de MMA au Rove</p>
+            <h1 class="club-name-font" aria-label="MIX MARTIAL ACADEMY"><span class="hero-title-word">mix</span> <span class="hero-title-word">martial</span> <span class="hero-title-word">academy</span></h1>
+            <p class="lead">MMA Enfants, Ados &amp; Adultes dans un cadre familial, structur&eacute; et progressif.</p>
+            <div class="hero-actions">
+              <a class="button" href="#cours">Voir les horaires</a>
+              <a class="button button-outline" href="#tarifs-inscription">S'inscrire</a>
+              <a class="button button-ghost" href="#contact">Nous contacter</a>
+            </div>
+          </div>
+          <div class="hero-panel fight-card" aria-label="R&eacute;sum&eacute; du club">
+            <img class="hero-logo" src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy Le Rove">
+            <div>
+              <p class="card-kicker">Le Rove</p>
+              <h2>Tout l'essentiel en un coup d'&oelig;il.</h2>
+            </div>
+            <ul class="hero-list">
+              <li><strong>Lundi &amp; Mercredi</strong><span>Enfants, Ados &amp; Adultes</span></li>
+              <li><strong>3 cours d'essai offerts</strong><span>Venez directement au bon cr&eacute;neau</span></li>
+              <li><strong>Paiement en 3x</strong><span>Automatiquement via HelloAsso</span></li>
+              <li class="location-row"><strong>Lieu</strong><span>Salle Jennifer<br>6 chemin de la Bergerie<br>13740 LE ROVE</span></li>
+            </ul>
           </div>
         </div>
-        <div class="hero-panel fight-card" aria-label="R&eacute;sum&eacute; du club">
-          <img class="hero-logo" src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy Le Rove">
-          <div>
-            <p class="card-kicker">Le Rove</p>
-            <h2>MMA structur&eacute;, cadre familial.</h2>
-          </div>
-          <ul class="hero-list">
-            <li><strong>Lundi &amp; Mercredi</strong><span>Entra&icirc;nements r&eacute;guliers</span></li>
-            <li><strong>3 cours d'essai offerts</strong><span>Sans pr&eacute;venir avant l'essai</span></li>
-            <li><strong>Paiement en 3x</strong><span>Automatiquement via HelloAsso</span></li>
-            <li class="location-row"><strong>Lieu</strong><span>Salle Jennifer<br>6 chemin de la Bergerie<br>13740 LE ROVE</span></li>
-          </ul>
-        </div>
       </div>
-    </div>
-    </section>
 
-    <section class="view-panel" id="cours" data-view="cours">
-    <div class="section">
-      <div class="section-head">
-        <p class="eyebrow">Cours &amp; horaires</p>
-        <h2>Apprendre le MMA dans un cadre structur&eacute;.</h2>
+      <div class="section home-courses" id="cours">
+        <div class="section-head home-section-head">
+          <p class="eyebrow">Cours &amp; horaires</p>
+          <h2>Votre cr&eacute;neau, simplement.</h2>
+          <p class="home-section-intro">Les cours ont lieu chaque lundi et mercredi. Choisissez la section correspondant &agrave; l'&acirc;ge du pratiquant.</p>
+        </div>
+        <div class="schedule-grid" data-render="schedule"></div>
       </div>
-      <div class="two-columns">
-        <div>
-          <p>Mix Martial Academy est un club de MMA situ&eacute; au Rove. Le club accueille les enfants, les ados et les adultes dans un cadre structur&eacute;, s&eacute;rieux et progressif.</p>
-          <p>L'objectif est simple : apprendre le MMA dans de bonnes conditions, d&eacute;velopper la discipline, la ma&icirc;trise technique, le respect et la confiance.</p>
-          <div class="value-grid" aria-label="Valeurs du club">
-            <span>Discipline</span>
-            <span>Progression</span>
-            <span>Respect</span>
+
+      <div class="section band home-trial-band">
+        <div class="trial-card home-trial-card">
+          <div class="home-trial-copy">
+            <p class="eyebrow">Pour commencer</p>
+            <h2>3 cours d'essai offerts.</h2>
+            <p>Pas besoin de pr&eacute;venir : pr&eacute;sentez-vous directement au cr&eacute;neau de votre section et venez d&eacute;couvrir le MMA.</p>
+          </div>
+          <div class="home-trial-actions">
+            <a class="button" href="#cours">Voir les horaires</a>
+            <a class="button button-outline" href="#tarifs">Tarifs &amp; inscription</a>
           </div>
         </div>
-        <aside class="accent-box">
-          <h3>Encadrement</h3>
-          <p>Fort d'une solide exp&eacute;rience dans les sports de combat et l'accompagnement d'athl&egrave;tes internationaux, on vous propose un encadrement s&eacute;rieux et progressif, centr&eacute; sur l'efficacit&eacute;, la ma&icirc;trise technique et l'esprit du MMA.</p>
-        </aside>
       </div>
-    </div>
 
-    <div class="section section-tight">
-      <div class="section-head">
-        <p class="eyebrow">Horaires</p>
-        <h2>Lundi &amp; Mercredi.</h2>
-      </div>
-      <div class="schedule-grid" data-render="schedule"></div>
-    </div>
-
-    <div class="section band trial-section">
-      <div class="trial-card">
-        <div class="section-head">
-          <p class="eyebrow">Cours d'essai</p>
-          <h2>3 cours d'essai offerts.</h2>
+      <div class="section home-club-summary">
+        <div class="home-club-grid">
+          <div class="home-club-copy">
+            <p class="eyebrow">Le club</p>
+            <h2>Apprendre, progresser, respecter.</h2>
+            <p>Mix Martial Academy accueille enfants, ados et adultes dans un cadre s&eacute;rieux et progressif, centr&eacute; sur la ma&icirc;trise technique, l'efficacit&eacute; et l'esprit du MMA.</p>
+            <div class="value-grid" aria-label="Valeurs du club">
+              <span>Discipline</span>
+              <span>Progression</span>
+              <span>Respect</span>
+            </div>
+          </div>
+          <aside class="accent-box home-location-card">
+            <p class="eyebrow">O&ugrave; nous trouver</p>
+            <h3>Salle Jennifer &mdash; Le Rove</h3>
+            <p>6 chemin de la Bergerie<br>13740 Le Rove</p>
+            <a class="button button-light" href="#contact">Contact &amp; Infos Club</a>
+          </aside>
         </div>
-        <p>Chaque nouveau pratiquant peut b&eacute;n&eacute;ficier de 3 cours d'essai offerts. Il n'est pas n&eacute;cessaire de pr&eacute;venir le club avant de venir essayer. Il suffit de se pr&eacute;senter au cr&eacute;neau correspondant &agrave; sa section.</p>
-        <a class="button button-light" href="#tarifs">Voir les tarifs</a>
       </div>
-    </div>
 
-    <div class="section section-tight">
-      <div class="accent-box local-seo-card">
-        <p class="eyebrow">MMA au Rove et sur la C&ocirc;te Bleue</p>
-        <h2>Un club local pour apprendre le MMA dans de bonnes conditions.</h2>
-        <p>Situ&eacute; au Rove, Mix Martial Academy accueille les pratiquants de MMA venant du Rove, de la C&ocirc;te Bleue, de Gignac-la-Nerthe, d'Ensu&egrave;s-la-Redonne, de Marseille L'Estaque, des Pennes-Mirabeau, de Ch&acirc;teauneuf-les-Martigues, de Vitrolles, de Marignane, de Carry-le-Rouet et de Sausset-les-Pins.</p>
+      <div class="section section-tight home-seo-wrap">
+        <div class="local-seo-card home-seo-card">
+          <p><strong>MMA au Rove &amp; C&ocirc;te Bleue.</strong> Le club accueille aussi des pratiquants des communes voisines, notamment Gignac-la-Nerthe, Ensu&egrave;s-la-Redonne, Marseille L'Estaque, Les Pennes-Mirabeau, Ch&acirc;teauneuf-les-Martigues, Vitrolles, Marignane, Carry-le-Rouet et Sausset-les-Pins.</p>
+        </div>
       </div>
-    </div>
     </section>
 
     <section class="view-panel" id="tarifs" data-view="tarifs">

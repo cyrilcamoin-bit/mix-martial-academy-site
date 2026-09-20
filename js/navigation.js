@@ -1,5 +1,5 @@
 (function () {
-  var validViews = ["accueil", "cours", "tarifs", "boutique", "documents-medicaux", "materiel", "regles-mma-league", "contact"];
+  var validViews = ["accueil", "tarifs", "boutique", "documents-medicaux", "materiel", "regles-mma-league", "contact"];
   var defaultTitle = "Mix Martial Academy - Club de MMA au Rove | Enfants, Ados & Adultes";
   var defaultDescription = "Club de MMA au Rove pour enfants, ados et adultes. 3 cours d'essai offerts à la Salle Jennifer, proche Côte Bleue, lundi et mercredi.";
   var medicalTitle = "Documents médicaux MMA au Rove | Certificats FMMAF - Mix Martial Academy";
@@ -22,6 +22,7 @@
 
   function getViewFromHash() {
     var hash = window.location.hash.replace("#", "");
+    if (hash === "cours") return "accueil";
     if (hash === "tarifs-inscription") return "tarifs";
     if (hash === "club") return "contact";
     return validViews.indexOf(hash) >= 0 ? hash : "accueil";
@@ -49,6 +50,14 @@
     if (navToggle && navLinks) {
       navToggle.setAttribute("aria-expanded", "false");
       navLinks.classList.remove("open");
+    }
+
+    if (hash === "cours") {
+      var coursesTarget = document.getElementById("cours");
+      if (coursesTarget) {
+        coursesTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
     }
 
     if (hash === "tarifs-inscription") {
