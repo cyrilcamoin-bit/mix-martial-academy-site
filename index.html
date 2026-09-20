@@ -32,7 +32,7 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260918-aides-native">
+  <link rel="stylesheet" href="css/style.css?v=20260920-documents-officiels">
   <script src="js/clubData.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/navigation.js?v=20260906-mma-league-fix" defer></script>
@@ -521,7 +521,58 @@
           <div class="socials socials-spaced" data-render="socials"></div>
         </div>
       </div>
+
+      <div class="official-documents" id="official-documents">
+        <div class="official-documents-head">
+          <p class="eyebrow">Documents officiels</p>
+          <h3>Affiliation &amp; assurance du club.</h3>
+          <p>Consultez les documents officiels de Mix Martial Academy pour la saison 2026/2027. Cliquez sur un aper&ccedil;u pour l'agrandir.</p>
+        </div>
+
+        <div class="official-documents-grid">
+          <button class="official-document-card" type="button" data-document-open="affiliation" aria-haspopup="dialog" aria-controls="official-documents-dialog">
+            <span class="official-document-preview-image">
+              <img src="assets/documents/attestation-affiliation-fmmaf-2026-2027-preview.jpg" alt="Aper&ccedil;u de l'attestation d'affiliation FMMAF 2026/2027" loading="lazy">
+              <span class="official-document-zoom" aria-hidden="true">Agrandir</span>
+            </span>
+            <span class="official-document-copy">
+              <span class="official-document-kicker">FMMAF</span>
+              <strong>Attestation d'affiliation</strong>
+              <span>Saison 2026/2027</span>
+            </span>
+          </button>
+
+          <button class="official-document-card" type="button" data-document-open="assurance" aria-haspopup="dialog" aria-controls="official-documents-dialog">
+            <span class="official-document-preview-image">
+              <img src="assets/documents/attestation-assurance-2026-2027-preview.jpg" alt="Aper&ccedil;u de l'attestation d'assurance 2026/2027" loading="lazy">
+              <span class="official-document-zoom" aria-hidden="true">Agrandir</span>
+            </span>
+            <span class="official-document-copy">
+              <span class="official-document-kicker">MAIF</span>
+              <strong>Attestation d'assurance</strong>
+              <span>Saison 2026/2027</span>
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
+
+    <dialog class="official-document-dialog" id="official-documents-dialog" aria-labelledby="official-document-dialog-title">
+      <div class="official-document-dialog-shell">
+        <div class="official-document-dialog-head">
+          <div>
+            <p class="official-document-dialog-label">Document officiel &middot; Saison 2026/2027</p>
+            <h3 id="official-document-dialog-title">Document officiel</h3>
+          </div>
+          <button class="official-document-dialog-close" type="button" data-document-close aria-label="Fermer le document">&times;</button>
+        </div>
+        <div class="official-document-dialog-pages" id="official-document-dialog-pages"></div>
+        <div class="official-document-dialog-actions">
+          <button class="button button-outline" type="button" data-document-close>Retour &agrave; Contact &amp; R&eacute;seaux</button>
+          <a class="button" id="official-document-full" href="#" target="_blank" rel="noopener noreferrer">Ouvrir le PDF complet</a>
+        </div>
+      </div>
+    </dialog>
 
     <section class="section legal" id="mentions-legales">
       <details class="legal-details">
@@ -579,6 +630,69 @@
 
       updateCountdown();
       if (Date.now() < deadline) timer = window.setInterval(updateCountdown, 1000);
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var dialog = document.getElementById('official-documents-dialog');
+      var title = document.getElementById('official-document-dialog-title');
+      var pages = document.getElementById('official-document-dialog-pages');
+      var full = document.getElementById('official-document-full');
+      var lastTrigger = null;
+
+      if (!dialog || !title || !pages || !full) return;
+
+      var documents = {
+        affiliation: {
+          title: "Attestation d'affiliation FMMAF",
+          pdf: 'assets/documents/attestation-affiliation-fmmaf-2026-2027.pdf',
+          pages: ['assets/documents/attestation-affiliation-fmmaf-2026-2027-preview.jpg']
+        },
+        assurance: {
+          title: "Attestation d'assurance",
+          pdf: 'assets/documents/attestation-assurance-2026-2027.pdf',
+          pages: [
+            'assets/documents/attestation-assurance-2026-2027-preview.jpg',
+            'assets/documents/attestation-assurance-2026-2027-page-2.jpg',
+            'assets/documents/attestation-assurance-2026-2027-page-3.jpg'
+          ]
+        }
+      };
+
+      function openDocument(key, trigger) {
+        var doc = documents[key];
+        if (!doc) return;
+        if (typeof dialog.showModal !== 'function') {
+          window.open(doc.pdf, '_blank', 'noopener');
+          return;
+        }
+        lastTrigger = trigger || null;
+        title.textContent = doc.title;
+        full.href = doc.pdf;
+        pages.innerHTML = doc.pages.map(function (src, index) {
+          return '<img class="official-document-page" src="' + src + '" alt="Page ' + (index + 1) + ' - ' + doc.title + '" loading="eager">';
+        }).join('');
+        dialog.showModal();
+      }
+
+      document.querySelectorAll('[data-document-open]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          openDocument(button.getAttribute('data-document-open'), button);
+        });
+      });
+
+      document.querySelectorAll('[data-document-close]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          if (dialog.open) dialog.close();
+        });
+      });
+
+      dialog.addEventListener('close', function () {
+        pages.innerHTML = '';
+        full.href = '#';
+        if (lastTrigger) lastTrigger.focus();
+      });
     });
   </script>
 
