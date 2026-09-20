@@ -15,6 +15,21 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <script>
+    (function () {
+      var endpoint = "/version.json?t=" + Date.now();
+      fetch(endpoint, { cache: "no-store" })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+          if (!data || !data.version) return;
+          var url = new URL(window.location.href);
+          if (url.searchParams.get("v") === data.version) return;
+          url.searchParams.set("v", data.version);
+          window.location.replace(url.pathname + url.search + url.hash);
+        })
+        .catch(function () {});
+    })();
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mix Martial Academy - Club de MMA au Rove | Enfants, Ados &amp; Adultes</title>
@@ -35,7 +50,7 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260920-trial-premium-v2">
+  <link rel="stylesheet" href="css/style.css?v=20260920-premium-trial-cachefix">
   <script src="js/clubData.js?v=20260920-essais-dates" defer></script>
   <script src="js/inscription.js?v=20260906-whatsapp-compact" defer></script>
   <script src="js/navigation.js?v=20260920-essais-dates" defer></script>

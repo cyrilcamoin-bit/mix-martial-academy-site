@@ -1,0 +1,5 @@
+{
+  "version": "20260920-premium-trial-cachefix",
+  "deployedFrom": "9c8eb027f0b70d4ffccc1deb6aa9585ec1547127",
+  "note": "Increment this version on every public site update so browsers self-refresh."
+}
