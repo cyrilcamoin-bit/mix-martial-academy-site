@@ -56,15 +56,15 @@
 
   const CODE_RULES = {
     'Pass CAF Loisirs': {
-      placeholder: '123456-1234',
-      message: 'Format obligatoire : 6 chiffres + 4 chiffres (ex. 123456-1234).',
+      placeholder: '1234567-1234',
+      message: 'Format obligatoire : 7 chiffres + 4 chiffres (ex. 1234567-1234).',
       inputMode: 'numeric',
-      maxLength: 11,
-      regex: /^\d{6}-\d{4}$/,
-      pattern: '[0-9]{6}-[0-9]{4}',
+      maxLength: 12,
+      regex: /^\d{7}-\d{4}$/,
+      pattern: '[0-9]{7}-[0-9]{4}',
       format(value) {
-        const digits = String(value || '').replace(/\D/g, '').slice(0, 10);
-        return digits.length > 6 ? digits.slice(0, 6) + '-' + digits.slice(6) : digits;
+        const digits = String(value || '').replace(/\D/g, '').slice(0, 11);
+        return digits.length > 7 ? digits.slice(0, 7) + '-' + digits.slice(7) : digits;
       }
     },
     'Pass’Sport': {
