@@ -1,5 +1,5 @@
 {
-  "version": "20260921-aides-code-validation",
-  "deployedFrom": "b88b1418a22da7830cc6e6809f25f8e632753e96",
+  "version": "20260921-aides-code-validation-v2",
+  "deployedFrom": "dcee48454d297219ed1088e09eda9afc842d12df",
   "note": "Increment this version on every public site update so browsers self-refresh."
 }
