@@ -133,6 +133,13 @@
     if (!response.ok) throw new Error('firebase_patch_failed');
   }
 
+  async function deleteRequest(id) {
+    const response = await fetch(`${DB_BASE}/${DB_PATH}/${encodeURIComponent(id)}.json`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('firebase_delete_failed');
+  }
+
   function renderTable() {
     const body = $('admin-aids-body');
     body.textContent = '';
@@ -140,7 +147,7 @@
     if (!rows.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 10;
+      td.colSpan = 11;
       td.className = 'admin-aids-empty';
       td.textContent = 'Aucune demande enregistrée.';
       tr.appendChild(td);
@@ -207,6 +214,32 @@
         const dateTd = document.createElement('td');
         dateTd.textContent = dateFr(row.meta.refundedAt);
         tr.appendChild(dateTd);
+
+        const deleteTd = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'admin-aids-delete';
+        deleteButton.textContent = 'Supprimer';
+        deleteButton.setAttribute('aria-label', `Supprimer la demande de ${row.data.prenom || ''} ${row.data.nom || ''}`.trim());
+        deleteButton.addEventListener('click', async () => {
+          const adherent = `${row.data.prenom || ''} ${row.data.nom || ''}`.trim() || 'cet adhérent';
+          if (!window.confirm(`Supprimer définitivement la demande de ${adherent} ? Cette action est irréversible.`)) return;
+
+          deleteButton.disabled = true;
+          try {
+            await deleteRequest(row.id);
+            rows = rows.filter((item) => item.id !== row.id);
+            renderTable();
+            $('export-csv').disabled = rows.length === 0;
+            setMessage('Demande supprimée définitivement.');
+          } catch (error) {
+            console.error(error);
+            deleteButton.disabled = false;
+            setMessage('Impossible de supprimer cette demande.', true);
+          }
+        });
+        deleteTd.appendChild(deleteButton);
+        tr.appendChild(deleteTd);
         body.appendChild(tr);
       });
 
