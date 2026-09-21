@@ -1,5 +1,5 @@
 {
-  "version": "20260920-premium-trial-cachefix",
-  "deployedFrom": "9c8eb027f0b70d4ffccc1deb6aa9585ec1547127",
+  "version": "20260921-aides-code-validation",
+  "deployedFrom": "b88b1418a22da7830cc6e6809f25f8e632753e96",
   "note": "Increment this version on every public site update so browsers self-refresh."
 }
