@@ -1,5 +1,5 @@
 {
-  "version": "20260921-admin-action-v2",
-  "deployedFrom": "9327cdcc7d95a572686811a7eafd4724ecdb0fca",
+  "version": "20260921-caf-format-v2",
+  "deployedFrom": "458bede129eb0d67513b290c96df4405cdceca36",
   "note": "Increment this version on every public site update so browsers self-refresh."
 }
