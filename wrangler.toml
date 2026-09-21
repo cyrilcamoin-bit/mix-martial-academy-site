@@ -1,0 +1,8 @@
+name = "mma-lerove-api"
+main = "backend/helloasso-worker/src/worker.js"
+compatibility_date = "2026-09-21"
+
+[vars]
+HELLOASSO_ORGANIZATION_SLUG = "mix-martial-academy"
+HELLOASSO_FORM_TYPE = "Membership"
+HELLOASSO_FORM_SLUG = "adhesion-mma-2026-2027"
