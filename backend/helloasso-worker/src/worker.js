@@ -174,6 +174,57 @@ export default {
         });
       }
 
+      if (request.method === "GET" && url.pathname === "/stats") {
+        const token = await getAccessToken(env);
+        const all = [];
+        const pageSize = 100;
+
+        for (let pageIndex = 1; pageIndex <= 50; pageIndex += 1) {
+          const apiUrl = new URL(
+            `${HELLOASSO_API}/v5/organizations/${ORGANIZATION_SLUG}/forms/${FORM_TYPE}/${FORM_SLUG}/items`
+          );
+          apiUrl.searchParams.set("pageIndex", String(pageIndex));
+          apiUrl.searchParams.set("pageSize", String(pageSize));
+          apiUrl.searchParams.set("withDetails", "true");
+
+          const response = await fetch(apiUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HelloAsso stats ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const page = Array.isArray(payload?.data) ? payload.data : [];
+          all.push(...page);
+          if (page.length < pageSize) break;
+        }
+
+        const memberships = all.filter(
+          (item) => String(item?.type || item?.tierType || "").toLowerCase() === "membership"
+        );
+
+        const completeMembers = memberships.filter((item) => {
+          const firstName = String(item?.user?.firstName || "").trim();
+          const lastName = String(item?.user?.lastName || "").trim();
+          const birthDate = getBirthDate(item);
+          return firstName && lastName && birthDate;
+        });
+
+        return json(request, {
+          ok: true,
+          campaign: FORM_SLUG,
+          totalItems: all.length,
+          memberships: memberships.length,
+          completeMembers: completeMembers.length,
+          missingIdentityOrBirthDate: memberships.length - completeMembers.length
+        });
+      }
+
       if (request.method === "POST" && url.pathname === "/members/verify") {
         const body = await request.json().catch(() => null);
         if (!body?.firstName || !body?.lastName || !normalizeDate(body?.birthDate)) {
