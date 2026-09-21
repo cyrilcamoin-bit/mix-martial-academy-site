@@ -3559,3 +3559,9 @@ p {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Respect native hidden state even when components define display rules. */
+[hidden] {
+  display: none !important;
+}
