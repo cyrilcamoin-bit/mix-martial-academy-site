@@ -1,5 +1,5 @@
 {
-  "version": "20260921-aides-validation-v3",
-  "deployedFrom": "5cd92a502b323f20e58be2ad290c87831e7960cf",
+  "version": "20260921-admin-action-v2",
+  "deployedFrom": "9327cdcc7d95a572686811a7eafd4724ecdb0fca",
   "note": "Increment this version on every public site update so browsers self-refresh."
 }
