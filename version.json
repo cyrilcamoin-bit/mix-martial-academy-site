@@ -1,5 +1,5 @@
 {
-  "version": "20260921-caf-format-v2",
-  "deployedFrom": "458bede129eb0d67513b290c96df4405cdceca36",
-  "note": "Increment this version on every public site update so browsers self-refresh."
+  "version": "20260922-certificats-v1",
+  "deployedFrom": "codex/helloasso-api-connection",
+  "note": "Ajout depot certificats medicaux + verification HelloAsso + espace admin."
 }

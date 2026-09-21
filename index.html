@@ -58,6 +58,7 @@
   <script src="js/chatbot.js?v=20260906-whatsapp" defer></script>
   <script src="js/analytics.js?v=20260906-whatsapp" defer></script>
   <script src="js/aides.js?v=20260921-caf-format-v2" defer></script>
+  <script src="js/medicalUpload.js?v=20260922-certificats-v1" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -403,6 +404,52 @@
               <a class="button button-outline medical-download" href="https://www.fmmaf.fr/wp-content/uploads/2023/09/FMMAF_Certificat-medical-de-non-contre-indication-MMA-loisir-3.pdf">T&eacute;l&eacute;charger le certificat m&eacute;dical MMA loisir FMMAF</a>
             </li>
           </ul>
+        </div>
+      </div>
+
+      <div class="section section-tight medical-upload-section">
+        <div class="section-head">
+          <p class="eyebrow">Dépôt en ligne</p>
+          <h2>Déposer mon certificat médical</h2>
+          <p>Renseignez les informations de l'adhérent lui-même, puis ajoutez son certificat. Le nom et le prénom du payeur ne doivent pas être utilisés.</p>
+        </div>
+
+        <div class="medical-upload-card">
+          <form id="medical-upload-form" novalidate>
+            <div class="medical-upload-grid">
+              <label>
+                <span>Nom de l'adhérent</span>
+                <input id="medical-last-name" name="lastName" type="text" autocomplete="family-name" required>
+              </label>
+              <label>
+                <span>Prénom de l'adhérent</span>
+                <input id="medical-first-name" name="firstName" type="text" autocomplete="given-name" required>
+              </label>
+              <label>
+                <span>Date de naissance de l'adhérent</span>
+                <input id="medical-birth-date" name="birthDate" type="date" required>
+              </label>
+            </div>
+
+            <div class="medical-upload-actions">
+              <button id="medical-verify-button" class="button" type="button">Vérifier mon inscription</button>
+            </div>
+
+            <div id="medical-upload-step" class="medical-upload-step" hidden>
+              <div class="medical-upload-divider"></div>
+              <label class="medical-file-label" for="medical-file">
+                <span>Certificat médical</span>
+                <input id="medical-file" name="file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif" required>
+                <small>PDF ou photo. Les images sont automatiquement converties en PDF avant l'envoi.</small>
+              </label>
+              <div class="medical-upload-actions">
+                <button id="medical-upload-button" class="button" type="button">Envoyer mon certificat</button>
+                <button id="medical-reset-button" class="button button-outline" type="button">Changer d'adhérent</button>
+              </div>
+            </div>
+
+            <div id="medical-upload-status" class="medical-upload-status" role="status" aria-live="polite" hidden></div>
+          </form>
         </div>
       </div>
 

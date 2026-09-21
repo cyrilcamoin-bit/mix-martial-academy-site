@@ -107,3 +107,12 @@ Ne pas ajouter d'API HelloAsso en V1.
 Ne pas ajouter de dépendance lourde.
 Ne pas transformer le site en application complexe.
 Ne pas remplacer les données validées.
+
+
+V2 autorisée — certificats médicaux :
+- Le backend Cloudflare Worker situé dans backend/helloasso-worker est désormais autorisé pour l'intégration HelloAsso et le dépôt de certificats.
+- Les secrets restent exclusivement dans Cloudflare.
+- Les documents médicaux doivent rester dans un stockage privé R2 et ne doivent jamais être commités dans le dépôt public.
+- Pour identifier un adhérent, utiliser uniquement les données de l'adhérent HelloAsso, jamais celles du payeur.
+- La vérification publique repose sur nom + prénom + date de naissance de l'adhérent.
+- L'espace administrateur affiche seulement reçu/manquant ; pas de statut de transmission fédérale.

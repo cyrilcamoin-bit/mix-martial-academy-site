@@ -72,3 +72,27 @@ Le dépôt GitHub Pages est public par défaut. Tout ce qui y est ajouté doit �
 - Cloudflare Worker.
 - Stockage sécurisé.
 - RGPD renforcé.
+
+
+## V2 — certificats médicaux / HelloAsso
+
+La branche `codex/helloasso-api-connection` ajoute un backend Cloudflare Worker pour :
+
+- vérifier un adhérent uniquement par nom, prénom et date de naissance provenant de la campagne HelloAsso 2026/2027 ;
+- ne jamais utiliser les coordonnées du payeur à la place de celles de l'adhérent ;
+- recevoir un certificat PDF ;
+- stocker un seul certificat actif par adhérent dans R2 ;
+- exposer un suivi administrateur reçu/manquant ;
+- télécharger un PDF individuel, une sélection ou tous les certificats reçus en ZIP.
+
+Secrets Cloudflare requis :
+
+- `HELLOASSO_CLIENT_ID`
+- `HELLOASSO_CLIENT_SECRET`
+- `ADMIN_API_TOKEN` pour l'espace administrateur
+
+Binding Cloudflare requis :
+
+- `CERTIFICATES` vers un bucket R2 privé.
+
+Aucune clé API ni donnée adhérent ne doit être commitée dans GitHub.
