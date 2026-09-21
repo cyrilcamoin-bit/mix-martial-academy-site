@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v1",
-  "deployedFrom": "codex/helloasso-api-connection",
-  "note": "Ajout depot certificats medicaux + verification HelloAsso + espace admin."
+  "version": "20260922-certificats-v3",
+  "deployedFrom": "main",
+  "note": "Repositionnement du dépôt de certificat avant la section Loisir / Entraînements."
 }
