@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v3",
+  "version": "20260922-certificats-v4",
   "deployedFrom": "main",
-  "note": "Repositionnement du dépôt de certificat avant la section Loisir / Entraînements."
+  "note": "Date de naissance affichée et saisie au format JJ/MM/AAAA."
 }
