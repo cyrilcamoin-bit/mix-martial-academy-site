@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v4",
+  "version": "20260922-certificats-v5",
   "deployedFrom": "main",
-  "note": "Date de naissance affichée et saisie au format JJ/MM/AAAA."
+  "note": "Bouton dépôt certificat renommé."
 }
