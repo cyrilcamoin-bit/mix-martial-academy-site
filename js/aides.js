@@ -61,6 +61,7 @@
       inputMode: 'numeric',
       maxLength: 11,
       regex: /^\d{6}-\d{4}$/,
+      pattern: '[0-9]{6}-[0-9]{4}',
       format(value) {
         const digits = String(value || '').replace(/\D/g, '').slice(0, 10);
         return digits.length > 6 ? digits.slice(0, 6) + '-' + digits.slice(6) : digits;
@@ -72,6 +73,7 @@
       inputMode: 'text',
       maxLength: 12,
       regex: /^\d{2}-[A-Z]{4}-[A-Z]{4}$/,
+      pattern: '[0-9]{2}-[A-Z]{4}-[A-Z]{4}',
       format(value) {
         const raw = String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
         let cleaned = '';
@@ -90,14 +92,28 @@
     }
   };
 
+  function getCodeRule(dispositif) {
+    const normalized = String(dispositif || '')
+      .toLowerCase()
+      .replace(/[’']/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (normalized === 'passsport') return CODE_RULES['Pass’Sport'];
+    if (normalized === 'pass caf loisirs') return CODE_RULES['Pass CAF Loisirs'];
+    return null;
+  }
+
   function updateCodeField(dispositif, codeInput, hint) {
-    const rule = CODE_RULES[dispositif];
+    const rule = getCodeRule(dispositif);
     codeInput.setCustomValidity('');
 
     if (!rule) {
       codeInput.placeholder = 'Saisir le code attribué';
       codeInput.inputMode = 'text';
       codeInput.maxLength = 80;
+      codeInput.removeAttribute('pattern');
+      codeInput.removeAttribute('title');
       if (hint) hint.textContent = 'Saisissez le code exactement comme il vous a été communiqué.';
       return;
     }
@@ -105,6 +121,8 @@
     codeInput.placeholder = rule.placeholder;
     codeInput.inputMode = rule.inputMode;
     codeInput.maxLength = rule.maxLength;
+    codeInput.pattern = rule.pattern;
+    codeInput.title = rule.message;
     codeInput.value = rule.format(codeInput.value);
     if (hint) hint.textContent = rule.message;
 
@@ -114,7 +132,7 @@
   }
 
   function validateCode(dispositif, codeInput, hint) {
-    const rule = CODE_RULES[dispositif];
+    const rule = getCodeRule(dispositif);
     if (!rule) {
       codeInput.setCustomValidity('');
       return true;
@@ -158,7 +176,8 @@
       dispositif: clean(data.get('dispositif')),
       code: clean(data.get('code')),
       montant: Number(String(data.get('montant')).replace(',', '.')),
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
+      validationVersion: 2
     };
 
     if (!payload.nom || !payload.prenom || !payload.categorie || !payload.responsable ||
@@ -218,7 +237,7 @@
     });
 
     codeInput.addEventListener('input', () => {
-      const rule = CODE_RULES[dispositifInput.value];
+      const rule = getCodeRule(dispositifInput.value);
       if (rule) codeInput.value = rule.format(codeInput.value);
       validateCode(dispositifInput.value, codeInput, hint);
     });
