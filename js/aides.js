@@ -54,8 +54,93 @@
     return String(value || '').trim();
   }
 
+  const CODE_RULES = {
+    'Pass CAF Loisirs': {
+      placeholder: '123456-1234',
+      message: 'Format obligatoire : 6 chiffres + 4 chiffres (ex. 123456-1234).',
+      inputMode: 'numeric',
+      maxLength: 11,
+      regex: /^\d{6}-\d{4}$/,
+      format(value) {
+        const digits = String(value || '').replace(/\D/g, '').slice(0, 10);
+        return digits.length > 6 ? digits.slice(0, 6) + '-' + digits.slice(6) : digits;
+      }
+    },
+    'Pass’Sport': {
+      placeholder: '12-ABCD-EFGH',
+      message: 'Format obligatoire : 2 chiffres - 4 lettres - 4 lettres (ex. 12-ABCD-EFGH).',
+      inputMode: 'text',
+      maxLength: 12,
+      regex: /^\d{2}-[A-Z]{4}-[A-Z]{4}$/,
+      format(value) {
+        const raw = String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let cleaned = '';
+        for (const char of raw) {
+          const pos = cleaned.length;
+          if (pos < 2 && /\d/.test(char)) cleaned += char;
+          else if (pos >= 2 && pos < 10 && /[A-Z]/.test(char)) cleaned += char;
+          if (cleaned.length >= 10) break;
+        }
+        const parts = [];
+        if (cleaned.length) parts.push(cleaned.slice(0, 2));
+        if (cleaned.length > 2) parts.push(cleaned.slice(2, 6));
+        if (cleaned.length > 6) parts.push(cleaned.slice(6, 10));
+        return parts.join('-');
+      }
+    }
+  };
+
+  function updateCodeField(dispositif, codeInput, hint) {
+    const rule = CODE_RULES[dispositif];
+    codeInput.setCustomValidity('');
+
+    if (!rule) {
+      codeInput.placeholder = 'Saisir le code attribué';
+      codeInput.inputMode = 'text';
+      codeInput.maxLength = 80;
+      if (hint) hint.textContent = 'Saisissez le code exactement comme il vous a été communiqué.';
+      return;
+    }
+
+    codeInput.placeholder = rule.placeholder;
+    codeInput.inputMode = rule.inputMode;
+    codeInput.maxLength = rule.maxLength;
+    codeInput.value = rule.format(codeInput.value);
+    if (hint) hint.textContent = rule.message;
+
+    if (codeInput.value && !rule.regex.test(codeInput.value)) {
+      codeInput.setCustomValidity(rule.message);
+    }
+  }
+
+  function validateCode(dispositif, codeInput, hint) {
+    const rule = CODE_RULES[dispositif];
+    if (!rule) {
+      codeInput.setCustomValidity('');
+      return true;
+    }
+
+    codeInput.value = rule.format(codeInput.value);
+    const valid = rule.regex.test(codeInput.value);
+    codeInput.setCustomValidity(valid ? '' : rule.message);
+    if (hint) hint.textContent = rule.message;
+    return valid;
+  }
+
+
   async function submitForm(form, status) {
     const button = form.querySelector('button[type="submit"]');
+    const dispositifInput = form.elements.dispositif;
+    const codeInput = form.elements.code;
+    const hint = document.getElementById('aid-code-hint');
+
+    if (!validateCode(dispositifInput.value, codeInput, hint)) {
+      codeInput.reportValidity();
+      status.textContent = 'Vérifiez le format du code indiqué.';
+      status.className = 'aid-form-status is-error';
+      return;
+    }
+
     const data = new FormData(form);
 
     if (clean(data.get('website'))) {
@@ -104,6 +189,7 @@
       if (!response.ok) throw new Error('firebase_write_failed');
 
       form.reset();
+      updateCodeField('', form.elements.code, document.getElementById('aid-code-hint'));
       status.textContent = 'Demande envoyée. Le club pourra maintenant la vérifier.';
       status.className = 'aid-form-status is-success';
     } catch (error) {
@@ -119,6 +205,27 @@
     const form = document.getElementById('aid-form');
     const status = document.getElementById('aid-form-status');
     if (!form || !status) return;
+
+    const dispositifInput = form.elements.dispositif;
+    const codeInput = form.elements.code;
+    const hint = document.getElementById('aid-code-hint');
+
+    updateCodeField(dispositifInput.value, codeInput, hint);
+
+    dispositifInput.addEventListener('change', () => {
+      codeInput.value = '';
+      updateCodeField(dispositifInput.value, codeInput, hint);
+    });
+
+    codeInput.addEventListener('input', () => {
+      const rule = CODE_RULES[dispositifInput.value];
+      if (rule) codeInput.value = rule.format(codeInput.value);
+      validateCode(dispositifInput.value, codeInput, hint);
+    });
+
+    codeInput.addEventListener('blur', () => {
+      validateCode(dispositifInput.value, codeInput, hint);
+    });
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
