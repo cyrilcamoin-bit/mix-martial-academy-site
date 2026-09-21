@@ -3271,3 +3271,6 @@ p {
     font-size: 1rem;
   }
 }
+
+.aid-code-hint{display:block;margin-top:3px;color:var(--muted);font-size:.82rem;line-height:1.35}
+.aid-form input[name="code"]:invalid:not(:placeholder-shown){border-color:#ff5a64}
