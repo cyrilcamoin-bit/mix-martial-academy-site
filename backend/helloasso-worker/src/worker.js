@@ -13,25 +13,39 @@ export default {
       if (!tokenResponse.ok) {
         return Response.json({ ok:false, step:"auth", status:tokenResponse.status }, { status:500 });
       }
+
       const tokenData = await tokenResponse.json();
       const url = new URL("https://api.helloasso.com/v5/organizations/mix-martial-academy/forms/Membership/adhesion-mma-2026-2027/items");
       url.searchParams.set("pageIndex","1");
       url.searchParams.set("pageSize","20");
       url.searchParams.set("withDetails","true");
+
       const response = await fetch(url, {
         headers: { Authorization: `Bearer ${tokenData.access_token}`, Accept:"application/json" }
       });
       if (!response.ok) {
         return Response.json({ ok:false, step:"campaign", status:response.status }, { status:500 });
       }
+
       const data = await response.json();
       const items = Array.isArray(data.data) ? data.data : [];
       const fieldNames = [...new Set(items.flatMap(item => (item.customFields || []).map(field => field.name)))];
+      const typeCounts = {};
+      const stateCounts = {};
+      for (const item of items) {
+        const type = String(item.type || item.tierType || "unknown");
+        const state = String(item.state || "unknown");
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+        stateCounts[state] = (stateCounts[state] || 0) + 1;
+      }
+
       return Response.json({
         ok:true,
         campaign:"adhesion-mma-2026-2027",
         itemsOnFirstPage:items.length,
         memberIdentityAvailable:items.filter(item => item.user?.firstName && item.user?.lastName).length,
+        typeCounts,
+        stateCounts,
         customFieldNames:fieldNames
       });
     } catch (error) {
