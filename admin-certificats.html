@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Suivi certificats — Mix Martial Academy</title>
+  <link rel="stylesheet" href="css/style.css?v=20260922-certificats">
+  <script src="js/adminCertificates.js?v=20260922-1" defer></script>
+</head>
+<body>
+  <main class="admin-certificates-page">
+    <section class="section">
+      <div class="section-head">
+        <p class="eyebrow">Administration</p>
+        <h1>Certificats médicaux</h1>
+        <p>Suivi des adhérents HelloAsso et téléchargement des certificats reçus.</p>
+      </div>
+
+      <div id="certificates-admin-login" class="admin-login-card">
+        <label for="admin-token">Code administrateur</label>
+        <input id="admin-token" type="password" autocomplete="current-password">
+        <button id="admin-login-button" class="button" type="button">Ouvrir le suivi</button>
+      </div>
+
+      <div id="certificates-admin-status" class="admin-status" hidden></div>
+
+      <div id="certificates-admin-panel" hidden>
+        <div id="certificates-admin-stats" class="admin-certificates-stats"></div>
+
+        <div class="admin-certificates-toolbar">
+          <input id="certificates-admin-search" type="search" placeholder="Rechercher un adhérent">
+          <select id="certificates-admin-filter">
+            <option value="all">Tous</option>
+            <option value="received">Reçus</option>
+            <option value="missing">Manquants</option>
+          </select>
+          <button id="certificates-download-selected" class="button button-outline" type="button">Télécharger la sélection</button>
+          <button id="certificates-download-all" class="button" type="button">Télécharger tous les reçus</button>
+          <button id="admin-logout-button" class="button button-ghost" type="button">Fermer</button>
+        </div>
+
+        <div class="admin-certificates-table-wrap">
+          <table class="admin-certificates-table">
+            <thead>
+              <tr>
+                <th><input id="certificates-select-all" type="checkbox" aria-label="Tout sélectionner"></th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Certificat</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="certificates-admin-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
