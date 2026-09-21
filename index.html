@@ -57,7 +57,7 @@
   <script src="js/mmaLeague.js?v=20260906-mma-league-labels" defer></script>
   <script src="js/chatbot.js?v=20260906-whatsapp" defer></script>
   <script src="js/analytics.js?v=20260906-whatsapp" defer></script>
-  <script src="js/aides.js?v=20260918-native" defer></script>
+  <script src="js/aides.js?v=20260921-code-validation" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -297,7 +297,8 @@
               </label>
               <label>
                 <span>Numéro / code attribué par l'organisme</span>
-                <input type="text" name="code" autocomplete="off" required>
+                <input type="text" name="code" autocomplete="off" required aria-describedby="aid-code-hint">
+                <small class="aid-code-hint" id="aid-code-hint">Saisissez le code exactement comme il vous a été communiqué.</small>
               </label>
               <label>
                 <span>Montant de l'aide (€)</span>
