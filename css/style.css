@@ -3287,3 +3287,52 @@ p {
 }
 .admin-aids-delete:hover{background:rgba(255,90,100,.16)}
 .admin-aids-delete:disabled{opacity:.5;cursor:not-allowed}
+
+/* Admin aides — action column fix */
+.admin-aids-table-wrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.admin-aids-table{
+  min-width:1250px;
+}
+.admin-aids-table th:last-child,
+.admin-aids-table td:last-child{
+  position:sticky;
+  right:0;
+  min-width:120px;
+  width:120px;
+  white-space:nowrap;
+  text-align:center;
+  background:#141414;
+  z-index:2;
+  box-shadow:-8px 0 12px rgba(0,0,0,.18);
+}
+.admin-aids-table th:last-child{
+  background:#191919;
+  z-index:3;
+}
+.admin-aids-delete{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:96px;
+  max-width:100%;
+  padding:8px 10px;
+  white-space:nowrap;
+}
+@media(max-width:768px){
+  .admin-aids-table{
+    min-width:1150px;
+  }
+  .admin-aids-table th:last-child,
+  .admin-aids-table td:last-child{
+    min-width:92px;
+    width:92px;
+  }
+  .admin-aids-delete{
+    min-width:74px;
+    padding:6px 8px;
+    font-size:.82rem;
+  }
+}
