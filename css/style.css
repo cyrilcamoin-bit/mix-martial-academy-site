@@ -3274,3 +3274,16 @@ p {
 
 .aid-code-hint{display:block;margin-top:3px;color:var(--muted);font-size:.82rem;line-height:1.35}
 .aid-form input[name="code"]:invalid:not(:placeholder-shown){border-color:#ff5a64}
+
+.admin-aids-delete{
+  border:1px solid rgba(255,90,100,.55);
+  background:rgba(255,90,100,.08);
+  color:#ff7a83;
+  border-radius:9px;
+  padding:8px 11px;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+.admin-aids-delete:hover{background:rgba(255,90,100,.16)}
+.admin-aids-delete:disabled{opacity:.5;cursor:not-allowed}
