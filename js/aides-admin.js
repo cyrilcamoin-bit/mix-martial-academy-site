@@ -219,7 +219,7 @@
         const deleteButton = document.createElement('button');
         deleteButton.type = 'button';
         deleteButton.className = 'admin-aids-delete';
-        deleteButton.textContent = 'Supprimer';
+        deleteButton.textContent = window.innerWidth < 768 ? 'Suppr.' : 'Supprimer';
         deleteButton.setAttribute('aria-label', `Supprimer la demande de ${row.data.prenom || ''} ${row.data.nom || ''}`.trim());
         deleteButton.addEventListener('click', async () => {
           const adherent = `${row.data.prenom || ''} ${row.data.nom || ''}`.trim() || 'cet adhérent';
