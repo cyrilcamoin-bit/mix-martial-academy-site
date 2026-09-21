@@ -9,3 +9,4 @@ HELLOASSO_FORM_SLUG = "adhesion-mma-2026-2027"
 
 [[r2_buckets]]
 binding = "CERTIFICATES"
+bucket_name = "mma-certificats"
