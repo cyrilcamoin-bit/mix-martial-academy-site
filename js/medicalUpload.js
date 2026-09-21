@@ -24,7 +24,7 @@
 
   function setVerifyBusy(busy) {
     verifyButton.disabled = busy;
-    verifyButton.textContent = busy ? "Vérification..." : "Vérifier mon inscription";
+    verifyButton.textContent = busy ? "Vérification..." : "Déposer mon certificat";
   }
 
   function setUploadBusy(busy, label) {
