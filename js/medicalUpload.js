@@ -40,6 +40,18 @@
     };
   }
 
+  function formatBirthDateInput(value) {
+    var digits = String(value || "").replace(/\D/g, "").slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return digits.slice(0, 2) + "/" + digits.slice(2);
+    return digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
+  }
+
+  birthDateInput.addEventListener("input", function () {
+    var formatted = formatBirthDateInput(birthDateInput.value);
+    if (birthDateInput.value !== formatted) birthDateInput.value = formatted;
+  });
+
   function resetVerification() {
     verified = null;
     uploadStep.hidden = true;
@@ -57,6 +69,12 @@
     var payload = identityPayload();
     if (!payload.firstName || !payload.lastName || !payload.birthDate) {
       setStatus("Renseignez le nom, le prénom et la date de naissance de l’adhérent.", "error");
+      return;
+    }
+
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(payload.birthDate)) {
+      setStatus("Saisissez la date de naissance au format JJ/MM/AAAA.", "error");
+      birthDateInput.focus();
       return;
     }
 
