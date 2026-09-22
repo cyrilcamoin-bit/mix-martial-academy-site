@@ -1,5 +1,5 @@
 {
-  "version": "20260922-admin-club-v1",
+  "version": "20260922-admin-club-v2",
   "deployedFrom": "main",
-  "note": "Nouvelle interface unifiée Administration du club pour les aides et les certificats, anciennes pages conservées."
+  "note": "Administration du club avec un seul champ de mot de passe pour déverrouiller aides et certificats; anciennes pages conservées."
 }
