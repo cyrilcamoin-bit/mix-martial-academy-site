@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    (function () {
+      var endpoint = "/version.json?t=" + Date.now();
+      fetch(endpoint, { cache: "no-store" })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+          if (!data || !data.version) return;
+          var url = new URL(window.location.href);
+          if (url.searchParams.get("v") === data.version) return;
+          url.searchParams.set("v", data.version);
+          window.location.replace(url.pathname + url.search + url.hash);
+        })
+        .catch(function () {});
+    })();
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administration du club — Mix Martial Academy</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="css/style.css?v=20260922-admin-club-v2">
+  <script src="js/adminClub.js?v=20260922-admin-club-v2" defer></script>
+  <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
+  <script src="js/adminCertificates.js?v=20260922-certificats-v3" defer></script>
+</head>
+<body class="admin-aids-page admin-club-page">
+  <main class="admin-club-shell">
+    <header class="admin-club-head">
+      <div>
+        <p class="eyebrow">Mix Martial Academy — Le Rove</p>
+        <h1>Administration du club</h1>
+        <p>Un seul espace pour gérer les aides à l'inscription et les certificats médicaux.</p>
+      </div>
+      <img src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy">
+    </header>
+
+    <nav class="admin-club-tabs" aria-label="Gestion du club">
+      <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">Vue d'ensemble</button>
+      <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
+      <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
+    </nav>
+
+    <section id="admin-club-access" class="admin-club-access-card">
+      <div>
+        <p class="eyebrow">Accès administrateur</p>
+        <h2>Déverrouiller l'administration</h2>
+        <p>Un seul mot de passe ouvre les aides à l'inscription et les certificats médicaux.</p>
+      </div>
+      <div class="admin-club-access-actions">
+        <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
+        <button id="admin-club-unlock" class="button" type="button">Déverrouiller</button>
+      </div>
+      <p id="admin-club-access-status" class="note" aria-live="polite">Saisissez votre mot de passe administrateur.</p>
+    </section>
+
+    <section id="admin-club-dashboard" class="admin-club-view">
+      <div class="admin-club-dashboard-intro">
+        <p class="eyebrow">Gestion administrative</p>
+        <h2>Que souhaitez-vous gérer ?</h2>
+        <p>Les deux outils restent indépendants et sécurisés, mais sont désormais accessibles depuis cette même interface.</p>
+      </div>
+
+      <div class="admin-club-dashboard-grid">
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">€</div>
+          <div>
+            <p class="card-kicker">Aides à l'inscription</p>
+            <h3>Aides de l'État & organismes</h3>
+            <p>Consultez les demandes, vérifiez les codes, suivez les remboursements et exportez le suivi en CSV.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="aides" data-admin-protected disabled>Gérer les aides</button>
+        </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">+</div>
+          <div>
+            <p class="card-kicker">Documents médicaux</p>
+            <h3>Certificats médicaux</h3>
+            <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
+        </article>
+      </div>
+
+      <p class="admin-club-legacy-note">Les deux anciennes pages d'administration restent actives pendant la phase de validation.</p>
+    </section>
+
+    <section id="admin-club-aides" class="admin-club-view" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">Administration</p>
+          <h2>Aides à l'inscription</h2>
+          <p>Suivi des demandes Carte Collégien de Provence, Pass'Sport et Pass CAF Loisirs.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <section class="admin-aids-panel admin-club-internal-login">
+        <h2>Accès aux demandes</h2>
+        <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
+        <div class="admin-aids-actions">
+          <input id="admin-code" type="password" autocomplete="current-password" inputmode="text" placeholder="Code personnel">
+          <button class="button" id="unlock-admin" type="button">Ouvrir le suivi</button>
+          <button class="button button-outline" id="export-csv" type="button" disabled>Exporter CSV</button>
+        </div>
+        <p id="admin-message" class="note" aria-live="polite">Saisissez votre code personnel.</p>
+      </section>
+
+      <section class="admin-aids-metrics" aria-label="Résumé">
+        <div class="admin-aids-metric"><span>Demandes</span><strong id="metric-count">0</strong></div>
+        <div class="admin-aids-metric"><span>Total déclaré</span><strong id="metric-total">0,00 €</strong></div>
+        <div class="admin-aids-metric"><span>Remboursé</span><strong id="metric-refunded">0,00 €</strong></div>
+        <div class="admin-aids-metric"><span>Reste</span><strong id="metric-remaining">0,00 €</strong></div>
+      </section>
+
+      <section class="admin-aids-panel">
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Adhérent</th>
+                <th>Catégorie</th>
+                <th>Responsable légal</th>
+                <th>Dispositif</th>
+                <th>Code</th>
+                <th>Montant</th>
+                <th>Code vérifié</th>
+                <th>Remboursé</th>
+                <th>Date remboursement</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-aids-body">
+              <tr><td colspan="11" class="admin-aids-empty">Aucune donnée chargée.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="admin-club-certificats" class="admin-club-view admin-certificates-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">Administration</p>
+          <h2>Certificats médicaux</h2>
+          <p>Suivi des adhérents HelloAsso et téléchargement des certificats reçus.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <div id="certificates-admin-login" class="admin-login-card admin-club-internal-login">
+        <label for="admin-token">Code administrateur</label>
+        <input id="admin-token" type="password" autocomplete="current-password">
+        <button id="admin-login-button" class="button" type="button">Ouvrir le suivi</button>
+      </div>
+
+      <div id="certificates-admin-status" class="admin-status" hidden></div>
+
+      <div id="certificates-admin-panel" hidden>
+        <div id="certificates-admin-stats" class="admin-certificates-stats"></div>
+
+        <div class="admin-certificates-toolbar">
+          <input id="certificates-admin-search" type="search" placeholder="Rechercher un adhérent">
+          <select id="certificates-admin-filter">
+            <option value="all">Tous</option>
+            <option value="received">Reçus</option>
+            <option value="missing">Manquants</option>
+          </select>
+          <button id="certificates-download-selected" class="button button-outline" type="button">Télécharger la sélection</button>
+          <button id="certificates-download-all" class="button" type="button">Télécharger tous les reçus</button>
+          <button id="admin-logout-button" class="button button-ghost" type="button">Fermer</button>
+        </div>
+
+        <div class="admin-certificates-table-wrap">
+          <table class="admin-certificates-table">
+            <thead>
+              <tr>
+                <th><input id="certificates-select-all" type="checkbox" aria-label="Tout sélectionner"></th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Certificat</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="certificates-admin-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
