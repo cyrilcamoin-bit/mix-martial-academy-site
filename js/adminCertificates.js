@@ -61,7 +61,10 @@
         "<td>" + escapeHtml(member.firstName) + "</td>" +
         "<td><span class='certificate-status " + (member.received ? "is-received" : "is-missing") + "'>" + (member.received ? "Reçu" : "Manquant") + "</span></td>" +
         "<td>" + (member.received
-          ? "<button class='button button-small button-outline certificate-download-one' data-member-id='" + member.memberId + "'>Télécharger</button>"
+          ? "<div class='certificate-row-actions'>" +
+              "<button class='button button-small button-outline certificate-download-one' data-member-id='" + member.memberId + "'>Télécharger</button>" +
+              "<button class='button button-small certificate-delete-one' data-member-id='" + member.memberId + "' data-member-name='" + escapeHtml(member.firstName + " " + member.lastName) + "'>Supprimer</button>" +
+            "</div>"
           : "") + "</td>" +
       "</tr>";
     }).join("");
@@ -69,6 +72,15 @@
     tbody.querySelectorAll(".certificate-download-one").forEach(function (button) {
       button.addEventListener("click", function () {
         downloadOne(button.getAttribute("data-member-id"));
+      });
+    });
+
+    tbody.querySelectorAll(".certificate-delete-one").forEach(function (button) {
+      button.addEventListener("click", function () {
+        deleteOne(
+          button.getAttribute("data-member-id"),
+          button.getAttribute("data-member-name")
+        );
       });
     });
   }
@@ -165,6 +177,44 @@
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  async function deleteOne(memberId, memberName) {
+    var displayName = memberName || "cet adhérent";
+    var confirmed = window.confirm(
+      "Supprimer définitivement le certificat de " + displayName + " ?\n\n" +
+      "Le fichier sera supprimé du stockage et l’adhérent repassera en « Manquant ». " +
+      "Cette action ne modifie pas son inscription HelloAsso."
+    );
+
+    if (!confirmed) return;
+
+    setStatus("Suppression du certificat...", "");
+
+    try {
+      var response = await fetch(API_BASE + "/admin/certificates/delete", {
+        method: "POST",
+        headers: authHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ memberId: memberId })
+      });
+      var data = await response.json().catch(function () { return {}; });
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "delete_failed");
+      }
+
+      var member = members.find(function (entry) {
+        return String(entry.memberId) === String(memberId);
+      });
+      if (member) member.received = false;
+
+      selectAll.checked = false;
+      renderStats();
+      renderTable();
+      setStatus("Certificat supprimé. L’adhérent est de nouveau indiqué comme « Manquant ».", "success");
+    } catch (error) {
+      setStatus("Impossible de supprimer ce certificat pour le moment.", "error");
+    }
   }
 
   async function downloadOne(memberId) {
