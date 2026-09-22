@@ -26,7 +26,7 @@
     addresses: {
       trainingPlace: "Salle Jennifer",
       trainingAddress: "6 chemin de la Bergerie, 13740 Le Rove",
-      administrativeAddress: "16 rue Adrien Isnardon, 13740 Le Rove"
+      administrativeAddress: "5 impasse des Faisans, 13180 Gignac-la-Nerthe"
     },
     schedule: [
       {
@@ -190,7 +190,7 @@
       siret: "903 072 395 00010",
       rna: "W134010278",
       ape: "93.12Z - Activit\u00e9s de clubs de sports",
-      legalAddress: "16 rue Adrien Isnardon, 13740 Le Rove",
+      legalAddress: "5 impasse des Faisans, 13180 Gignac-la-Nerthe",
       trainingAddress: "Salle Jennifer, 6 chemin de la Bergerie, 13740 Le Rove",
       publicationManager: "Cyril Camoin",
       hosting: "GitHub Pages",
