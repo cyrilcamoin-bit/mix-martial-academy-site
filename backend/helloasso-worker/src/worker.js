@@ -413,7 +413,8 @@ export default {
           ok: true,
           service: "mma-lerove-api",
           helloAssoCampaign: FORM_SLUG,
-          certificateStorage: storageReady(env)
+          certificateStorage: storageReady(env),
+          certificateDeletion: true
         });
       }
 
