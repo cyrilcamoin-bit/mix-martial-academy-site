@@ -3810,3 +3810,90 @@ p {
     width: 100%;
   }
 }
+
+
+/* ── Déverrouillage unique de l'administration ───────────── */
+.admin-club-access-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr);
+  gap: 18px 24px;
+  align-items: end;
+  margin: 0 0 24px;
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018)),
+    #111114;
+  box-shadow: var(--shadow);
+}
+
+.admin-club-access-card h2 {
+  margin: .25rem 0 .45rem;
+  font-size: clamp(1.55rem, 3.6vw, 2.2rem);
+}
+
+.admin-club-access-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.admin-club-access-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.admin-club-access-actions input {
+  width: 100%;
+  min-height: 50px;
+  padding: .8rem .95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: #0f0f12;
+  color: var(--text);
+}
+
+#admin-club-access-status {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+#admin-club-access-status.is-success {
+  color: #b7f7d6;
+}
+
+#admin-club-access-status.is-error {
+  color: #ff8c8c;
+}
+
+.admin-club-access-card.is-unlocked {
+  border-color: rgba(52, 211, 153, .34);
+  background:
+    linear-gradient(180deg, rgba(52, 211, 153, .06), rgba(255,255,255,.018)),
+    #111114;
+}
+
+.admin-club-internal-login {
+  display: none !important;
+}
+
+.admin-club-page [data-admin-protected]:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+  filter: grayscale(.15);
+}
+
+@media (max-width: 760px) {
+  .admin-club-access-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-club-access-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-club-access-actions .button {
+    width: 100%;
+  }
+}
