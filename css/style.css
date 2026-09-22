@@ -733,9 +733,9 @@ p {
   grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
   align-items: center;
   gap: clamp(1.5rem, 5vw, 4.5rem);
-  min-height: 610px;
-  padding-top: 76px;
-  padding-bottom: 64px;
+  min-height: 500px;
+  padding-top: 60px;
+  padding-bottom: 44px;
 }
 
 .medical-hero::before {
@@ -770,7 +770,6 @@ p {
   color: var(--red-hover);
 }
 
-.medical-info-box,
 .medical-copy-card,
 .medical-know-box,
 .medical-circuit-card,
@@ -782,28 +781,6 @@ p {
     linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
     var(--card);
   box-shadow: var(--shadow);
-}
-
-.medical-info-box {
-  margin: 1.5rem 0;
-  padding: 1rem 1.1rem;
-  border-left: 4px solid var(--red);
-}
-
-.medical-info-box strong {
-  color: var(--text);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.medical-info-box p {
-  margin: 0.35rem 0 0;
-  color: var(--off-white);
-}
-
-.medical-primary-link {
-  max-width: 100%;
 }
 
 .medical-hero-mark {
@@ -2391,10 +2368,6 @@ p {
   .medical-hero .lead {
     margin-left: auto;
     margin-right: auto;
-  }
-
-  .medical-info-box {
-    text-align: left;
   }
 
   .medical-download-grid,
