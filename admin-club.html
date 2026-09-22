@@ -24,8 +24,8 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Administration du club — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="css/style.css?v=20260922-admin-club-v1">
-  <script src="js/adminClub.js?v=20260922-admin-club-v1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=20260922-admin-club-v2">
+  <script src="js/adminClub.js?v=20260922-admin-club-v2" defer></script>
   <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
   <script src="js/adminCertificates.js?v=20260922-certificats-v3" defer></script>
 </head>
@@ -42,9 +42,22 @@
 
     <nav class="admin-club-tabs" aria-label="Gestion du club">
       <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">Vue d'ensemble</button>
-      <button class="admin-club-tab" type="button" data-admin-view="aides">Aides à l'inscription</button>
-      <button class="admin-club-tab" type="button" data-admin-view="certificats">Certificats médicaux</button>
+      <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
+      <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
     </nav>
+
+    <section id="admin-club-access" class="admin-club-access-card">
+      <div>
+        <p class="eyebrow">Accès administrateur</p>
+        <h2>Déverrouiller l'administration</h2>
+        <p>Un seul mot de passe ouvre les aides à l'inscription et les certificats médicaux.</p>
+      </div>
+      <div class="admin-club-access-actions">
+        <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
+        <button id="admin-club-unlock" class="button" type="button">Déverrouiller</button>
+      </div>
+      <p id="admin-club-access-status" class="note" aria-live="polite">Saisissez votre mot de passe administrateur.</p>
+    </section>
 
     <section id="admin-club-dashboard" class="admin-club-view">
       <div class="admin-club-dashboard-intro">
@@ -61,7 +74,7 @@
             <h3>Aides de l'État & organismes</h3>
             <p>Consultez les demandes, vérifiez les codes, suivez les remboursements et exportez le suivi en CSV.</p>
           </div>
-          <button class="button admin-club-open" type="button" data-admin-view="aides">Gérer les aides</button>
+          <button class="button admin-club-open" type="button" data-admin-view="aides" data-admin-protected disabled>Gérer les aides</button>
         </article>
 
         <article class="admin-club-card">
@@ -71,7 +84,7 @@
             <h3>Certificats médicaux</h3>
             <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
           </div>
-          <button class="button admin-club-open" type="button" data-admin-view="certificats">Gérer les certificats</button>
+          <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
         </article>
       </div>
 
@@ -88,7 +101,7 @@
         <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
       </div>
 
-      <section class="admin-aids-panel">
+      <section class="admin-aids-panel admin-club-internal-login">
         <h2>Accès aux demandes</h2>
         <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
         <div class="admin-aids-actions">
@@ -142,7 +155,7 @@
         <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
       </div>
 
-      <div id="certificates-admin-login" class="admin-login-card">
+      <div id="certificates-admin-login" class="admin-login-card admin-club-internal-login">
         <label for="admin-token">Code administrateur</label>
         <input id="admin-token" type="password" autocomplete="current-password">
         <button id="admin-login-button" class="button" type="button">Ouvrir le suivi</button>
