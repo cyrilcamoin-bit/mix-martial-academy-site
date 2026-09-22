@@ -1,5 +1,5 @@
 {
-  "version": "20260922-admin-club-v3",
+  "version": "20260922-admincyril-v1",
   "deployedFrom": "main",
-  "note": "Anciennes pages admin aides et certificats supprimées ; administration centralisée sur admin-club.html."
+  "note": "Page d’administration unifiée renommée admincyril.html."
 }
