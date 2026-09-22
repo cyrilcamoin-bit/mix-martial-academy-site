@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v6",
+  "version": "20260922-certificats-v7",
   "deployedFrom": "main",
-  "note": "Ajout suppression d’un certificat avec confirmation dans l’espace admin."
+  "note": "Affichage harmonisé : noms de famille en lettres capitales dans l’espace admin."
 }
