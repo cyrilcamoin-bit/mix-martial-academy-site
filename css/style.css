@@ -3565,3 +3565,32 @@ p {
 [hidden] {
   display: none !important;
 }
+
+
+/* Suppression certificat — espace admin */
+.certificate-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.certificate-delete-one {
+  background: rgba(201, 15, 19, .08);
+  border-color: rgba(225, 38, 33, .48);
+  color: #ff8c8c;
+  box-shadow: none;
+}
+
+.certificate-delete-one:hover,
+.certificate-delete-one:focus-visible {
+  background: rgba(201, 15, 19, .18);
+  border-color: rgba(255, 110, 110, .72);
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .certificate-row-actions {
+    min-width: 190px;
+  }
+}
