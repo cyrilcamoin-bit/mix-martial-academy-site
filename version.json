@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v7",
+  "version": "20260922-admin-club-v1",
   "deployedFrom": "codex/helloasso-api-connection",
-  "note": "Affichage harmonisé : noms de famille en lettres capitales dans l’espace admin."
+  "note": "Nouvelle interface unifiée Administration du club pour les aides et les certificats, anciennes pages conservées."
 }
