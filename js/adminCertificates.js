@@ -57,7 +57,7 @@
     tbody.innerHTML = rows.map(function (member) {
       return "<tr>" +
         "<td><input class='certificate-row-check' type='checkbox' value='" + member.memberId + "' " + (member.received ? "" : "disabled") + "></td>" +
-        "<td><strong>" + escapeHtml(member.lastName) + "</strong></td>" +
+        "<td><strong>" + escapeHtml(String(member.lastName || "").toUpperCase()) + "</strong></td>" +
         "<td>" + escapeHtml(member.firstName) + "</td>" +
         "<td><span class='certificate-status " + (member.received ? "is-received" : "is-missing") + "'>" + (member.received ? "Reçu" : "Manquant") + "</span></td>" +
         "<td>" + (member.received
