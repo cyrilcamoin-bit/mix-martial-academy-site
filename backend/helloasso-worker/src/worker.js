@@ -538,6 +538,34 @@ export default {
         });
       }
 
+      if (request.method === "POST" && url.pathname === "/admin/certificates/delete") {
+        const body = await request.json().catch(() => null);
+        const memberId = body?.memberId;
+        if (!memberId) {
+          return json(request, { ok: false, error: "missing_member_id" }, 400);
+        }
+
+        const members = await fetchMembershipItems(env);
+        const member = members.find((entry) => String(entry.memberId) === String(memberId));
+        if (!member) {
+          return json(request, { ok: false, error: "member_not_found" }, 404);
+        }
+
+        const object = await certificateObjectForMember(env, member.memberId);
+        if (!object) {
+          return json(request, { ok: false, error: "certificate_not_found" }, 404);
+        }
+
+        const fileName = certificateFileName(member);
+        await removeExistingCertificate(env, member.memberId);
+
+        return json(request, {
+          ok: true,
+          memberId: member.memberId,
+          fileName
+        });
+      }
+
       if (request.method === "POST" && url.pathname === "/admin/certificates/download-selected") {
         const body = await request.json().catch(() => null);
         const memberIds = Array.isArray(body?.memberIds) ? body.memberIds : [];
