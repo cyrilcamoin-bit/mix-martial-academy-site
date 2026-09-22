@@ -1,5 +1,5 @@
 {
-  "version": "20260922-certificats-v5",
+  "version": "20260922-certificats-v6",
   "deployedFrom": "main",
-  "note": "Bouton dépôt certificat renommé."
+  "note": "Ajout suppression d’un certificat avec confirmation dans l’espace admin."
 }
