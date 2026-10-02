@@ -3,8 +3,6 @@ const ORGANIZATION_SLUG = "mix-martial-academy";
 const FORM_TYPE = "Membership";
 const FORM_SLUG = "adhesion-mma-2026-2027";
 const BIRTHDATE_FIELD = "Date de naissance de l'adhérent";
-const TEMP_MISSING_EXPORT_TOKEN_HASH = "a1671a1bc14dcc61f2510148d6eb743cb680de12964972ecbbcb46d067003a7d";
-const TEMP_MISSING_EXPORT_EXPIRES_AT = Date.parse("2026-10-02T15:30:00Z");
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -70,18 +68,6 @@ function corsHeaders(request) {
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
   };
-}
-
-async function sha256Hex(value = "") {
-  const bytes = new TextEncoder().encode(String(value));
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
-  return Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-async function temporaryExportAuthorized(url) {
-  const token = String(url.searchParams.get("token") || "");
-  if (!token || Date.now() > TEMP_MISSING_EXPORT_EXPIRES_AT) return false;
-  return (await sha256Hex(token)) === TEMP_MISSING_EXPORT_TOKEN_HASH;
 }
 
 function json(request, data, status = 200, extraHeaders = {}) {
@@ -176,9 +162,7 @@ async function fetchMembershipItems(env) {
       memberId: item.id ?? null,
       firstName: String(item?.user?.firstName || "").trim(),
       lastName: String(item?.user?.lastName || "").trim(),
-      birthDate: getBirthDate(item),
-      email: String(item?.payer?.email || item?.user?.email || "").trim(),
-      tierName: String(item?.tierName || item?.name || "").trim()
+      birthDate: getBirthDate(item)
     }))
     .filter((member) => member.memberId != null && member.firstName && member.lastName && member.birthDate);
 
@@ -363,8 +347,6 @@ async function buildCertificateStatus(env) {
       memberId: member.memberId,
       firstName: member.firstName,
       lastName: member.lastName,
-      email: member.email || "",
-      tierName: member.tierName || "",
       received: receivedIds.has(String(member.memberId))
     }))
     .sort((a, b) => {
@@ -510,31 +492,6 @@ export default {
           ok: true,
           memberId: member.memberId,
           fileName
-        });
-      }
-
-      if (request.method === "GET" && url.pathname === "/internal/missing-certificates-export") {
-        if (!(await temporaryExportAuthorized(url))) {
-          return json(request, { ok: false, error: "not_found" }, 404);
-        }
-
-        const members = await buildCertificateStatus(env);
-        const missingMembers = members
-          .filter((member) => !member.received)
-          .map((member) => ({
-            memberId: member.memberId,
-            lastName: member.lastName,
-            firstName: member.firstName,
-            email: member.email || "",
-            tierName: member.tierName || ""
-          }));
-
-        return json(request, {
-          ok: true,
-          generatedAt: new Date().toISOString(),
-          totalMembers: members.length,
-          missingCount: missingMembers.length,
-          missingMembers
         });
       }
 
