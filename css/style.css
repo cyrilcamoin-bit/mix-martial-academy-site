@@ -4202,3 +4202,172 @@ p {
     width: 100%;
   }
 }
+
+
+/* ── Relances certificats médicaux ───────────────────────── */
+.admin-certificates-mailbar {
+  margin: 0 0 16px;
+}
+
+.admin-certificates-reminder-table td {
+  vertical-align: middle;
+}
+
+.admin-certificates-reminder-table a:not(.button) {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.certificate-email-missing,
+.certificate-reminder-na {
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.admin-certificates-reminder-table .certificate-reminder-send-one:disabled {
+  opacity: .52;
+  cursor: not-allowed;
+}
+
+.admin-certificates-history {
+  margin-top: 18px;
+}
+
+@media (min-width: 760px) {
+  .admin-certificates-page .admin-certificates-table-wrap {
+    overflow-x: hidden;
+  }
+
+  .admin-certificates-reminder-table {
+    table-layout: fixed;
+    font-size: .80rem;
+  }
+
+  .admin-certificates-reminder-table th,
+  .admin-certificates-reminder-table td {
+    min-width: 0;
+    padding: 8px 7px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-certificates-reminder-table th:nth-child(1),
+  .admin-certificates-reminder-table td:nth-child(1),
+  .admin-certificates-reminder-table th:nth-child(2),
+  .admin-certificates-reminder-table td:nth-child(2) {
+    width: 4%;
+    text-align: center;
+  }
+
+  .admin-certificates-reminder-table th:nth-child(3),
+  .admin-certificates-reminder-table td:nth-child(3) { width: 13%; }
+
+  .admin-certificates-reminder-table th:nth-child(4),
+  .admin-certificates-reminder-table td:nth-child(4) { width: 12%; }
+
+  .admin-certificates-reminder-table th:nth-child(5),
+  .admin-certificates-reminder-table td:nth-child(5) { width: 10%; }
+
+  .admin-certificates-reminder-table th:nth-child(6),
+  .admin-certificates-reminder-table td:nth-child(6) { width: 22%; }
+
+  .admin-certificates-reminder-table th:nth-child(7),
+  .admin-certificates-reminder-table td:nth-child(7) { width: 17%; }
+
+  .admin-certificates-reminder-table th:nth-child(8),
+  .admin-certificates-reminder-table td:nth-child(8) { width: 18%; }
+
+  .admin-certificates-reminder-table .certificate-row-actions {
+    min-width: 0;
+  }
+
+  .admin-certificates-reminder-table .button {
+    min-width: 0;
+    padding: 6px 8px;
+    font-size: .76rem;
+    white-space: normal;
+  }
+
+  .admin-certificates-history-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .admin-certificates-history-table th,
+  .admin-certificates-history-table td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-certificates-history-table th:nth-child(1),
+  .admin-certificates-history-table td:nth-child(1) { width: 22%; }
+
+  .admin-certificates-history-table th:nth-child(2),
+  .admin-certificates-history-table td:nth-child(2) { width: 28%; }
+
+  .admin-certificates-history-table th:nth-child(3),
+  .admin-certificates-history-table td:nth-child(3) { width: 36%; }
+
+  .admin-certificates-history-table th:nth-child(4),
+  .admin-certificates-history-table td:nth-child(4) { width: 14%; }
+}
+
+@media (max-width: 759px) {
+  .admin-certificates-reminder-table,
+  .admin-certificates-reminder-table tbody,
+  .admin-certificates-reminder-table tr,
+  .admin-certificates-reminder-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-certificates-reminder-table thead {
+    display: none;
+  }
+
+  .admin-certificates-reminder-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255,255,255,.025);
+  }
+
+  .admin-certificates-reminder-table td {
+    padding: 7px 8px;
+    border-bottom: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-certificates-reminder-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 3px;
+    color: var(--muted);
+    font-size: .68rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .admin-certificates-reminder-table td:nth-child(6),
+  .admin-certificates-reminder-table td:nth-child(7),
+  .admin-certificates-reminder-table td:nth-child(8) {
+    grid-column: 1 / -1;
+  }
+
+  .admin-certificates-reminder-table .certificate-row-actions {
+    min-width: 0;
+  }
+
+  .admin-certificates-reminder-table .certificate-row-actions .button {
+    width: 100%;
+  }
+}
