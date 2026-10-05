@@ -230,6 +230,28 @@
     }
   }
 
+  function mailErrorMessage(code) {
+    var messages = {
+      "mail_not_configured": "Le mot de passe spécifique à l’app Apple n’est pas configuré.",
+      "invalid_recipient": "L’adresse e-mail du club est invalide.",
+      "smtp_connection_failed": "Cloudflare n’arrive pas à ouvrir la connexion SMTP vers Apple.",
+      "smtp_tls_failed": "La négociation TLS avec Apple a échoué.",
+      "smtp_greeting_220": "Réponse inattendue du serveur iCloud à la connexion.",
+      "smtp_ehlo_250": "Le serveur iCloud a refusé l’identification SMTP.",
+      "smtp_starttls_220": "Apple a refusé le passage en connexion chiffrée STARTTLS.",
+      "smtp_secure_ehlo_250": "La session sécurisée iCloud n’a pas accepté l’identification SMTP.",
+      "smtp_auth_535": "Apple refuse l’authentification : vérifiez l’adresse iCloud et le mot de passe spécifique à l’app.",
+      "smtp_auth_password_535": "Apple refuse le mot de passe spécifique à l’app.",
+      "smtp_auth_user_334": "Apple n’a pas accepté l’identifiant iCloud.",
+      "smtp_mail_from_250": "Apple refuse l’adresse d’expéditeur.",
+      "smtp_rcpt_to_250": "Apple refuse l’adresse destinataire du test.",
+      "smtp_data_354": "Apple refuse de recevoir le contenu du message.",
+      "smtp_message_250": "Apple n’a pas accepté le message après son envoi.",
+      "smtp_unknown_failure": "Échec SMTP iCloud non identifié."
+    };
+    return messages[code] || ("Erreur SMTP iCloud : " + String(code || "inconnue"));
+  }
+
   async function sendTestMail() {
     var token = adminToken();
     if (!token || !mailConfigured) return;
@@ -258,12 +280,10 @@
 
       setStatus("E-mail de test envoyé à " + (data.recipient || "l’adresse iCloud du club") + ".", "success");
     } catch (error) {
-      if (error.message === "mail_not_configured") {
-        setStatus("Le mot de passe spécifique à l’app Apple n’est pas encore configuré dans Cloudflare.", "error");
-      } else if (error.message === "unauthorized") {
+      if (error.message === "unauthorized") {
         setStatus("Votre accès administrateur a expiré.", "error");
       } else {
-        setStatus("Échec du test iCloud. Vérifiez le mot de passe spécifique à l’app Apple.", "error");
+        setStatus(mailErrorMessage(error.message), "error");
       }
     } finally {
       testMailButton.disabled = !mailConfigured;
