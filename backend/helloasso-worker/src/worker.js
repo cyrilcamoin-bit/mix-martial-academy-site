@@ -430,7 +430,7 @@ function buildPaymentReminderMail(payment, dateValue) {
     "",
     `Nous vous informons que l’échéance HelloAsso du ${formatDateFr(dateValue)}${membership} a été refusée.`,
     "",
-    "HelloAsso a normalement dû vous envoyer un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
+    "HelloAsso vous a envoyé un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
     "",
     "Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.",
     "",
@@ -460,7 +460,7 @@ function buildPaymentReminderMail(payment, dateValue) {
                   Nous vous informons que l’échéance HelloAsso du <strong>${escapeMailHtml(formatDateFr(dateValue))}</strong>${escapeMailHtml(membership)} a été refusée.
                 </p>
                 <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">
-                  HelloAsso a normalement dû vous envoyer un e-mail contenant le lien permettant de régulariser la situation.
+                  HelloAsso vous a envoyé un e-mail contenant le lien permettant de régulariser la situation.
                   Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams,
                   puis d’effectuer la régularisation dès que possible.
                 </p>
