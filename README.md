@@ -90,9 +90,21 @@ Secrets Cloudflare requis :
 - `HELLOASSO_CLIENT_ID`
 - `HELLOASSO_CLIENT_SECRET`
 - `ADMIN_API_TOKEN` pour l'espace administrateur
+- `ICLOUD_APP_PASSWORD` pour l'envoi SMTP des relances de paiement depuis `mixmartialacademy@icloud.com`
 
 Binding Cloudflare requis :
 
 - `CERTIFICATES` vers un bucket R2 privé.
 
 Aucune clé API ni donnée adhérent ne doit être commitée dans GitHub.
+
+
+## Échéances refusées / relances iCloud
+
+L'administration unifiée peut détecter les paiements HelloAsso refusés par date et envoyer des relances individuelles depuis l'adresse iCloud du club.
+
+Sécurité :
+- aucun mot de passe Apple n'est stocké dans GitHub ;
+- seul un mot de passe spécifique à l'app Apple est utilisé, via le secret Cloudflare `ICLOUD_APP_PASSWORD` ;
+- chaque envoi nécessite une action explicite depuis l'administration ;
+- les envois réussis sont journalisés dans le stockage R2 privé afin d'éviter les doubles relances.
