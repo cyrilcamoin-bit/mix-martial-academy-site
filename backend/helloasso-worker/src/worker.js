@@ -811,7 +811,8 @@ export default {
           helloAssoCampaign: FORM_SLUG,
           certificateStorage: storageReady(env),
           certificateDeletion: true,
-          refusedPayments: true
+          refusedPayments: true,
+          icloudMailConfigured: mailConfigured(env)
         });
       }
 
