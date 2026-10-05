@@ -1,11 +1,12 @@
 (() => {
   'use strict';
 
-  const validViews = new Set(['dashboard', 'aides', 'certificats']);
+  const validViews = new Set(['dashboard', 'aides', 'certificats', 'paiements']);
   const views = {
     dashboard: document.getElementById('admin-club-dashboard'),
     aides: document.getElementById('admin-club-aides'),
-    certificats: document.getElementById('admin-club-certificats')
+    certificats: document.getElementById('admin-club-certificats'),
+    paiements: document.getElementById('admin-club-paiements')
   };
 
   const accessCard = document.getElementById('admin-club-access');
