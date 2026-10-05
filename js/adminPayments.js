@@ -280,13 +280,12 @@
       if (data.failed) parts.push(data.failed + " échec(s)");
       if (data.notFound) parts.push(data.notFound + " introuvable(s)");
 
-      setStatus(
-        "Relances : " + (parts.length ? parts.join(" · ") : "aucun envoi"),
-        data.failed || data.invalidEmail || data.notFound ? "error" : "success"
-      );
+      var summaryMessage = "Relances : " + (parts.length ? parts.join(" · ") : "aucun envoi");
+      var summaryKind = data.failed || data.invalidEmail || data.notFound ? "error" : "success";
 
       loadedKey = "";
       await loadPayments(true);
+      setStatus(summaryMessage, summaryKind);
     } catch (error) {
       if (error.message === "mail_not_configured") {
         setStatus("Le mot de passe spécifique à l’app Apple n’est pas encore configuré dans Cloudflare.", "error");
