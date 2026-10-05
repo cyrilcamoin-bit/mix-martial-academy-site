@@ -4037,6 +4037,131 @@ p {
 }
 
 
+/* Paiements admin — tenir sur un seul écran desktop */
+@media (min-width: 1100px) {
+  .admin-club-shell {
+    max-width: 1480px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .admin-payments-page .admin-aids-panel {
+    padding: 16px;
+  }
+
+  .admin-payments-page .admin-aids-table-wrap {
+    overflow-x: hidden;
+  }
+
+  .admin-payments-page .admin-aids-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-size: .86rem;
+  }
+
+  .admin-payments-page .admin-aids-table th,
+  .admin-payments-page .admin-aids-table td {
+    min-width: 0;
+    padding: 8px 7px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .admin-payments-page .admin-aids-table th {
+    white-space: nowrap;
+    font-size: .82rem;
+  }
+
+  .admin-payments-table th:nth-child(1),
+  .admin-payments-table td:nth-child(1) { width: 3%; }
+
+  .admin-payments-table th:nth-child(2),
+  .admin-payments-table td:nth-child(2) { width: 9%; }
+
+  .admin-payments-table th:nth-child(3),
+  .admin-payments-table td:nth-child(3) { width: 15%; }
+
+  .admin-payments-table th:nth-child(4),
+  .admin-payments-table td:nth-child(4) { width: 10%; }
+
+  .admin-payments-table th:nth-child(5),
+  .admin-payments-table td:nth-child(5) { width: 17%; }
+
+  .admin-payments-table th:nth-child(6),
+  .admin-payments-table td:nth-child(6) { width: 7%; }
+
+  .admin-payments-table th:nth-child(7),
+  .admin-payments-table td:nth-child(7) { width: 8%; }
+
+  .admin-payments-table th:nth-child(8),
+  .admin-payments-table td:nth-child(8) { width: 10%; }
+
+  .admin-payments-table th:nth-child(9),
+  .admin-payments-table td:nth-child(9) { width: 21%; }
+
+  .admin-payments-table .certificate-row-actions {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .admin-payments-table .certificate-row-actions .button {
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px 8px;
+    font-size: .76rem;
+    line-height: 1.05;
+    white-space: normal;
+  }
+
+  .admin-payments-table .payment-send-mail {
+    grid-column: 1 / -1;
+  }
+
+  .admin-payments-table .payment-sent-badge,
+  .admin-payments-table .payment-refused-badge {
+    min-height: 24px;
+    padding: 2px 7px;
+    font-size: .72rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .admin-payments-history .admin-aids-table th:nth-child(1),
+  .admin-payments-history .admin-aids-table td:nth-child(1) { width: 15%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(2),
+  .admin-payments-history .admin-aids-table td:nth-child(2) { width: 11%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(3),
+  .admin-payments-history .admin-aids-table td:nth-child(3) { width: 19%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(4),
+  .admin-payments-history .admin-aids-table td:nth-child(4) { width: 18%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(5),
+  .admin-payments-history .admin-aids-table td:nth-child(5) { width: 22%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(6),
+  .admin-payments-history .admin-aids-table td:nth-child(6) { width: 8%; }
+
+  .admin-payments-history .admin-aids-table th:nth-child(7),
+  .admin-payments-history .admin-aids-table td:nth-child(7) { width: 7%; }
+
+  .admin-payments-history .admin-aids-table td:nth-child(5) {
+    overflow-wrap: anywhere;
+  }
+
+  .admin-payments-history .payment-sent-badge {
+    min-height: 24px;
+    padding: 2px 7px;
+    font-size: .72rem;
+  }
+}
+
 .admin-payments-history {
   margin-top: 18px;
 }
