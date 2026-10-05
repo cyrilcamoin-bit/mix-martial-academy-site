@@ -355,6 +355,43 @@ async function getPaymentReminder(env, dateValue, paymentId) {
   }
 }
 
+async function listPaymentReminders(env, limit = 100) {
+  if (!storageReady(env)) return [];
+
+  const listed = await env.CERTIFICATES.list({
+    prefix: "payment-reminders/",
+    limit: Math.max(1, Math.min(Number(limit) || 100, 500))
+  });
+
+  const rows = [];
+  for (const object of listed.objects || []) {
+    const match = String(object.key || "").match(/^payment-reminders\/(\d{4}-\d{2}-\d{2})\/([^/]+)\.json$/);
+    if (!match) continue;
+
+    const stored = await env.CERTIFICATES.get(object.key);
+    if (!stored) continue;
+
+    try {
+      const data = JSON.parse(await stored.text());
+      rows.push({
+        date: match[1],
+        paymentId: data.paymentId ?? match[2],
+        orderId: data.orderId ?? null,
+        sentAt: data.sentAt || null,
+        email: data.email || "",
+        payerFirstName: data.payerFirstName || "",
+        payerLastName: data.payerLastName || "",
+        members: Array.isArray(data.members) ? data.members : [],
+        amount: Number(data.amount || 0),
+        status: "sent"
+      });
+    } catch {}
+  }
+
+  rows.sort((a, b) => String(b.sentAt || "").localeCompare(String(a.sentAt || "")));
+  return rows;
+}
+
 function formatDateFr(dateValue) {
   const match = String(dateValue || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match) return String(dateValue || "");
@@ -645,7 +682,10 @@ async function storePaymentReminder(env, dateValue, payment) {
     paymentId: payment.paymentId,
     orderId: payment.orderId,
     email: String(payment?.payer?.email || "").trim(),
-    members: paymentMemberNames(payment)
+    payerFirstName: String(payment?.payer?.firstName || "").trim(),
+    payerLastName: String(payment?.payer?.lastName || "").trim(),
+    members: paymentMemberNames(payment),
+    amount: Number(payment?.amount || 0)
   };
   await env.CERTIFICATES.put(
     paymentReminderKey(dateValue, payment.paymentId),
@@ -1036,6 +1076,18 @@ export default {
             error: publicMailError(error)
           }, 502);
         }
+      }
+
+      if (request.method === "GET" && url.pathname === "/admin/payments/reminders") {
+        if (!storageReady(env)) {
+          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+        }
+        const reminders = await listPaymentReminders(env, url.searchParams.get("limit") || 100);
+        return json(request, {
+          ok: true,
+          total: reminders.length,
+          reminders
+        });
       }
 
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
