@@ -4038,7 +4038,7 @@ p {
 
 
 /* Paiements admin — tenir sur un seul écran desktop */
-@media (min-width: 1100px) {
+@media (min-width: 760px) {
   .admin-club-shell {
     max-width: 1480px;
     padding-left: 20px;
@@ -4057,13 +4057,13 @@ p {
     min-width: 0;
     width: 100%;
     table-layout: fixed;
-    font-size: .86rem;
+    font-size: .80rem;
   }
 
   .admin-payments-page .admin-aids-table th,
   .admin-payments-page .admin-aids-table td {
     min-width: 0;
-    padding: 8px 7px;
+    padding: 7px 6px;
     line-height: 1.35;
     overflow-wrap: anywhere;
     word-break: normal;
@@ -4071,7 +4071,7 @@ p {
 
   .admin-payments-page .admin-aids-table th {
     white-space: nowrap;
-    font-size: .82rem;
+    font-size: .76rem;
   }
 
   .admin-payments-table th:nth-child(1),
@@ -4151,8 +4151,17 @@ p {
   .admin-payments-history .admin-aids-table th:nth-child(7),
   .admin-payments-history .admin-aids-table td:nth-child(7) { width: 7%; }
 
-  .admin-payments-history .admin-aids-table td:nth-child(5) {
+  .admin-payments-history .admin-aids-table td:nth-child(1),
+  .admin-payments-history .admin-aids-table td:nth-child(2),
+  .admin-payments-history .admin-aids-table td:nth-child(5),
+  .admin-payments-history .admin-aids-table td:nth-child(6),
+  .admin-payments-history .admin-aids-table td:nth-child(7) {
     overflow-wrap: anywhere;
+  }
+
+  .admin-payments-history .admin-aids-table th,
+  .admin-payments-history .admin-aids-table td {
+    white-space: normal;
   }
 
   .admin-payments-history .payment-sent-badge {
