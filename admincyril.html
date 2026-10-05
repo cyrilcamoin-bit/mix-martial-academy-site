@@ -28,7 +28,7 @@
   <script src="js/adminClub.js?v=20261005-admin-payments-v1" defer></script>
   <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
   <script src="js/adminCertificates.js?v=20260922-certificats-v3" defer></script>
-  <script src="js/adminPayments.js?v=20261005-icloud-smtp-diag-v1" defer></script>
+  <script src="js/adminPayments.js?v=20261005-reminder-history-v1" defer></script>
 </head>
 <body class="admin-aids-page admin-club-page">
   <main class="admin-club-shell">
@@ -263,6 +263,35 @@
             </thead>
             <tbody id="payments-refused-body">
               <tr><td colspan="9" class="admin-aids-empty">Déverrouillez l’administration puis lancez la recherche.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-aids-panel admin-payments-history">
+        <div class="admin-payments-history-head">
+          <div>
+            <p class="card-kicker">Historique</p>
+            <h3>Relances envoyées</h3>
+            <p>Journal interne des messages réellement envoyés depuis l’adresse iCloud du club.</p>
+          </div>
+          <button id="payments-history-refresh" class="button button-outline" type="button">Actualiser l’historique</button>
+        </div>
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table">
+            <thead>
+              <tr>
+                <th>Envoyé le</th>
+                <th>Échéance</th>
+                <th>Adhérent(s)</th>
+                <th>Payeur</th>
+                <th>Destinataire</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="payments-history-body">
+              <tr><td colspan="7" class="admin-aids-empty">Aucune relance chargée.</td></tr>
             </tbody>
           </table>
         </div>
