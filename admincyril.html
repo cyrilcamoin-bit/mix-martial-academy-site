@@ -25,9 +25,10 @@
   <title>Administration du club — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="css/style.css?v=20260922-admin-club-v2">
-  <script src="js/adminClub.js?v=20260922-admin-club-v2" defer></script>
+  <script src="js/adminClub.js?v=20261005-admin-payments-v1" defer></script>
   <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
   <script src="js/adminCertificates.js?v=20260922-certificats-v3" defer></script>
+  <script src="js/adminPayments.js?v=20261005-refused-v1" defer></script>
 </head>
 <body class="admin-aids-page admin-club-page">
   <main class="admin-club-shell">
@@ -44,6 +45,7 @@
       <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">Vue d'ensemble</button>
       <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
       <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
+      <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected disabled>Échéances refusées</button>
     </nav>
 
     <section id="admin-club-access" class="admin-club-access-card">
@@ -85,6 +87,16 @@
             <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
           </div>
           <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
+        </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">!</div>
+          <div>
+            <p class="card-kicker">HelloAsso</p>
+            <h3>Échéances refusées</h3>
+            <p>Repérez les paiements refusés par date, retrouvez le payeur, l’adhérent et l’adresse e-mail, puis préparez la relance.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="paiements" data-admin-protected disabled>Voir les refus</button>
         </article>
       </div>
 
@@ -193,6 +205,55 @@
           </table>
         </div>
       </div>
+    </section>
+
+    <section id="admin-club-paiements" class="admin-club-view admin-payments-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">HelloAsso</p>
+          <h2>Échéances refusées</h2>
+          <p>Recherche sécurisée dans la campagne Adhésion MMA 2026 - 2027.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <section class="admin-aids-panel admin-payments-controls">
+        <div>
+          <label for="payments-refused-date">Date de l’échéance</label>
+          <input id="payments-refused-date" type="date" value="2026-10-05">
+        </div>
+        <button id="payments-refused-load" class="button" type="button">Rechercher les refus</button>
+        <p class="note">HelloAsso envoie automatiquement au payeur un e-mail de régularisation après le refus d’une échéance.</p>
+      </section>
+
+      <div id="payments-refused-status" class="admin-status" hidden></div>
+
+      <section class="admin-aids-metrics" aria-label="Résumé des échéances refusées">
+        <div class="admin-aids-metric"><span>Refus</span><strong id="payments-refused-count">0</strong></div>
+        <div class="admin-aids-metric"><span>Montant concerné</span><strong id="payments-refused-total">0,00 €</strong></div>
+      </section>
+
+      <section class="admin-aids-panel">
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table admin-payments-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Adhérent(s)</th>
+                <th>Payeur</th>
+                <th>E-mail</th>
+                <th>Échéance</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Relance</th>
+              </tr>
+            </thead>
+            <tbody id="payments-refused-body">
+              <tr><td colspan="8" class="admin-aids-empty">Déverrouillez l’administration puis lancez la recherche.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
   </main>
 </body>
