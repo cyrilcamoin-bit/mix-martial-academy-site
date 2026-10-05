@@ -1,0 +1,33 @@
+name: Validate iCloud reminders
+
+on:
+  push:
+    branches:
+      - codex/icloud-payment-reminders-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check browser JavaScript syntax
+        run: node --check js/adminPayments.js
+
+      - name: Check Worker JavaScript syntax
+        run: node --check backend/helloasso-worker/src/worker.js
+
+      - name: Install Worker dependencies
+        working-directory: backend/helloasso-worker
+        run: npm install --no-audit --no-fund
+
+      - name: Build Worker without deploying
+        working-directory: backend/helloasso-worker
+        run: npx wrangler deploy --dry-run --outdir /tmp/mma-worker-build
