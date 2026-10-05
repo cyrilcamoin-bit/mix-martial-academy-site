@@ -13,6 +13,7 @@
   var tbody = document.getElementById("payments-refused-body");
   var selectAll = document.getElementById("payments-refused-select-all");
   var sendSelected = document.getElementById("payments-refused-send-selected");
+  var testMailButton = document.getElementById("payments-mail-test");
   var mailState = document.getElementById("payments-mail-state");
   var loadedKey = "";
   var currentData = null;
@@ -214,6 +215,7 @@
       if (!response.ok || !data.ok) throw new Error(data.error || "mail_status_failed");
 
       mailConfigured = Boolean(data.configured);
+      testMailButton.disabled = !mailConfigured;
       if (mailConfigured) {
         setMailState("Envoi direct actif depuis " + (data.sender || "l’adresse iCloud du club") + ".", "success");
       } else {
@@ -225,6 +227,46 @@
       mailConfigured = false;
       setMailState("Impossible de vérifier la configuration iCloud.", "error");
       updateBulkButton();
+    }
+  }
+
+  async function sendTestMail() {
+    var token = adminToken();
+    if (!token || !mailConfigured) return;
+
+    var confirmed = window.confirm(
+      "Envoyer un e-mail de test à mixmartialacademy@icloud.com ?\n\n" +
+      "Aucun adhérent ne sera contacté."
+    );
+    if (!confirmed) return;
+
+    testMailButton.disabled = true;
+    setStatus("Envoi du message de test iCloud…", "");
+
+    try {
+      var response = await fetch(API_BASE + "/admin/mail/test", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json"
+        }
+      });
+      var data = await response.json().catch(function () { return {}; });
+
+      if (response.status === 401) throw new Error("unauthorized");
+      if (!response.ok || !data.ok) throw new Error(data.error || "test_failed");
+
+      setStatus("E-mail de test envoyé à " + (data.recipient || "l’adresse iCloud du club") + ".", "success");
+    } catch (error) {
+      if (error.message === "mail_not_configured") {
+        setStatus("Le mot de passe spécifique à l’app Apple n’est pas encore configuré dans Cloudflare.", "error");
+      } else if (error.message === "unauthorized") {
+        setStatus("Votre accès administrateur a expiré.", "error");
+      } else {
+        setStatus("Échec du test iCloud. Vérifiez le mot de passe spécifique à l’app Apple.", "error");
+      }
+    } finally {
+      testMailButton.disabled = !mailConfigured;
     }
   }
 
@@ -365,6 +407,8 @@
   sendSelected.addEventListener("click", function () {
     sendPayments(selectedPaymentIds());
   });
+
+  testMailButton.addEventListener("click", sendTestMail);
 
   document.querySelectorAll('[data-admin-view="paiements"]').forEach(function (button) {
     button.addEventListener("click", function () {
