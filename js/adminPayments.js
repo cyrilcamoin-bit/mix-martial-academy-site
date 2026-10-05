@@ -11,7 +11,12 @@
   var countBox = document.getElementById("payments-refused-count");
   var totalBox = document.getElementById("payments-refused-total");
   var tbody = document.getElementById("payments-refused-body");
+  var selectAll = document.getElementById("payments-refused-select-all");
+  var sendSelected = document.getElementById("payments-refused-send-selected");
+  var mailState = document.getElementById("payments-mail-state");
   var loadedKey = "";
+  var currentData = null;
+  var mailConfigured = false;
 
   function adminToken() {
     return sessionStorage.getItem("mma_cert_admin_token") || "";
@@ -69,6 +74,11 @@
     statusBox.className = "admin-status" + (kind ? " is-" + kind : "");
   }
 
+  function setMailState(message, kind) {
+    mailState.textContent = message || "";
+    mailState.className = "payment-mail-state" + (kind ? " is-" + kind : "");
+  }
+
   function emailTemplate(payment, selectedDate) {
     var payer = payment.payer || {};
     var firstName = String(payer.firstName || "").trim();
@@ -96,33 +106,70 @@
     };
   }
 
+  function selectedPaymentIds() {
+    return Array.from(tbody.querySelectorAll(".payment-row-check:checked")).map(function (checkbox) {
+      return checkbox.value;
+    });
+  }
+
+  function updateBulkButton() {
+    if (!sendSelected) return;
+    var count = selectedPaymentIds().length;
+    sendSelected.disabled = !mailConfigured || count === 0;
+    sendSelected.textContent = count > 0
+      ? "Envoyer " + count + " relance" + (count > 1 ? "s" : "")
+      : "Envoyer les relances sélectionnées";
+  }
+
   function render(data) {
+    currentData = data;
     var payments = Array.isArray(data.payments) ? data.payments : [];
     countBox.textContent = String(payments.length);
     totalBox.textContent = euro(data.totalAmount || 0);
+    selectAll.checked = false;
 
     if (!payments.length) {
-      tbody.innerHTML = "<tr><td colspan='8' class='admin-aids-empty'>Aucune échéance refusée pour cette date.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='9' class='admin-aids-empty'>Aucune échéance refusée pour cette date.</td></tr>";
+      updateBulkButton();
       return;
     }
 
     tbody.innerHTML = payments.map(function (payment, index) {
       var payer = payment.payer || {};
       var email = String(payer.email || "").trim();
+      var alreadySent = Boolean(payment.reminder && payment.reminder.sentAt);
+      var selectable = Boolean(email) && !alreadySent;
+      var reminderStatus = alreadySent
+        ? "<span class='payment-sent-badge'>Envoyé le " + escapeHtml(dateTimeFr(payment.reminder.sentAt)) + "</span>"
+        : "<span class='payment-refused-badge'>À relancer</span>";
+
       return "<tr>" +
+        "<td><input class='payment-row-check' type='checkbox' value='" + escapeHtml(payment.paymentId) + "' " + (selectable ? "" : "disabled") + " aria-label='Sélectionner cette relance'></td>" +
         "<td>" + escapeHtml(dateTimeFr(payment.paymentDate)) + "</td>" +
         "<td><strong>" + escapeHtml(memberNames(payment)) + "</strong></td>" +
         "<td>" + escapeHtml(payerName(payment)) + "</td>" +
         "<td>" + (email ? "<a href='mailto:" + encodeURIComponent(email) + "'>" + escapeHtml(email) + "</a>" : "—") + "</td>" +
         "<td>" + escapeHtml(payment.installmentNumber == null ? "—" : String(payment.installmentNumber)) + "</td>" +
         "<td>" + escapeHtml(euro(payment.amount)) + "</td>" +
-        "<td><span class='payment-refused-badge'>Refusé</span></td>" +
+        "<td>" + reminderStatus + "</td>" +
         "<td><div class='certificate-row-actions'>" +
-          "<button class='button button-small button-outline payment-copy-mail' data-index='" + index + "' type='button' " + (email ? "" : "disabled") + ">Copier la relance</button>" +
-          "<a class='button button-small payment-open-mail' data-index='" + index + "' href='#' " + (email ? "" : "aria-disabled='true'") + ">Préparer l’e-mail</a>" +
+          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Déjà envoyé" : "Envoyer") + "</button>" +
+          "<button class='button button-small button-outline payment-copy-mail' data-index='" + index + "' type='button' " + (email ? "" : "disabled") + ">Copier</button>" +
+          "<a class='button button-small button-outline payment-open-mail' data-index='" + index + "' href='#' " + (email ? "" : "aria-disabled='true'") + ">Préparer</a>" +
         "</div></td>" +
       "</tr>";
     }).join("");
+
+    tbody.querySelectorAll(".payment-row-check").forEach(function (checkbox) {
+      checkbox.addEventListener("change", updateBulkButton);
+    });
+
+    tbody.querySelectorAll(".payment-send-mail").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var payment = payments[Number(button.getAttribute("data-index"))];
+        sendPayments([String(payment.paymentId)]);
+      });
+    });
 
     tbody.querySelectorAll(".payment-copy-mail").forEach(function (button) {
       button.addEventListener("click", async function () {
@@ -149,6 +196,108 @@
         "?subject=" + encodeURIComponent(template.subject) +
         "&body=" + encodeURIComponent(template.body);
     });
+
+    updateBulkButton();
+  }
+
+  async function loadMailStatus() {
+    var token = adminToken();
+    if (!token) return;
+
+    setMailState("Vérification de l’envoi iCloud…", "");
+    try {
+      var response = await fetch(API_BASE + "/admin/mail/status", {
+        headers: { "Authorization": "Bearer " + token },
+        cache: "no-store"
+      });
+      var data = await response.json().catch(function () { return {}; });
+      if (!response.ok || !data.ok) throw new Error(data.error || "mail_status_failed");
+
+      mailConfigured = Boolean(data.configured);
+      if (mailConfigured) {
+        setMailState("Envoi direct actif depuis " + (data.sender || "l’adresse iCloud du club") + ".", "success");
+      } else {
+        setMailState("Envoi direct iCloud à configurer : le mot de passe spécifique à l’app Apple manque dans Cloudflare.", "warning");
+      }
+
+      if (currentData) render(currentData);
+    } catch (error) {
+      mailConfigured = false;
+      setMailState("Impossible de vérifier la configuration iCloud.", "error");
+      updateBulkButton();
+    }
+  }
+
+  async function sendPayments(paymentIds) {
+    var token = adminToken();
+    var date = String(dateInput.value || "").trim();
+    if (!token || !paymentIds.length) return;
+    if (!mailConfigured) {
+      setStatus("L’envoi direct iCloud n’est pas encore configuré.", "error");
+      return;
+    }
+
+    var matching = (currentData && Array.isArray(currentData.payments) ? currentData.payments : []).filter(function (payment) {
+      return paymentIds.includes(String(payment.paymentId));
+    });
+    var recipients = matching.map(function (payment) {
+      return payerName(payment) + (memberNames(payment) !== "—" ? " — " + memberNames(payment) : "");
+    });
+
+    var confirmed = window.confirm(
+      "Envoyer " + paymentIds.length + " relance" + (paymentIds.length > 1 ? "s" : "") +
+      " depuis mixmartialacademy@icloud.com ?\n\n" +
+      recipients.join("\n") +
+      "\n\nChaque destinataire recevra un message individuel et personnalisé."
+    );
+    if (!confirmed) return;
+
+    sendSelected.disabled = true;
+    tbody.querySelectorAll(".payment-send-mail").forEach(function (button) { button.disabled = true; });
+    setStatus("Envoi des relances depuis iCloud…", "");
+
+    try {
+      var response = await fetch(API_BASE + "/admin/payments/refused/send", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          date: date,
+          paymentIds: paymentIds
+        })
+      });
+      var data = await response.json().catch(function () { return {}; });
+
+      if (response.status === 401) throw new Error("unauthorized");
+      if (!response.ok || !data.ok) throw new Error(data.error || "send_failed");
+
+      var parts = [];
+      if (data.sent) parts.push(data.sent + " envoyée(s)");
+      if (data.alreadySent) parts.push(data.alreadySent + " déjà envoyée(s)");
+      if (data.invalidEmail) parts.push(data.invalidEmail + " e-mail invalide");
+      if (data.failed) parts.push(data.failed + " échec(s)");
+      if (data.notFound) parts.push(data.notFound + " introuvable(s)");
+
+      setStatus(
+        "Relances : " + (parts.length ? parts.join(" · ") : "aucun envoi"),
+        data.failed || data.invalidEmail || data.notFound ? "error" : "success"
+      );
+
+      loadedKey = "";
+      await loadPayments(true);
+    } catch (error) {
+      if (error.message === "mail_not_configured") {
+        setStatus("Le mot de passe spécifique à l’app Apple n’est pas encore configuré dans Cloudflare.", "error");
+      } else if (error.message === "unauthorized") {
+        setStatus("Votre accès administrateur a expiré.", "error");
+      } else {
+        setStatus("Impossible d’envoyer les relances pour le moment.", "error");
+      }
+    } finally {
+      updateBulkButton();
+    }
   }
 
   async function loadPayments(force) {
@@ -199,11 +348,31 @@
   }
 
   loadButton.addEventListener("click", function () { loadPayments(true); });
-  dateInput.addEventListener("change", function () { loadedKey = ""; });
+
+  dateInput.addEventListener("change", function () {
+    loadedKey = "";
+    currentData = null;
+    selectAll.checked = false;
+    updateBulkButton();
+  });
+
+  selectAll.addEventListener("change", function () {
+    tbody.querySelectorAll(".payment-row-check:not(:disabled)").forEach(function (checkbox) {
+      checkbox.checked = selectAll.checked;
+    });
+    updateBulkButton();
+  });
+
+  sendSelected.addEventListener("click", function () {
+    sendPayments(selectedPaymentIds());
+  });
 
   document.querySelectorAll('[data-admin-view="paiements"]').forEach(function (button) {
     button.addEventListener("click", function () {
-      window.setTimeout(function () { loadPayments(false); }, 250);
+      window.setTimeout(function () {
+        loadMailStatus();
+        loadPayments(false);
+      }, 250);
     });
   });
 })();
