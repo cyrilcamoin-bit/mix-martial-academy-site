@@ -1,5 +1,5 @@
 {
-  "version": "20261005-admin-v1",
+  "version": "20261005-icloud-reminders-v1",
   "deployedFrom": "main",
-  "note": "Mise à jour de l’administration du club."
+  "note": "Ajout des relances personnalisées iCloud pour les échéances HelloAsso refusées."
 }
