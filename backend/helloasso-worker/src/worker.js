@@ -460,6 +460,15 @@ function smtpExpect(response, allowedCodes, step) {
   }
 }
 
+function publicMailError(error) {
+  const raw = String(error?.message || error || "mail_failed");
+  if (/^smtp_[a-z0-9_]+$/i.test(raw)) return raw;
+  if (raw === "mail_not_configured" || raw === "invalid_recipient") return raw;
+  if (/tls/i.test(raw)) return "smtp_tls_failed";
+  if (/socket|connect|network|tcp/i.test(raw)) return "smtp_connection_failed";
+  return "smtp_unknown_failure";
+}
+
 async function sendIcloudMail(env, mail, paymentId) {
   if (!mailConfigured(env)) throw new Error("mail_not_configured");
   if (!validEmail(mail.recipient)) throw new Error("invalid_recipient");
@@ -905,25 +914,33 @@ export default {
           return json(request, { ok: false, error: "mail_not_configured" }, 503);
         }
 
-        await sendIcloudMail(env, {
-          recipient: ICLOUD_SMTP_USER,
-          subject: "Test envoi iCloud — Mix Martial Academy",
-          body: [
-            "Bonjour,",
-            "",
-            "Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.",
-            "",
-            "La connexion SMTP iCloud du club fonctionne correctement.",
-            "",
-            "Mix Martial Academy — Le Rove"
-          ].join("\n")
-        }, `test-${Date.now()}`);
+        try {
+          await sendIcloudMail(env, {
+            recipient: ICLOUD_SMTP_USER,
+            subject: "Test envoi iCloud — Mix Martial Academy",
+            body: [
+              "Bonjour,",
+              "",
+              "Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.",
+              "",
+              "La connexion SMTP iCloud du club fonctionne correctement.",
+              "",
+              "Mix Martial Academy — Le Rove"
+            ].join("\n")
+          }, `test-${Date.now()}`);
 
-        return json(request, {
-          ok: true,
-          sent: true,
-          recipient: ICLOUD_SMTP_USER
-        });
+          return json(request, {
+            ok: true,
+            sent: true,
+            recipient: ICLOUD_SMTP_USER
+          });
+        } catch (error) {
+          console.error("iCloud SMTP test failed", error);
+          return json(request, {
+            ok: false,
+            error: publicMailError(error)
+          }, 502);
+        }
       }
 
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
@@ -1001,7 +1018,8 @@ export default {
             console.error("Unable to send iCloud payment reminder", paymentId, error);
             results.push({
               paymentId,
-              status: "failed"
+              status: "failed",
+              error: publicMailError(error)
             });
           }
         }
