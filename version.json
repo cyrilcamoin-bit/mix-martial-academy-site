@@ -1,5 +1,5 @@
 {
-  "version": "20261005-icloud-reminders-v1",
+  "version": "20261005-icloud-smtp-diag-v1",
   "deployedFrom": "main",
-  "note": "Ajout des relances personnalisées iCloud pour les échéances HelloAsso refusées."
+  "note": "Diagnostic précis de l’envoi SMTP iCloud."
 }
