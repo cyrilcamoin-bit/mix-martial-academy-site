@@ -3947,6 +3947,13 @@ p {
   min-width: 0;
 }
 
+.admin-payments-mail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .admin-payments-mailbar .card-kicker {
   margin-bottom: .45rem;
 }
@@ -4018,6 +4025,10 @@ p {
   .admin-payments-mailbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .admin-payments-mail-actions {
+    width: 100%;
   }
 
   .admin-payments-mailbar .button {
