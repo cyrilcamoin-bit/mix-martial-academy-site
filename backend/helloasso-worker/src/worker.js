@@ -182,6 +182,144 @@ function matches(member, body) {
   );
 }
 
+
+function nextIsoDate(dateValue) {
+  const match = String(dateValue || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return "";
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function parisOffsetForDate(dateValue) {
+  const reference = new Date(`${dateValue}T12:00:00Z`);
+  if (Number.isNaN(reference.getTime())) return "+01:00";
+  try {
+    const part = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Europe/Paris",
+      timeZoneName: "longOffset",
+      year: "numeric"
+    }).formatToParts(reference).find((entry) => entry.type === "timeZoneName");
+    const value = String(part?.value || "").replace(/^GMT/, "");
+    return /^[+-]\d{2}:\d{2}$/.test(value) ? value : "+01:00";
+  } catch {
+    return "+01:00";
+  }
+}
+
+function parisDateRange(dateValue) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateValue || ""))) return null;
+  const nextDate = nextIsoDate(dateValue);
+  if (!nextDate) return null;
+  return {
+    from: `${dateValue}T00:00:00${parisOffsetForDate(dateValue)}`,
+    to: `${nextDate}T00:00:00${parisOffsetForDate(nextDate)}`
+  };
+}
+
+async function fetchHelloAssoJson(url, token, label) {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json"
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`${label} ${response.status}`);
+  }
+  return response.json();
+}
+
+async function fetchRefusedPayments(env, dateValue) {
+  const range = parisDateRange(dateValue);
+  if (!range) throw new Error("invalid_date");
+
+  const token = await getAccessToken(env);
+  const payments = [];
+  const pageSize = 100;
+
+  for (let pageIndex = 1; pageIndex <= 50; pageIndex += 1) {
+    const url = new URL(
+      `${HELLOASSO_API}/v5/organizations/${ORGANIZATION_SLUG}/forms/${FORM_TYPE}/${FORM_SLUG}/payments`
+    );
+    url.searchParams.set("from", range.from);
+    url.searchParams.set("to", range.to);
+    url.searchParams.append("states", "Refused");
+    url.searchParams.set("pageIndex", String(pageIndex));
+    url.searchParams.set("pageSize", String(pageSize));
+    url.searchParams.set("sortField", "Date");
+    url.searchParams.set("sortOrder", "Asc");
+
+    const payload = await fetchHelloAssoJson(url, token, "HelloAsso payments");
+    const page = Array.isArray(payload?.data) ? payload.data : [];
+    payments.push(...page);
+
+    const totalPages = Number(payload?.pagination?.totalPages || 0);
+    if (page.length < pageSize || (totalPages && pageIndex >= totalPages)) break;
+  }
+
+  const orderCache = new Map();
+
+  async function getOrder(orderId) {
+    if (!orderId) return null;
+    if (orderCache.has(String(orderId))) return orderCache.get(String(orderId));
+
+    const url = new URL(`${HELLOASSO_API}/v5/orders/${encodeURIComponent(orderId)}`);
+    url.searchParams.set("withFormData", "true");
+
+    try {
+      const order = await fetchHelloAssoJson(url, token, "HelloAsso order");
+      orderCache.set(String(orderId), order);
+      return order;
+    } catch (error) {
+      console.error("Unable to load HelloAsso order", orderId, error);
+      orderCache.set(String(orderId), null);
+      return null;
+    }
+  }
+
+  const rows = [];
+  for (const payment of payments) {
+    const orderId = payment?.order?.id ?? null;
+    const order = await getOrder(orderId);
+    const payer = payment?.payer || order?.payer || {};
+    const orderItems = Array.isArray(order?.items) ? order.items : [];
+
+    const members = [];
+    const memberKeys = new Set();
+
+    for (const item of orderItems) {
+      if (String(item?.type || "").toLowerCase() !== "membership") continue;
+      const firstName = String(item?.user?.firstName || "").trim();
+      const lastName = String(item?.user?.lastName || "").trim();
+      const itemId = item?.id ?? null;
+      if (!firstName && !lastName) continue;
+      const key = `${normalizeText(lastName)}|${normalizeText(firstName)}|${itemId ?? ""}`;
+      if (memberKeys.has(key)) continue;
+      memberKeys.add(key);
+      members.push({ itemId, firstName, lastName });
+    }
+
+    rows.push({
+      paymentId: payment?.id ?? null,
+      orderId,
+      paymentDate: payment?.date || payment?.meta?.updatedAt || null,
+      installmentNumber: payment?.installmentNumber ?? null,
+      amount: Number(payment?.amount || 0),
+      state: String(payment?.state || ""),
+      payer: {
+        firstName: String(payer?.firstName || "").trim(),
+        lastName: String(payer?.lastName || "").trim(),
+        email: String(payer?.email || "").trim()
+      },
+      members,
+      itemNames: orderItems.map((item) => String(item?.name || "").trim()).filter(Boolean)
+    });
+  }
+
+  return rows;
+}
+
 function storageReady(env) {
   return Boolean(env.CERTIFICATES && typeof env.CERTIFICATES.put === "function");
 }
@@ -415,7 +553,8 @@ export default {
           service: "mma-lerove-api",
           helloAssoCampaign: FORM_SLUG,
           certificateStorage: storageReady(env),
-          certificateDeletion: true
+          certificateDeletion: true,
+          refusedPayments: true
         });
       }
 
@@ -499,9 +638,26 @@ export default {
         if (!isAdmin(request, env)) {
           return json(request, { ok: false, error: "unauthorized" }, 401);
         }
-        if (!storageReady(env)) {
-          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+      }
+
+      if (url.pathname.startsWith("/admin/certificates/") && !storageReady(env)) {
+        return json(request, { ok: false, error: "storage_not_configured" }, 503);
+      }
+
+      if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
+        const date = String(url.searchParams.get("date") || "").trim();
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          return json(request, { ok: false, error: "invalid_date" }, 400);
         }
+
+        const payments = await fetchRefusedPayments(env, date);
+        return json(request, {
+          ok: true,
+          date,
+          total: payments.length,
+          totalAmount: payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
+          payments
+        });
       }
 
       if (request.method === "GET" && url.pathname === "/admin/certificates/status") {
