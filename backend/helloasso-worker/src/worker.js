@@ -900,6 +900,32 @@ export default {
         });
       }
 
+      if (request.method === "POST" && url.pathname === "/admin/mail/test") {
+        if (!mailConfigured(env)) {
+          return json(request, { ok: false, error: "mail_not_configured" }, 503);
+        }
+
+        await sendIcloudMail(env, {
+          recipient: ICLOUD_SMTP_USER,
+          subject: "Test envoi iCloud — Mix Martial Academy",
+          body: [
+            "Bonjour,",
+            "",
+            "Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.",
+            "",
+            "La connexion SMTP iCloud du club fonctionne correctement.",
+            "",
+            "Mix Martial Academy — Le Rove"
+          ].join("\n")
+        }, `test-${Date.now()}`);
+
+        return json(request, {
+          ok: true,
+          sent: true,
+          recipient: ICLOUD_SMTP_USER
+        });
+      }
+
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
         const date = String(url.searchParams.get("date") || "").trim();
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
