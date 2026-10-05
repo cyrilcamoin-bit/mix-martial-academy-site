@@ -15,6 +15,8 @@
   var sendSelected = document.getElementById("payments-refused-send-selected");
   var testMailButton = document.getElementById("payments-mail-test");
   var mailState = document.getElementById("payments-mail-state");
+  var historyRefresh = document.getElementById("payments-history-refresh");
+  var historyBody = document.getElementById("payments-history-body");
   var loadedKey = "";
   var currentData = null;
   var mailConfigured = false;
@@ -348,6 +350,7 @@
 
       loadedKey = "";
       await loadPayments(true);
+      await loadHistory();
       setStatus(summaryMessage, summaryKind);
     } catch (error) {
       if (error.message === "mail_not_configured") {
@@ -359,6 +362,47 @@
       }
     } finally {
       updateBulkButton();
+    }
+  }
+
+  async function loadHistory() {
+    var token = adminToken();
+    if (!token || !historyBody) return;
+
+    historyRefresh.disabled = true;
+    try {
+      var response = await fetch(API_BASE + "/admin/payments/reminders?limit=100", {
+        headers: { "Authorization": "Bearer " + token },
+        cache: "no-store"
+      });
+      var data = await response.json().catch(function () { return {}; });
+
+      if (response.status === 401) throw new Error("unauthorized");
+      if (!response.ok || !data.ok) throw new Error(data.error || "history_failed");
+
+      var reminders = Array.isArray(data.reminders) ? data.reminders : [];
+      if (!reminders.length) {
+        historyBody.innerHTML = "<tr><td colspan='7' class='admin-aids-empty'>Aucune relance envoyée pour le moment.</td></tr>";
+        return;
+      }
+
+      historyBody.innerHTML = reminders.map(function (entry) {
+        var payer = [entry.payerFirstName, entry.payerLastName].filter(Boolean).join(" ").trim() || "—";
+        var members = Array.isArray(entry.members) && entry.members.length ? entry.members.join(", ") : "—";
+        return "<tr>" +
+          "<td>" + escapeHtml(dateTimeFr(entry.sentAt)) + "</td>" +
+          "<td>" + escapeHtml(dateFr(entry.date)) + "</td>" +
+          "<td><strong>" + escapeHtml(members) + "</strong></td>" +
+          "<td>" + escapeHtml(payer) + "</td>" +
+          "<td>" + escapeHtml(entry.email || "—") + "</td>" +
+          "<td>" + escapeHtml(euro(entry.amount || 0)) + "</td>" +
+          "<td><span class='payment-sent-badge'>Envoyé</span></td>" +
+        "</tr>";
+      }).join("");
+    } catch (error) {
+      historyBody.innerHTML = "<tr><td colspan='7' class='admin-aids-empty'>Impossible de charger l’historique pour le moment.</td></tr>";
+    } finally {
+      historyRefresh.disabled = false;
     }
   }
 
@@ -431,11 +475,14 @@
 
   testMailButton.addEventListener("click", sendTestMail);
 
+  historyRefresh.addEventListener("click", loadHistory);
+
   document.querySelectorAll('[data-admin-view="paiements"]').forEach(function (button) {
     button.addEventListener("click", function () {
       window.setTimeout(function () {
         loadMailStatus();
         loadPayments(false);
+        loadHistory();
       }, 250);
     });
   });
