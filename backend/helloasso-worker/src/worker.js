@@ -999,28 +999,38 @@ export default {
         }
 
         try {
-          await sendIcloudMail(env, {
-            recipient: ICLOUD_SMTP_FROM,
-            subject: "Test envoi iCloud — Mix Martial Academy",
-            body: [
-              "Bonjour,",
-              "",
-              "Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.",
-              "",
-              "La connexion SMTP iCloud du club fonctionne correctement.",
-              "",
-              "Mix Martial Academy — Le Rove"
-            ].join("\n"),
-            htmlBody: `<!doctype html><html lang="fr"><body style="margin:0;padding:24px;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;color:#171717;"><div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e6e6;"><div style="background:#0b0b0d;padding:24px;text-align:center;"><img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;margin:0 auto;width:130px;max-width:100%;height:auto;border:0;"></div><div style="height:4px;background:#c90f13;"></div><div style="padding:28px;"><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">Bonjour,</p><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.</p><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">La connexion SMTP iCloud du club fonctionne correctement.</p><p style="font-size:16px;line-height:1.6;margin:0;"><strong>Mix Martial Academy — Le Rove</strong></p></div></div></body></html>`
-          }, `test-${Date.now()}`);
+          const fakePayment = {
+            paymentId: `test-${Date.now()}`,
+            payer: {
+              firstName: "Cyril",
+              lastName: "TEST",
+              email: ICLOUD_SMTP_FROM
+            },
+            members: [
+              {
+                firstName: "Lucas",
+                lastName: "MARTIN"
+              }
+            ]
+          };
+
+          const mail = buildPaymentReminderMail(fakePayment, "2026-10-05");
+          mail.recipient = ICLOUD_SMTP_FROM;
+
+          await sendIcloudMail(env, mail, fakePayment.paymentId);
 
           return json(request, {
             ok: true,
             sent: true,
-            recipient: ICLOUD_SMTP_FROM
+            recipient: ICLOUD_SMTP_FROM,
+            preview: {
+              payerFirstName: fakePayment.payer.firstName,
+              memberName: "Lucas MARTIN",
+              date: "05/10/2026"
+            }
           });
         } catch (error) {
-          console.error("iCloud SMTP test failed", error);
+          console.error("iCloud SMTP realistic reminder test failed", error);
           return json(request, {
             ok: false,
             error: publicMailError(error)
