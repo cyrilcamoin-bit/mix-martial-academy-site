@@ -9,6 +9,7 @@ const ICLOUD_SMTP_HOST = "smtp.mail.me.com";
 const ICLOUD_SMTP_PORT = 587;
 const ICLOUD_SMTP_AUTH_USER = "cyril.camoin@icloud.com";
 const ICLOUD_SMTP_FROM = "mixmartialacademy@icloud.com";
+const CLUB_LOGO_URL = "https://www.mma-lerove.fr/assets/logo/logo-mma-2627-officiel.png";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -367,6 +368,15 @@ function paymentMemberNames(payment) {
     .filter(Boolean);
 }
 
+function escapeMailHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function buildPaymentReminderMail(payment, dateValue) {
   const payer = payment?.payer || {};
   const payerFirstName = String(payer.firstName || "").trim();
@@ -391,7 +401,54 @@ function buildPaymentReminderMail(payment, dateValue) {
     "Mix Martial Academy — Le Rove"
   ].join("\n");
 
-  return { recipient, subject, body };
+  const htmlBody = `<!doctype html>
+<html lang="fr">
+  <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;color:#171717;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f4f4;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
+            <tr>
+              <td align="center" style="background:#0b0b0d;padding:24px 20px 18px;">
+                <img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;width:130px;max-width:100%;height:auto;border:0;">
+              </td>
+            </tr>
+            <tr>
+              <td style="height:4px;background:#c90f13;font-size:0;line-height:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:28px 28px 30px;">
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">${escapeMailHtml(intro)}</p>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">
+                  Nous vous informons que l’échéance HelloAsso du <strong>${escapeMailHtml(formatDateFr(dateValue))}</strong>${escapeMailHtml(membership)} a été refusée.
+                </p>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">
+                  HelloAsso a normalement dû vous envoyer un e-mail contenant le lien permettant de régulariser la situation.
+                  Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams,
+                  puis d’effectuer la régularisation dès que possible.
+                </p>
+                <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#555555;">
+                  Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.
+                </p>
+                <p style="margin:0;font-size:16px;line-height:1.6;">
+                  Cordialement,<br>
+                  <strong>Mix Martial Academy — Le Rove</strong>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 28px;background:#111114;color:#d6d6d6;font-size:12px;line-height:1.5;text-align:center;">
+                <a href="https://www.mma-lerove.fr/" style="color:#ffffff;text-decoration:none;">www.mma-lerove.fr</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+  return { recipient, subject, body, htmlBody };
 }
 
 function validEmail(value) {
@@ -527,20 +584,46 @@ async function sendIcloudMail(env, mail, paymentId) {
     smtpExpect(await smtpRead(state), [354], "data");
 
     const messageIdPart = String(paymentId || Date.now()).replace(/[^A-Za-z0-9._-]/g, "");
-    const message = [
+    const headers = [
       `From: =?UTF-8?B?${utf8Base64("Mix Martial Academy — Le Rove")}?= <${ICLOUD_SMTP_FROM}>`,
       `To: <${mail.recipient}>`,
       `Reply-To: <${ICLOUD_SMTP_FROM}>`,
       `Subject: =?UTF-8?B?${utf8Base64(mail.subject)}?=`,
       `Date: ${new Date().toUTCString()}`,
       `Message-ID: <helloasso-${messageIdPart}@mma-lerove.fr>`,
-      "MIME-Version: 1.0",
-      "Content-Type: text/plain; charset=UTF-8",
-      "Content-Transfer-Encoding: base64",
-      "",
-      wrapBase64(mail.body),
-      "."
-    ].join("\r\n");
+      "MIME-Version: 1.0"
+    ];
+
+    let message;
+    if (mail.htmlBody) {
+      const boundary = `mma-alt-${messageIdPart}-${Date.now()}`;
+      message = [
+        ...headers,
+        `Content-Type: multipart/alternative; boundary="${boundary}"`,
+        "",
+        `--${boundary}`,
+        "Content-Type: text/plain; charset=UTF-8",
+        "Content-Transfer-Encoding: base64",
+        "",
+        wrapBase64(mail.body),
+        `--${boundary}`,
+        "Content-Type: text/html; charset=UTF-8",
+        "Content-Transfer-Encoding: base64",
+        "",
+        wrapBase64(mail.htmlBody),
+        `--${boundary}--`,
+        "."
+      ].join("\r\n");
+    } else {
+      message = [
+        ...headers,
+        "Content-Type: text/plain; charset=UTF-8",
+        "Content-Transfer-Encoding: base64",
+        "",
+        wrapBase64(mail.body),
+        "."
+      ].join("\r\n");
+    }
 
     await state.writer.write(state.encoder.encode(message + "\r\n"));
     smtpExpect(await smtpRead(state), [250], "message");
@@ -927,7 +1010,8 @@ export default {
               "La connexion SMTP iCloud du club fonctionne correctement.",
               "",
               "Mix Martial Academy — Le Rove"
-            ].join("\n")
+            ].join("\n"),
+            htmlBody: `<!doctype html><html lang="fr"><body style="margin:0;padding:24px;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;color:#171717;"><div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e6e6;"><div style="background:#0b0b0d;padding:24px;text-align:center;"><img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;margin:0 auto;width:130px;max-width:100%;height:auto;border:0;"></div><div style="height:4px;background:#c90f13;"></div><div style="padding:28px;"><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">Bonjour,</p><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">Ceci est un message de test envoyé automatiquement depuis l’administration de Mix Martial Academy.</p><p style="font-size:16px;line-height:1.6;margin:0 0 18px;">La connexion SMTP iCloud du club fonctionne correctement.</p><p style="font-size:16px;line-height:1.6;margin:0;"><strong>Mix Martial Academy — Le Rove</strong></p></div></div></body></html>`
           }, `test-${Date.now()}`);
 
           return json(request, {
