@@ -7,7 +7,8 @@ const FORM_SLUG = "adhesion-mma-2026-2027";
 const BIRTHDATE_FIELD = "Date de naissance de l'adhérent";
 const ICLOUD_SMTP_HOST = "smtp.mail.me.com";
 const ICLOUD_SMTP_PORT = 587;
-const ICLOUD_SMTP_USER = "mixmartialacademy@icloud.com";
+const ICLOUD_SMTP_AUTH_USER = "cyril.camoin@icloud.com";
+const ICLOUD_SMTP_FROM = "mixmartialacademy@icloud.com";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -504,19 +505,19 @@ async function sendIcloudMail(env, mail, paymentId) {
     const authText = ehlo.text.toUpperCase();
 
     if (authText.includes("AUTH PLAIN")) {
-      const payload = utf8Base64(`\u0000${ICLOUD_SMTP_USER}\u0000${password}`);
+      const payload = utf8Base64(`\u0000${ICLOUD_SMTP_AUTH_USER}\u0000${password}`);
       await smtpWriteLine(state, `AUTH PLAIN ${payload}`);
       smtpExpect(await smtpRead(state), [235], "auth");
     } else {
       await smtpWriteLine(state, "AUTH LOGIN");
       smtpExpect(await smtpRead(state), [334], "auth_login");
-      await smtpWriteLine(state, utf8Base64(ICLOUD_SMTP_USER));
+      await smtpWriteLine(state, utf8Base64(ICLOUD_SMTP_AUTH_USER));
       smtpExpect(await smtpRead(state), [334], "auth_user");
       await smtpWriteLine(state, utf8Base64(password));
       smtpExpect(await smtpRead(state), [235], "auth_password");
     }
 
-    await smtpWriteLine(state, `MAIL FROM:<${ICLOUD_SMTP_USER}>`);
+    await smtpWriteLine(state, `MAIL FROM:<${ICLOUD_SMTP_FROM}>`);
     smtpExpect(await smtpRead(state), [250], "mail_from");
 
     await smtpWriteLine(state, `RCPT TO:<${mail.recipient}>`);
@@ -527,9 +528,9 @@ async function sendIcloudMail(env, mail, paymentId) {
 
     const messageIdPart = String(paymentId || Date.now()).replace(/[^A-Za-z0-9._-]/g, "");
     const message = [
-      `From: =?UTF-8?B?${utf8Base64("Mix Martial Academy — Le Rove")}?= <${ICLOUD_SMTP_USER}>`,
+      `From: =?UTF-8?B?${utf8Base64("Mix Martial Academy — Le Rove")}?= <${ICLOUD_SMTP_FROM}>`,
       `To: <${mail.recipient}>`,
-      `Reply-To: <${ICLOUD_SMTP_USER}>`,
+      `Reply-To: <${ICLOUD_SMTP_FROM}>`,
       `Subject: =?UTF-8?B?${utf8Base64(mail.subject)}?=`,
       `Date: ${new Date().toUTCString()}`,
       `Message-ID: <helloasso-${messageIdPart}@mma-lerove.fr>`,
@@ -905,7 +906,7 @@ export default {
         return json(request, {
           ok: true,
           configured: mailConfigured(env),
-          sender: ICLOUD_SMTP_USER
+          sender: ICLOUD_SMTP_FROM
         });
       }
 
@@ -916,7 +917,7 @@ export default {
 
         try {
           await sendIcloudMail(env, {
-            recipient: ICLOUD_SMTP_USER,
+            recipient: ICLOUD_SMTP_FROM,
             subject: "Test envoi iCloud — Mix Martial Academy",
             body: [
               "Bonjour,",
@@ -932,7 +933,7 @@ export default {
           return json(request, {
             ok: true,
             sent: true,
-            recipient: ICLOUD_SMTP_USER
+            recipient: ICLOUD_SMTP_FROM
           });
         } catch (error) {
           console.error("iCloud SMTP test failed", error);
