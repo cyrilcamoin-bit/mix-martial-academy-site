@@ -3615,7 +3615,7 @@ p {
   top: 10px;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin: 0 0 24px;
   padding: 8px;
@@ -3935,6 +3935,76 @@ p {
   pointer-events: none;
 }
 
+.admin-payments-mailbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.admin-payments-mailbar > div {
+  min-width: 0;
+}
+
+.admin-payments-mailbar .card-kicker {
+  margin-bottom: .45rem;
+}
+
+.admin-payments-mailbar strong {
+  display: block;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.payment-mail-state {
+  margin: .45rem 0 0;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.payment-mail-state.is-success {
+  color: #b7f7d6;
+}
+
+.payment-mail-state.is-warning {
+  color: #ffd58a;
+}
+
+.payment-mail-state.is-error {
+  color: #ff8c8c;
+}
+
+.payment-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: #b7f7d6;
+  background: rgba(52, 211, 153, .10);
+  border: 1px solid rgba(52, 211, 153, .34);
+  font-size: .78rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.admin-payments-table th:first-child,
+.admin-payments-table td:first-child {
+  width: 42px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.admin-payments-table .certificate-row-actions {
+  min-width: 250px;
+}
+
+.admin-payments-table .payment-send-mail:disabled {
+  opacity: .52;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   .admin-payments-controls {
     grid-template-columns: 1fr;
@@ -3942,6 +4012,15 @@ p {
   }
 
   .admin-payments-controls .button {
+    width: 100%;
+  }
+
+  .admin-payments-mailbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-payments-mailbar .button {
     width: 100%;
   }
 }
