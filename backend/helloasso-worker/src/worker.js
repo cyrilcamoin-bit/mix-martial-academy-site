@@ -1,8 +1,13 @@
+import { connect } from "cloudflare:sockets";
+
 const HELLOASSO_API = "https://api.helloasso.com";
 const ORGANIZATION_SLUG = "mix-martial-academy";
 const FORM_TYPE = "Membership";
 const FORM_SLUG = "adhesion-mma-2026-2027";
 const BIRTHDATE_FIELD = "Date de naissance de l'adhérent";
+const ICLOUD_SMTP_HOST = "smtp.mail.me.com";
+const ICLOUD_SMTP_PORT = 587;
+const ICLOUD_SMTP_USER = "mixmartialacademy@icloud.com";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -317,7 +322,250 @@ async function fetchRefusedPayments(env, dateValue) {
     });
   }
 
+  for (const row of rows) {
+    row.reminder = await getPaymentReminder(env, dateValue, row.paymentId);
+  }
+
   return rows;
+}
+
+function mailConfigured(env) {
+  return Boolean(env.ICLOUD_APP_PASSWORD);
+}
+
+function paymentReminderKey(dateValue, paymentId) {
+  return `payment-reminders/${dateValue}/${String(paymentId)}.json`;
+}
+
+async function getPaymentReminder(env, dateValue, paymentId) {
+  if (!storageReady(env) || paymentId == null) return null;
+  const object = await env.CERTIFICATES.get(paymentReminderKey(dateValue, paymentId));
+  if (!object) return null;
+  try {
+    const data = JSON.parse(await object.text());
+    return {
+      sentAt: data.sentAt || null,
+      email: data.email || "",
+      paymentId: data.paymentId ?? paymentId
+    };
+  } catch {
+    return null;
+  }
+}
+
+function formatDateFr(dateValue) {
+  const match = String(dateValue || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return String(dateValue || "");
+  return `${match[3]}/${match[2]}/${match[1]}`;
+}
+
+function paymentMemberNames(payment) {
+  const members = Array.isArray(payment?.members) ? payment.members : [];
+  return members
+    .map((member) => [member?.firstName, member?.lastName].filter(Boolean).join(" ").trim())
+    .filter(Boolean);
+}
+
+function buildPaymentReminderMail(payment, dateValue) {
+  const payer = payment?.payer || {};
+  const payerFirstName = String(payer.firstName || "").trim();
+  const recipient = String(payer.email || "").trim();
+  const members = paymentMemberNames(payment);
+  const intro = payerFirstName ? `Bonjour ${payerFirstName},` : "Bonjour,";
+  let membership = "";
+  if (members.length === 1) membership = ` concernant l’adhésion de ${members[0]}`;
+  if (members.length > 1) membership = ` concernant les adhésions de ${members.join(", ")}`;
+
+  const subject = "Échéance HelloAsso refusée — régularisation";
+  const body = [
+    intro,
+    "",
+    `Nous vous informons que l’échéance HelloAsso du ${formatDateFr(dateValue)}${membership} a été refusée.`,
+    "",
+    "HelloAsso a normalement dû vous envoyer un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
+    "",
+    "Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.",
+    "",
+    "Cordialement,",
+    "Mix Martial Academy — Le Rove"
+  ].join("\n");
+
+  return { recipient, subject, body };
+}
+
+function validEmail(value) {
+  const email = String(value || "").trim();
+  return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email) && !/[\r\n]/.test(email);
+}
+
+function bytesToBase64(bytes) {
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+function utf8Base64(value) {
+  return bytesToBase64(new TextEncoder().encode(String(value || "")));
+}
+
+function wrapBase64(value) {
+  const encoded = utf8Base64(value);
+  return encoded.match(/.{1,76}/g)?.join("\r\n") || "";
+}
+
+function createSmtpState(socket) {
+  return {
+    socket,
+    reader: socket.readable.getReader(),
+    writer: socket.writable.getWriter(),
+    buffer: "",
+    decoder: new TextDecoder(),
+    encoder: new TextEncoder()
+  };
+}
+
+async function smtpRead(state) {
+  const lines = [];
+  while (true) {
+    const newline = state.buffer.indexOf("\n");
+    if (newline >= 0) {
+      const line = state.buffer.slice(0, newline).replace(/\r$/, "");
+      state.buffer = state.buffer.slice(newline + 1);
+      lines.push(line);
+      if (/^\d{3} /.test(line)) {
+        return {
+          code: Number(line.slice(0, 3)),
+          text: lines.join("\n")
+        };
+      }
+      continue;
+    }
+
+    const result = await state.reader.read();
+    if (result.done) throw new Error("smtp_connection_closed");
+    state.buffer += state.decoder.decode(result.value, { stream: true });
+  }
+}
+
+async function smtpWriteLine(state, line) {
+  await state.writer.write(state.encoder.encode(String(line) + "\r\n"));
+}
+
+function smtpExpect(response, allowedCodes, step) {
+  if (!allowedCodes.includes(response.code)) {
+    throw new Error(`smtp_${step}_${response.code}`);
+  }
+}
+
+async function sendIcloudMail(env, mail, paymentId) {
+  if (!mailConfigured(env)) throw new Error("mail_not_configured");
+  if (!validEmail(mail.recipient)) throw new Error("invalid_recipient");
+
+  const socket = connect(
+    { hostname: ICLOUD_SMTP_HOST, port: ICLOUD_SMTP_PORT },
+    { secureTransport: "starttls" }
+  );
+  let state = createSmtpState(socket);
+
+  try {
+    await socket.opened;
+    smtpExpect(await smtpRead(state), [220], "greeting");
+
+    await smtpWriteLine(state, "EHLO mma-lerove.fr");
+    smtpExpect(await smtpRead(state), [250], "ehlo");
+
+    await smtpWriteLine(state, "STARTTLS");
+    smtpExpect(await smtpRead(state), [220], "starttls");
+
+    state.reader.releaseLock();
+    state.writer.releaseLock();
+
+    const secureSocket = state.socket.startTls();
+    await secureSocket.opened;
+    state = createSmtpState(secureSocket);
+
+    await smtpWriteLine(state, "EHLO mma-lerove.fr");
+    const ehlo = await smtpRead(state);
+    smtpExpect(ehlo, [250], "secure_ehlo");
+
+    const password = String(env.ICLOUD_APP_PASSWORD || "").trim();
+    const authText = ehlo.text.toUpperCase();
+
+    if (authText.includes("AUTH PLAIN")) {
+      const payload = utf8Base64(`\u0000${ICLOUD_SMTP_USER}\u0000${password}`);
+      await smtpWriteLine(state, `AUTH PLAIN ${payload}`);
+      smtpExpect(await smtpRead(state), [235], "auth");
+    } else {
+      await smtpWriteLine(state, "AUTH LOGIN");
+      smtpExpect(await smtpRead(state), [334], "auth_login");
+      await smtpWriteLine(state, utf8Base64(ICLOUD_SMTP_USER));
+      smtpExpect(await smtpRead(state), [334], "auth_user");
+      await smtpWriteLine(state, utf8Base64(password));
+      smtpExpect(await smtpRead(state), [235], "auth_password");
+    }
+
+    await smtpWriteLine(state, `MAIL FROM:<${ICLOUD_SMTP_USER}>`);
+    smtpExpect(await smtpRead(state), [250], "mail_from");
+
+    await smtpWriteLine(state, `RCPT TO:<${mail.recipient}>`);
+    smtpExpect(await smtpRead(state), [250, 251], "rcpt_to");
+
+    await smtpWriteLine(state, "DATA");
+    smtpExpect(await smtpRead(state), [354], "data");
+
+    const messageIdPart = String(paymentId || Date.now()).replace(/[^A-Za-z0-9._-]/g, "");
+    const message = [
+      `From: =?UTF-8?B?${utf8Base64("Mix Martial Academy — Le Rove")}?= <${ICLOUD_SMTP_USER}>`,
+      `To: <${mail.recipient}>`,
+      `Reply-To: <${ICLOUD_SMTP_USER}>`,
+      `Subject: =?UTF-8?B?${utf8Base64(mail.subject)}?=`,
+      `Date: ${new Date().toUTCString()}`,
+      `Message-ID: <helloasso-${messageIdPart}@mma-lerove.fr>`,
+      "MIME-Version: 1.0",
+      "Content-Type: text/plain; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      wrapBase64(mail.body),
+      "."
+    ].join("\r\n");
+
+    await state.writer.write(state.encoder.encode(message + "\r\n"));
+    smtpExpect(await smtpRead(state), [250], "message");
+
+    await smtpWriteLine(state, "QUIT");
+    const quit = await smtpRead(state).catch(() => ({ code: 221 }));
+    smtpExpect(quit, [221], "quit");
+  } finally {
+    try { state.reader.releaseLock(); } catch {}
+    try { state.writer.releaseLock(); } catch {}
+    try { await state.socket.close(); } catch {}
+  }
+}
+
+async function storePaymentReminder(env, dateValue, payment) {
+  const sentAt = new Date().toISOString();
+  const record = {
+    sentAt,
+    paymentId: payment.paymentId,
+    orderId: payment.orderId,
+    email: String(payment?.payer?.email || "").trim(),
+    members: paymentMemberNames(payment)
+  };
+  await env.CERTIFICATES.put(
+    paymentReminderKey(dateValue, payment.paymentId),
+    JSON.stringify(record),
+    {
+      httpMetadata: { contentType: "application/json" },
+      customMetadata: {
+        sentAt,
+        paymentId: String(payment.paymentId ?? "")
+      }
+    }
+  );
+  return record;
 }
 
 function storageReady(env) {
@@ -644,6 +892,14 @@ export default {
         return json(request, { ok: false, error: "storage_not_configured" }, 503);
       }
 
+      if (request.method === "GET" && url.pathname === "/admin/mail/status") {
+        return json(request, {
+          ok: true,
+          configured: mailConfigured(env),
+          sender: ICLOUD_SMTP_USER
+        });
+      }
+
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
         const date = String(url.searchParams.get("date") || "").trim();
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -657,6 +913,82 @@ export default {
           total: payments.length,
           totalAmount: payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
           payments
+        });
+      }
+
+      if (request.method === "POST" && url.pathname === "/admin/payments/refused/send") {
+        if (!mailConfigured(env)) {
+          return json(request, { ok: false, error: "mail_not_configured" }, 503);
+        }
+        if (!storageReady(env)) {
+          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+        }
+
+        const body = await request.json().catch(() => null);
+        const date = String(body?.date || "").trim();
+        const requestedIds = Array.isArray(body?.paymentIds)
+          ? [...new Set(body.paymentIds.map((value) => String(value)).filter(Boolean))]
+          : [];
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !requestedIds.length || requestedIds.length > 20) {
+          return json(request, { ok: false, error: "invalid_request" }, 400);
+        }
+
+        const payments = await fetchRefusedPayments(env, date);
+        const paymentById = new Map(payments.map((payment) => [String(payment.paymentId), payment]));
+        const results = [];
+
+        for (const paymentId of requestedIds) {
+          const payment = paymentById.get(paymentId);
+          if (!payment) {
+            results.push({ paymentId, status: "not_found" });
+            continue;
+          }
+
+          const existing = await getPaymentReminder(env, date, payment.paymentId);
+          if (existing?.sentAt) {
+            results.push({
+              paymentId,
+              status: "already_sent",
+              sentAt: existing.sentAt,
+              email: existing.email || ""
+            });
+            continue;
+          }
+
+          const mail = buildPaymentReminderMail(payment, date);
+          if (!validEmail(mail.recipient)) {
+            results.push({ paymentId, status: "invalid_email" });
+            continue;
+          }
+
+          try {
+            await sendIcloudMail(env, mail, payment.paymentId);
+            const record = await storePaymentReminder(env, date, payment);
+            results.push({
+              paymentId,
+              status: "sent",
+              sentAt: record.sentAt,
+              email: record.email
+            });
+          } catch (error) {
+            console.error("Unable to send iCloud payment reminder", paymentId, error);
+            results.push({
+              paymentId,
+              status: "failed"
+            });
+          }
+        }
+
+        return json(request, {
+          ok: true,
+          date,
+          sent: results.filter((result) => result.status === "sent").length,
+          alreadySent: results.filter((result) => result.status === "already_sent").length,
+          failed: results.filter((result) => result.status === "failed").length,
+          invalidEmail: results.filter((result) => result.status === "invalid_email").length,
+          notFound: results.filter((result) => result.status === "not_found").length,
+          results
         });
       }
 
