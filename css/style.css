@@ -3870,3 +3870,78 @@ p {
     width: 100%;
   }
 }
+
+
+/* ── Échéances refusées HelloAsso ── */
+.admin-payments-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) auto minmax(260px, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.admin-payments-controls > div {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-payments-controls label {
+  color: var(--text);
+  font-weight: 850;
+  font-size: .92rem;
+}
+
+.admin-payments-controls input[type="date"] {
+  width: 100%;
+  min-height: 48px;
+  padding: .78rem .9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: #0f0f12;
+  color: var(--text);
+  color-scheme: dark;
+}
+
+.admin-payments-controls .note {
+  margin: 0;
+  align-self: center;
+}
+
+.admin-payments-table td {
+  vertical-align: middle;
+}
+
+.admin-payments-table a:not(.button) {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.payment-refused-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: #ffd2d2;
+  background: rgba(201, 15, 19, .12);
+  border: 1px solid rgba(201, 15, 19, .32);
+  font-size: .78rem;
+  font-weight: 850;
+}
+
+.payment-open-mail[aria-disabled="true"] {
+  opacity: .45;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .admin-payments-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .admin-payments-controls .button {
+    width: 100%;
+  }
+}
