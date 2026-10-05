@@ -10,6 +10,7 @@ const ICLOUD_SMTP_PORT = 587;
 const ICLOUD_SMTP_AUTH_USER = "cyril.camoin@icloud.com";
 const ICLOUD_SMTP_FROM = "mixmartialacademy@icloud.com";
 const CLUB_LOGO_URL = "https://www.mma-lerove.fr/assets/logo/logo-mma-2627-officiel.png";
+const WORKER_RELEASE = "2026-10-05-reminder-wording-v2";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
