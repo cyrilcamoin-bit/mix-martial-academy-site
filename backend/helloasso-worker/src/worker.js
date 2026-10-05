@@ -10,7 +10,7 @@ const ICLOUD_SMTP_PORT = 587;
 const ICLOUD_SMTP_AUTH_USER = "cyril.camoin@icloud.com";
 const ICLOUD_SMTP_FROM = "mixmartialacademy@icloud.com";
 const CLUB_LOGO_URL = "https://www.mma-lerove.fr/assets/logo/logo-mma-2627-officiel.png";
-const WORKER_RELEASE = "2026-10-05-reminder-wording-v2";
+const WORKER_RELEASE = "2026-10-06-certificate-reminders-v1";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -170,7 +170,9 @@ async function fetchMembershipItems(env) {
       memberId: item.id ?? null,
       firstName: String(item?.user?.firstName || "").trim(),
       lastName: String(item?.user?.lastName || "").trim(),
-      birthDate: getBirthDate(item)
+      birthDate: getBirthDate(item),
+      orderId: item?.order?.id ?? null,
+      memberEmail: String(item?.user?.email || "").trim()
     }))
     .filter((member) => member.memberId != null && member.firstName && member.lastName && member.birthDate);
 
@@ -842,6 +844,188 @@ function createZip(files) {
   return concat([...localParts, central, end]);
 }
 
+
+async function resolveMembershipContact(env, member, orderCache = new Map()) {
+  const fallbackEmail = String(member?.memberEmail || "").trim();
+  const orderId = member?.orderId;
+  if (!orderId) {
+    return {
+      email: fallbackEmail,
+      firstName: String(member?.firstName || "").trim()
+    };
+  }
+
+  const cacheKey = String(orderId);
+  let order = orderCache.get(cacheKey);
+  if (order === undefined) {
+    try {
+      const token = await getAccessToken(env);
+      const url = new URL(`${HELLOASSO_API}/v5/orders/${encodeURIComponent(orderId)}`);
+      url.searchParams.set("withFormData", "true");
+      order = await fetchHelloAssoJson(url, token, "HelloAsso order");
+    } catch (error) {
+      console.error("Unable to resolve certificate reminder recipient", orderId, error);
+      order = null;
+    }
+    orderCache.set(cacheKey, order);
+  }
+
+  const payer = order?.payer || {};
+  const payerEmail = String(payer?.email || "").trim();
+  return {
+    email: payerEmail || fallbackEmail,
+    firstName: String(payer?.firstName || member?.firstName || "").trim()
+  };
+}
+
+function certificateReminderPrefix(memberId) {
+  return `certificate-reminders/${String(memberId)}/`;
+}
+
+function certificateReminderKey(memberId, sentAt) {
+  const safeStamp = String(sentAt || new Date().toISOString()).replace(/[:.]/g, "-");
+  return `${certificateReminderPrefix(memberId)}${safeStamp}.json`;
+}
+
+async function listCertificateReminderRecords(env, limit = 500) {
+  if (!storageReady(env)) return [];
+
+  const listed = await env.CERTIFICATES.list({
+    prefix: "certificate-reminders/",
+    limit: Math.max(1, Math.min(Number(limit) || 500, 1000))
+  });
+
+  const rows = [];
+  for (const object of listed.objects || []) {
+    const stored = await env.CERTIFICATES.get(object.key);
+    if (!stored) continue;
+    try {
+      const data = JSON.parse(await stored.text());
+      rows.push({
+        memberId: String(data.memberId || ""),
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        email: data.email || "",
+        recipientFirstName: data.recipientFirstName || "",
+        sentAt: data.sentAt || null,
+        status: data.status || "sent"
+      });
+    } catch {}
+  }
+
+  rows.sort((a, b) => String(b.sentAt || "").localeCompare(String(a.sentAt || "")));
+  return rows;
+}
+
+async function certificateReminderIndex(env) {
+  const rows = await listCertificateReminderRecords(env, 1000);
+  const latest = new Map();
+  for (const row of rows) {
+    const key = String(row.memberId || "");
+    if (key && !latest.has(key)) latest.set(key, row);
+  }
+  return latest;
+}
+
+async function storeCertificateReminder(env, member, contact) {
+  const sentAt = new Date().toISOString();
+  const record = {
+    memberId: String(member.memberId),
+    firstName: String(member.firstName || "").trim(),
+    lastName: String(member.lastName || "").trim(),
+    email: String(contact.email || "").trim(),
+    recipientFirstName: String(contact.firstName || "").trim(),
+    sentAt,
+    status: "sent"
+  };
+
+  await env.CERTIFICATES.put(
+    certificateReminderKey(member.memberId, sentAt),
+    JSON.stringify(record),
+    {
+      httpMetadata: { contentType: "application/json" },
+      customMetadata: {
+        sentAt,
+        memberId: String(member.memberId)
+      }
+    }
+  );
+  return record;
+}
+
+function buildCertificateReminderMail(member, contact) {
+  const recipient = String(contact?.email || "").trim();
+  const recipientFirstName = String(contact?.firstName || "").trim();
+  const memberName = [member?.firstName, member?.lastName].filter(Boolean).join(" ").trim();
+  const intro = recipientFirstName ? `Bonjour ${recipientFirstName},` : "Bonjour,";
+  const subject = "Certificat médical manquant — Mix Martial Academy";
+  const documentsUrl = "https://www.mma-lerove.fr/#documents-medicaux";
+  const body = [
+    intro,
+    "",
+    `Sauf erreur de notre part, nous n’avons pas encore reçu le certificat médical de ${memberName}.`,
+    "",
+    "Merci de le déposer directement sur notre site internet dans l’onglet « Documents Médicaux » :",
+    documentsUrl,
+    "",
+    "Si le certificat a déjà été transmis entre-temps, vous pouvez ne pas tenir compte de ce message.",
+    "",
+    "Cordialement,",
+    "Mix Martial Academy — Le Rove"
+  ].join("\n");
+
+  const htmlBody = `<!doctype html>
+<html lang="fr">
+  <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;color:#171717;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f4f4;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
+            <tr>
+              <td align="center" style="background:#0b0b0d;padding:24px 20px 18px;">
+                <img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;width:130px;max-width:100%;height:auto;border:0;">
+              </td>
+            </tr>
+            <tr>
+              <td style="height:4px;background:#c90f13;font-size:0;line-height:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:28px 28px 30px;">
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">${escapeMailHtml(intro)}</p>
+                <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">
+                  Sauf erreur de notre part, nous n’avons pas encore reçu le certificat médical de
+                  <strong>${escapeMailHtml(memberName)}</strong>.
+                </p>
+                <p style="margin:0 0 20px;font-size:16px;line-height:1.6;">
+                  Merci de le déposer directement sur notre site internet dans l’onglet « Documents Médicaux ».
+                </p>
+                <p style="margin:0 0 24px;text-align:center;">
+                  <a href="${documentsUrl}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#c90f13;color:#ffffff;text-decoration:none;font-weight:700;">Déposer le certificat médical</a>
+                </p>
+                <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#555555;">
+                  Si le certificat a déjà été transmis entre-temps, vous pouvez ne pas tenir compte de ce message.
+                </p>
+                <p style="margin:0;font-size:16px;line-height:1.6;">
+                  Cordialement,<br>
+                  <strong>Mix Martial Academy — Le Rove</strong>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 28px;background:#111114;color:#d6d6d6;font-size:12px;line-height:1.5;text-align:center;">
+                <a href="https://www.mma-lerove.fr/" style="color:#ffffff;text-decoration:none;">www.mma-lerove.fr</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+  return { recipient, subject, body, htmlBody };
+}
+
 async function buildCertificateStatus(env) {
   const members = await fetchMembershipItems(env);
   const receivedIds = new Set();
@@ -862,18 +1046,27 @@ async function buildCertificateStatus(env) {
     } while (cursor);
   }
 
-  return members
-    .map((member) => ({
+  const reminderIndex = await certificateReminderIndex(env);
+  const orderCache = new Map();
+  const enriched = await Promise.all(members.map(async (member) => {
+    const contact = await resolveMembershipContact(env, member, orderCache);
+    const reminder = reminderIndex.get(String(member.memberId)) || null;
+    return {
       memberId: member.memberId,
       firstName: member.firstName,
       lastName: member.lastName,
-      received: receivedIds.has(String(member.memberId))
-    }))
-    .sort((a, b) => {
-      const last = a.lastName.localeCompare(b.lastName, "fr", { sensitivity: "base" });
-      if (last !== 0) return last;
-      return a.firstName.localeCompare(b.firstName, "fr", { sensitivity: "base" });
-    });
+      received: receivedIds.has(String(member.memberId)),
+      email: String(contact.email || "").trim(),
+      recipientFirstName: String(contact.firstName || "").trim(),
+      lastReminderAt: reminder?.sentAt || null
+    };
+  }));
+
+  return enriched.sort((a, b) => {
+    const last = a.lastName.localeCompare(b.lastName, "fr", { sensitivity: "base" });
+    if (last !== 0) return last;
+    return a.firstName.localeCompare(b.firstName, "fr", { sensitivity: "base" });
+  });
 }
 
 async function downloadMembersZip(request, env, memberIds) {
@@ -936,6 +1129,7 @@ export default {
           helloAssoCampaign: FORM_SLUG,
           certificateStorage: storageReady(env),
           certificateDeletion: true,
+          certificateReminders: true,
           refusedPayments: true
         });
       }
@@ -1177,6 +1371,117 @@ export default {
           date,
           sent: results.filter((result) => result.status === "sent").length,
           alreadySent: results.filter((result) => result.status === "already_sent").length,
+          failed: results.filter((result) => result.status === "failed").length,
+          invalidEmail: results.filter((result) => result.status === "invalid_email").length,
+          notFound: results.filter((result) => result.status === "not_found").length,
+          results
+        });
+      }
+
+      if (request.method === "GET" && url.pathname === "/admin/certificates/reminders") {
+        if (!storageReady(env)) {
+          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+        }
+        const reminders = await listCertificateReminderRecords(env, url.searchParams.get("limit") || 200);
+        return json(request, {
+          ok: true,
+          total: reminders.length,
+          reminders
+        });
+      }
+
+      if (request.method === "POST" && url.pathname === "/admin/certificates/reminders/test") {
+        if (!mailConfigured(env)) {
+          return json(request, { ok: false, error: "mail_not_configured" }, 503);
+        }
+        try {
+          const fakeMember = {
+            memberId: `test-${Date.now()}`,
+            firstName: "Lucas",
+            lastName: "MARTIN"
+          };
+          const fakeContact = {
+            email: ICLOUD_SMTP_FROM,
+            firstName: "Cyril"
+          };
+          const mail = buildCertificateReminderMail(fakeMember, fakeContact);
+          await sendIcloudMail(env, mail, `certificate-test-${Date.now()}`);
+          return json(request, {
+            ok: true,
+            sent: true,
+            recipient: ICLOUD_SMTP_FROM
+          });
+        } catch (error) {
+          console.error("iCloud certificate reminder test failed", error);
+          return json(request, { ok: false, error: publicMailError(error) }, 502);
+        }
+      }
+
+      if (request.method === "POST" && url.pathname === "/admin/certificates/reminders/send") {
+        if (!mailConfigured(env)) {
+          return json(request, { ok: false, error: "mail_not_configured" }, 503);
+        }
+        if (!storageReady(env)) {
+          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+        }
+
+        const body = await request.json().catch(() => null);
+        const requestedIds = Array.isArray(body?.memberIds)
+          ? [...new Set(body.memberIds.map((value) => String(value)).filter(Boolean))]
+          : [];
+
+        if (!requestedIds.length || requestedIds.length > 20) {
+          return json(request, { ok: false, error: "invalid_request" }, 400);
+        }
+
+        const members = await fetchMembershipItems(env);
+        const memberById = new Map(members.map((member) => [String(member.memberId), member]));
+        const orderCache = new Map();
+        const results = [];
+
+        for (const memberId of requestedIds) {
+          const member = memberById.get(memberId);
+          if (!member) {
+            results.push({ memberId, status: "not_found" });
+            continue;
+          }
+
+          const certificate = await certificateObjectForMember(env, member.memberId);
+          if (certificate) {
+            results.push({ memberId, status: "certificate_received" });
+            continue;
+          }
+
+          const contact = await resolveMembershipContact(env, member, orderCache);
+          if (!validEmail(contact.email)) {
+            results.push({ memberId, status: "invalid_email" });
+            continue;
+          }
+
+          const mail = buildCertificateReminderMail(member, contact);
+          try {
+            await sendIcloudMail(env, mail, `certificate-${member.memberId}-${Date.now()}`);
+            const record = await storeCertificateReminder(env, member, contact);
+            results.push({
+              memberId,
+              status: "sent",
+              sentAt: record.sentAt,
+              email: record.email
+            });
+          } catch (error) {
+            console.error("Unable to send certificate reminder", memberId, error);
+            results.push({
+              memberId,
+              status: "failed",
+              error: publicMailError(error)
+            });
+          }
+        }
+
+        return json(request, {
+          ok: true,
+          sent: results.filter((result) => result.status === "sent").length,
+          received: results.filter((result) => result.status === "certificate_received").length,
           failed: results.filter((result) => result.status === "failed").length,
           invalidEmail: results.filter((result) => result.status === "invalid_email").length,
           notFound: results.filter((result) => result.status === "not_found").length,
