@@ -121,7 +121,7 @@
       }
       masterButton.hidden = true;
       accessCard?.classList.add('is-unlocked');
-      setMasterStatus('Administration déverrouillée : aides et certificats sont accessibles.');
+      setMasterStatus('Administration déverrouillée : aides, certificats et échéances refusées sont accessibles.');
     } else if (result.aidsOk && !result.certificatesOk) {
       setMasterStatus('Le mot de passe ouvre les aides, mais pas encore les certificats. Le code Cloudflare ADMIN_API_TOKEN doit être identique au code des aides.', true);
     } else if (!result.aidsOk && result.certificatesOk) {
