@@ -257,8 +257,9 @@
     if (!token || !mailConfigured) return;
 
     var confirmed = window.confirm(
-      "Envoyer un e-mail de test à mixmartialacademy@icloud.com ?\n\n" +
-      "Aucun adhérent ne sera contacté."
+      "Envoyer à mixmartialacademy@icloud.com un exemple identique au mail reçu par un adhérent ?\n\n" +
+      "Données fictives : payeur Cyril / adhérent Lucas MARTIN / échéance du 05/10/2026.\n\n" +
+      "Aucun adhérent réel ne sera contacté."
     );
     if (!confirmed) return;
 
@@ -278,7 +279,7 @@
       if (response.status === 401) throw new Error("unauthorized");
       if (!response.ok || !data.ok) throw new Error(data.error || "test_failed");
 
-      setStatus("E-mail de test envoyé à " + (data.recipient || "l’adresse iCloud du club") + ".", "success");
+      setStatus("Exemple adhérent envoyé à " + (data.recipient || "l’adresse iCloud du club") + " avec des données fictives.", "success");
     } catch (error) {
       if (error.message === "unauthorized") {
         setStatus("Votre accès administrateur a expiré.", "error");
