@@ -242,10 +242,12 @@ async function fetchHelloAssoJson(url, token, label) {
   return response.json();
 }
 
-async function fetchRefusedPayments(env, dateValue) {
-  const range = parisDateRange(dateValue);
-  if (!range) throw new Error("invalid_date");
+function paymentDateKey(value) {
+  const match = String(value || "").match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : "";
+}
 
+async function fetchRefusedPayments(env) {
   const token = await getAccessToken(env);
   const payments = [];
   const pageSize = 100;
@@ -254,8 +256,6 @@ async function fetchRefusedPayments(env, dateValue) {
     const url = new URL(
       `${HELLOASSO_API}/v5/organizations/${ORGANIZATION_SLUG}/forms/${FORM_TYPE}/${FORM_SLUG}/payments`
     );
-    url.searchParams.set("from", range.from);
-    url.searchParams.set("to", range.to);
     url.searchParams.append("states", "Refused");
     url.searchParams.set("pageIndex", String(pageIndex));
     url.searchParams.set("pageSize", String(pageSize));
@@ -312,10 +312,12 @@ async function fetchRefusedPayments(env, dateValue) {
       members.push({ itemId, firstName, lastName });
     }
 
+    const paymentDate = payment?.date || payment?.meta?.updatedAt || null;
     rows.push({
       paymentId: payment?.id ?? null,
       orderId,
-      paymentDate: payment?.date || payment?.meta?.updatedAt || null,
+      paymentDate,
+      dateKey: paymentDateKey(paymentDate),
       installmentNumber: payment?.installmentNumber ?? null,
       amount: Number(payment?.amount || 0),
       state: String(payment?.state || ""),
@@ -330,7 +332,9 @@ async function fetchRefusedPayments(env, dateValue) {
   }
 
   for (const row of rows) {
-    row.reminder = await getPaymentReminder(env, dateValue, row.paymentId);
+    row.reminder = row.dateKey
+      ? await getPaymentReminder(env, row.dateKey, row.paymentId)
+      : null;
   }
 
   return rows;
@@ -1194,7 +1198,8 @@ export default {
           certificateStorage: storageReady(env),
           certificateDeletion: true,
           certificateReminders: true,
-          refusedPayments: true
+          refusedPayments: true,
+          refusedPaymentsScope: "campaign"
         });
       }
 
@@ -1350,15 +1355,10 @@ export default {
       }
 
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
-        const date = String(url.searchParams.get("date") || "").trim();
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-          return json(request, { ok: false, error: "invalid_date" }, 400);
-        }
-
-        const payments = await fetchRefusedPayments(env, date);
+        const payments = await fetchRefusedPayments(env);
         return json(request, {
           ok: true,
-          date,
+          campaign: FORM_SLUG,
           total: payments.length,
           totalAmount: payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
           payments
@@ -1374,16 +1374,15 @@ export default {
         }
 
         const body = await request.json().catch(() => null);
-        const date = String(body?.date || "").trim();
         const requestedIds = Array.isArray(body?.paymentIds)
           ? [...new Set(body.paymentIds.map((value) => String(value)).filter(Boolean))]
           : [];
 
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !requestedIds.length || requestedIds.length > 20) {
+        if (!requestedIds.length || requestedIds.length > 20) {
           return json(request, { ok: false, error: "invalid_request" }, 400);
         }
 
-        const payments = await fetchRefusedPayments(env, date);
+        const payments = await fetchRefusedPayments(env);
         const paymentById = new Map(payments.map((payment) => [String(payment.paymentId), payment]));
         const results = [];
 
@@ -1391,6 +1390,12 @@ export default {
           const payment = paymentById.get(paymentId);
           if (!payment) {
             results.push({ paymentId, status: "not_found" });
+            continue;
+          }
+
+          const date = String(payment.dateKey || "").trim();
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            results.push({ paymentId, status: "invalid_payment_date" });
             continue;
           }
 
@@ -1432,12 +1437,12 @@ export default {
 
         return json(request, {
           ok: true,
-          date,
           sent: results.filter((result) => result.status === "sent").length,
           alreadySent: results.filter((result) => result.status === "already_sent").length,
           failed: results.filter((result) => result.status === "failed").length,
           invalidEmail: results.filter((result) => result.status === "invalid_email").length,
           notFound: results.filter((result) => result.status === "not_found").length,
+          invalidPaymentDate: results.filter((result) => result.status === "invalid_payment_date").length,
           results
         });
       }
