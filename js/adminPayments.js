@@ -5,7 +5,6 @@
   var section = document.getElementById("admin-club-paiements");
   if (!section) return;
 
-  var dateInput = document.getElementById("payments-refused-date");
   var loadButton = document.getElementById("payments-refused-load");
   var statusBox = document.getElementById("payments-refused-status");
   var countBox = document.getElementById("payments-refused-count");
@@ -82,7 +81,7 @@
     mailState.className = "payment-mail-state" + (kind ? " is-" + kind : "");
   }
 
-  function emailTemplate(payment, selectedDate) {
+  function emailTemplate(payment) {
     var payer = payment.payer || {};
     var firstName = String(payer.firstName || "").trim();
     var adherents = memberNames(payment);
@@ -91,15 +90,30 @@
     var body = [
       intro,
       "",
-      "Nous vous informons que l’échéance HelloAsso du " + dateFr(selectedDate) +
+      "Nous vous informons que l’échéance HelloAsso du " + dateFr(payment.dateKey) +
         (adherents !== "—" ? " concernant l’adhésion de " + adherents : "") + " a été refusée.",
       "",
-      "HelloAsso a normalement dû vous envoyer un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
+      "HelloAsso vous a envoyé un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
+      "",
+      "Vous ne retrouvez pas l’e-mail HelloAsso ? Aucun problème.",
+      "",
+      "Vous pouvez accéder directement à votre espace HelloAsso et retrouver votre paiement :",
+      "1. Rendez-vous sur la page de connexion HelloAsso : https://auth.helloasso.com/connexion",
+      "2. Cliquez sur « Mot de passe oublié »",
+      "3. Saisissez l’adresse e-mail utilisée lors du paiement",
+      "4. Utilisez le lien reçu par e-mail pour créer ou réinitialiser votre mot de passe",
+      "5. Connectez-vous à votre espace HelloAsso",
+      "6. Retrouvez votre paiement au statut « Refusé » et procédez à sa régularisation",
+      "",
+      "Une fois la régularisation effectuée, le statut du paiement passera à « Payé ».",
+      "",
+      "Cette procédure vous permet donc de régulariser votre échéance même si vous ne retrouvez plus l’e-mail initial envoyé par HelloAsso.",
       "",
       "Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.",
       "",
       "Cordialement,",
-      "Mix Martial Academy — Le Rove"
+      "Mix Martial Academy — Le Rove",
+      "www.mma-lerove.fr"
     ].join("\n");
 
     return {
@@ -132,7 +146,7 @@
     selectAll.checked = false;
 
     if (!payments.length) {
-      tbody.innerHTML = "<tr><td colspan='9' class='admin-aids-empty'>Aucune échéance refusée pour cette date.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='9' class='admin-aids-empty'>Aucune échéance refusée actuellement sur cette campagne.</td></tr>";
       updateBulkButton();
       return;
     }
@@ -177,7 +191,7 @@
     tbody.querySelectorAll(".payment-copy-mail").forEach(function (button) {
       button.addEventListener("click", async function () {
         var payment = payments[Number(button.getAttribute("data-index"))];
-        var template = emailTemplate(payment, data.date);
+        var template = emailTemplate(payment);
         var text = "À : " + template.email + "\nObjet : " + template.subject + "\n\n" + template.body;
         try {
           await navigator.clipboard.writeText(text);
@@ -190,7 +204,7 @@
 
     tbody.querySelectorAll(".payment-open-mail").forEach(function (link) {
       var payment = payments[Number(link.getAttribute("data-index"))];
-      var template = emailTemplate(payment, data.date);
+      var template = emailTemplate(payment);
       if (!template.email) {
         link.addEventListener("click", function (event) { event.preventDefault(); });
         return;
@@ -295,7 +309,6 @@
 
   async function sendPayments(paymentIds) {
     var token = adminToken();
-    var date = String(dateInput.value || "").trim();
     if (!token || !paymentIds.length) return;
     if (!mailConfigured) {
       setStatus("L’envoi direct iCloud n’est pas encore configuré.", "error");
@@ -329,7 +342,6 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          date: date,
           paymentIds: paymentIds
         })
       });
@@ -344,9 +356,10 @@
       if (data.invalidEmail) parts.push(data.invalidEmail + " e-mail invalide");
       if (data.failed) parts.push(data.failed + " échec(s)");
       if (data.notFound) parts.push(data.notFound + " introuvable(s)");
+      if (data.invalidPaymentDate) parts.push(data.invalidPaymentDate + " date invalide");
 
       var summaryMessage = "Relances : " + (parts.length ? parts.join(" · ") : "aucun envoi");
-      var summaryKind = data.failed || data.invalidEmail || data.notFound ? "error" : "success";
+      var summaryKind = data.failed || data.invalidEmail || data.notFound || data.invalidPaymentDate ? "error" : "success";
 
       loadedKey = "";
       await loadPayments(true);
@@ -408,24 +421,19 @@
 
   async function loadPayments(force) {
     var token = adminToken();
-    var date = String(dateInput.value || "").trim();
     if (!token) {
       setStatus("Déverrouillez d’abord l’administration avec votre mot de passe.", "error");
       return;
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      setStatus("Choisissez une date valide.", "error");
-      return;
-    }
 
-    var key = token + "|" + date;
+    var key = token + "|campaign";
     if (!force && loadedKey === key) return;
 
     loadButton.disabled = true;
-    setStatus("Recherche des échéances refusées dans HelloAsso…", "");
+    setStatus("Recherche de toutes les échéances refusées de la campagne dans HelloAsso…", "");
 
     try {
-      var response = await fetch(API_BASE + "/admin/payments/refused?date=" + encodeURIComponent(date), {
+      var response = await fetch(API_BASE + "/admin/payments/refused", {
         headers: { "Authorization": "Bearer " + token },
         cache: "no-store"
       });
@@ -438,8 +446,8 @@
       render(data);
       setStatus(
         data.total
-          ? data.total + " échéance(s) refusée(s) trouvée(s) pour le " + dateFr(date) + "."
-          : "Aucune échéance refusée trouvée pour le " + dateFr(date) + ".",
+          ? data.total + " échéance(s) refusée(s) actuellement sur la campagne."
+          : "Aucune échéance refusée actuellement sur la campagne.",
         data.total ? "error" : "success"
       );
     } catch (error) {
@@ -454,13 +462,6 @@
   }
 
   loadButton.addEventListener("click", function () { loadPayments(true); });
-
-  dateInput.addEventListener("change", function () {
-    loadedKey = "";
-    currentData = null;
-    selectAll.checked = false;
-    updateBulkButton();
-  });
 
   selectAll.addEventListener("change", function () {
     tbody.querySelectorAll(".payment-row-check:not(:disabled)").forEach(function (checkbox) {
