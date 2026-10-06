@@ -3875,14 +3875,19 @@ p {
 /* ── Échéances refusées HelloAsso ── */
 .admin-payments-controls {
   display: grid;
-  grid-template-columns: minmax(220px, 320px) auto minmax(260px, 1fr);
-  gap: 14px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
 }
 
 .admin-payments-controls > div {
+  min-width: 0;
+}
+
+.admin-payments-scope {
   display: grid;
-  gap: 7px;
+  gap: 6px;
+  align-content: center;
 }
 
 .admin-payments-controls label {
@@ -3915,8 +3920,30 @@ p {
 }
 
 .admin-payments-controls .note {
-  margin: 0;
-  align-self: center;
+  margin: 2px 0 0;
+  max-width: 760px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.admin-payments-controls > .button {
+  min-width: 190px;
+  justify-self: end;
+}
+
+.admin-payments-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-payments-metrics .admin-aids-metric {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.admin-payments-metrics .admin-aids-metric strong {
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
 }
 
 .admin-payments-table td {
@@ -4030,8 +4057,14 @@ p {
     align-items: stretch;
   }
 
-  .admin-payments-controls .button {
+  .admin-payments-controls > .button {
     width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+  }
+
+  .admin-payments-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .admin-payments-mailbar {
