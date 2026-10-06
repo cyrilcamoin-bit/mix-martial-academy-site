@@ -470,7 +470,7 @@ function buildPaymentReminderMail(payment, dateValue) {
         <td align="center">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
             <tr>
-              <td align="center" style="background:#050505;padding:24px 20px 18px;">
+              <td align="center" style="background:#000000;padding:24px 20px 18px;">
                 <img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;width:130px;max-width:100%;height:auto;border:0;">
               </td>
             </tr>
@@ -535,7 +535,7 @@ function buildPaymentReminderMail(payment, dateValue) {
               </td>
             </tr>
             <tr>
-              <td style="padding:20px 28px;background:#050505;color:#ffffff;font-size:16px;line-height:1.5;text-align:center;">
+              <td style="padding:20px 28px;background:#000000;color:#ffffff;font-size:16px;line-height:1.5;text-align:center;">
                 <a href="https://www.mma-lerove.fr/" style="color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.2px;">www.mma-lerove.fr</a>
               </td>
             </tr>
@@ -1050,7 +1050,7 @@ function buildCertificateReminderMail(member, contact) {
         <td align="center">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
             <tr>
-              <td align="center" style="background:#050505;padding:24px 20px 18px;">
+              <td align="center" style="background:#000000;padding:24px 20px 18px;">
                 <img src="${CLUB_LOGO_URL}" width="130" alt="Mix Martial Academy — Le Rove" style="display:block;width:130px;max-width:100%;height:auto;border:0;">
               </td>
             </tr>
@@ -1080,7 +1080,7 @@ function buildCertificateReminderMail(member, contact) {
               </td>
             </tr>
             <tr>
-              <td style="padding:20px 28px;background:#050505;color:#ffffff;font-size:16px;line-height:1.5;text-align:center;">
+              <td style="padding:20px 28px;background:#000000;color:#ffffff;font-size:16px;line-height:1.5;text-align:center;">
                 <a href="https://www.mma-lerove.fr/" style="color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.2px;">www.mma-lerove.fr</a>
               </td>
             </tr>
