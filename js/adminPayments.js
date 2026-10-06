@@ -155,7 +155,7 @@
       var payer = payment.payer || {};
       var email = String(payer.email || "").trim();
       var alreadySent = Boolean(payment.reminder && payment.reminder.sentAt);
-      var selectable = Boolean(email) && !alreadySent;
+      var selectable = Boolean(email);
       var reminderStatus = alreadySent
         ? "<span class='payment-sent-badge'>Envoyé le " + escapeHtml(dateTimeFr(payment.reminder.sentAt)) + "</span>"
         : "<span class='payment-refused-badge'>À relancer</span>";
@@ -170,7 +170,7 @@
         "<td>" + escapeHtml(euro(payment.amount)) + "</td>" +
         "<td>" + reminderStatus + "</td>" +
         "<td><div class='certificate-row-actions'>" +
-          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Déjà envoyé" : "Envoyer") + "</button>" +
+          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Relancer" : "Envoyer") + "</button>" +
           "<button class='button button-small button-outline payment-copy-mail' data-index='" + index + "' type='button' " + (email ? "" : "disabled") + ">Copier</button>" +
           "<a class='button button-small button-outline payment-open-mail' data-index='" + index + "' href='#' " + (email ? "" : "aria-disabled='true'") + ">Préparer</a>" +
         "</div></td>" +
@@ -352,7 +352,6 @@
 
       var parts = [];
       if (data.sent) parts.push(data.sent + " envoyée(s)");
-      if (data.alreadySent) parts.push(data.alreadySent + " déjà envoyée(s)");
       if (data.invalidEmail) parts.push(data.invalidEmail + " e-mail invalide");
       if (data.failed) parts.push(data.failed + " échec(s)");
       if (data.notFound) parts.push(data.notFound + " introuvable(s)");
