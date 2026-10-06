@@ -10,7 +10,7 @@ const ICLOUD_SMTP_PORT = 587;
 const ICLOUD_SMTP_AUTH_USER = "cyril.camoin@icloud.com";
 const ICLOUD_SMTP_FROM = "mixmartialacademy@icloud.com";
 const CLUB_LOGO_URL = "https://www.mma-lerove.fr/assets/logo/logo-mma-2627-officiel.png";
-const WORKER_RELEASE = "2026-10-06-certificate-reminders-v1";
+const WORKER_RELEASE = "2026-10-06-certificate-reminders-email-fallback-v2";
 const ALLOWED_ORIGINS = new Set([
   "https://www.mma-lerove.fr",
   "https://mma-lerove.fr"
@@ -171,7 +171,9 @@ async function fetchMembershipItems(env) {
       firstName: String(item?.user?.firstName || "").trim(),
       lastName: String(item?.user?.lastName || "").trim(),
       birthDate: getBirthDate(item),
-      orderId: item?.order?.id ?? null,
+      orderId: item?.order?.id ?? item?.orderId ?? null,
+      payerEmail: String(item?.payer?.email || item?.order?.payer?.email || "").trim(),
+      payerFirstName: String(item?.payer?.firstName || item?.order?.payer?.firstName || "").trim(),
       memberEmail: String(item?.user?.email || "").trim()
     }))
     .filter((member) => member.memberId != null && member.firstName && member.lastName && member.birthDate);
@@ -846,8 +848,18 @@ function createZip(files) {
 
 
 async function resolveMembershipContact(env, member, orderCache = new Map()) {
+  const directPayerEmail = String(member?.payerEmail || "").trim();
+  const directPayerFirstName = String(member?.payerFirstName || "").trim();
   const fallbackEmail = String(member?.memberEmail || "").trim();
   const orderId = member?.orderId;
+
+  if (directPayerEmail) {
+    return {
+      email: directPayerEmail,
+      firstName: directPayerFirstName || String(member?.firstName || "").trim()
+    };
+  }
+
   if (!orderId) {
     return {
       email: fallbackEmail,
@@ -874,7 +886,7 @@ async function resolveMembershipContact(env, member, orderCache = new Map()) {
   const payerEmail = String(payer?.email || "").trim();
   return {
     email: payerEmail || fallbackEmail,
-    firstName: String(payer?.firstName || member?.firstName || "").trim()
+    firstName: String(payer?.firstName || directPayerFirstName || member?.firstName || "").trim()
   };
 }
 
