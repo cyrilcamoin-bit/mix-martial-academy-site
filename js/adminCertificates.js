@@ -471,36 +471,61 @@
     tbody.querySelectorAll(".certificate-reminder-send-one").forEach(function (button) {
       button.disabled = true;
     });
-    setStatus("Envoi des relances certificats médicaux…", "");
+
+    var totals = {
+      sent: 0,
+      received: 0,
+      invalidEmail: 0,
+      failed: 0,
+      notFound: 0
+    };
 
     try {
-      var response = await fetch(API_BASE + "/admin/certificates/reminders/send", {
-        method: "POST",
-        headers: authHeaders({ "Content-Type": "application/json" }),
-        body: JSON.stringify({ memberIds: memberIds })
-      });
-      var data = await response.json().catch(function () { return {}; });
+      var batchSize = 20;
+      var totalBatches = Math.ceil(memberIds.length / batchSize);
 
-      if (response.status === 401) throw new Error("unauthorized");
-      if (!response.ok || !data.ok) throw new Error(data.error || "send_failed");
+      for (var start = 0, batchIndex = 0; start < memberIds.length; start += batchSize, batchIndex += 1) {
+        var batch = memberIds.slice(start, start + batchSize);
+        setStatus(
+          "Envoi des relances certificats médicaux… lot " + (batchIndex + 1) + "/" + totalBatches +
+          " (" + Math.min(start + batch.length, memberIds.length) + "/" + memberIds.length + ")",
+          ""
+        );
+
+        var response = await fetch(API_BASE + "/admin/certificates/reminders/send", {
+          method: "POST",
+          headers: authHeaders({ "Content-Type": "application/json" }),
+          body: JSON.stringify({ memberIds: batch })
+        });
+        var data = await response.json().catch(function () { return {}; });
+
+        if (response.status === 401) throw new Error("unauthorized");
+        if (!response.ok || !data.ok) throw new Error(data.error || "send_failed");
+
+        totals.sent += Number(data.sent || 0);
+        totals.received += Number(data.received || 0);
+        totals.invalidEmail += Number(data.invalidEmail || 0);
+        totals.failed += Number(data.failed || 0);
+        totals.notFound += Number(data.notFound || 0);
+      }
 
       var parts = [];
-      if (data.sent) parts.push(data.sent + " envoyée(s)");
-      if (data.received) parts.push(data.received + " certificat(s) déjà reçu(s)");
-      if (data.invalidEmail) parts.push(data.invalidEmail + " e-mail invalide");
-      if (data.failed) parts.push(data.failed + " échec(s)");
-      if (data.notFound) parts.push(data.notFound + " introuvable(s)");
+      if (totals.sent) parts.push(totals.sent + " envoyée(s)");
+      if (totals.received) parts.push(totals.received + " certificat(s) déjà reçu(s)");
+      if (totals.invalidEmail) parts.push(totals.invalidEmail + " e-mail invalide");
+      if (totals.failed) parts.push(totals.failed + " échec(s)");
+      if (totals.notFound) parts.push(totals.notFound + " introuvable(s)");
 
       await loadStatus();
       setStatus(
         "Relances : " + (parts.length ? parts.join(" · ") : "aucun envoi"),
-        data.failed || data.invalidEmail || data.notFound ? "error" : "success"
+        totals.failed || totals.invalidEmail || totals.notFound ? "error" : "success"
       );
     } catch (error) {
       if (error.message === "unauthorized") {
         setStatus("Votre accès administrateur a expiré.", "error");
       } else {
-        setStatus("Impossible d’envoyer les relances pour le moment.", "error");
+        setStatus("Envoi interrompu. Certaines relances ont peut-être déjà été envoyées. Actualisez l’historique avant de recommencer.", "error");
       }
       updateReminderBulkButton();
     }
