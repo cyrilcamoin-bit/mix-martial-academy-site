@@ -1,5 +1,5 @@
 {
-  "version": "20261006-certificate-reminders-v1",
-  "deployedFrom": "feature/certificate-reminders",
-  "note": "Relances manuelles pour certificats médicaux dans l’espace administrateur."
+  "version": "20261006-certificate-reminders-batch-v2",
+  "deployedFrom": "main",
+  "note": "Envoi des relances certificats par lots de 20 pour respecter la limite API."
 }
