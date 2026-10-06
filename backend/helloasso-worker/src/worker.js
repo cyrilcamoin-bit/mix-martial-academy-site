@@ -348,6 +348,11 @@ function paymentReminderKey(dateValue, paymentId) {
   return `payment-reminders/${dateValue}/${String(paymentId)}.json`;
 }
 
+function paymentReminderHistoryKey(dateValue, paymentId, sentAt) {
+  const safeSentAt = String(sentAt || "").replace(/[:.]/g, "-");
+  return `payment-reminders-history/${dateValue}/${String(paymentId)}/${safeSentAt}.json`;
+}
+
 async function getPaymentReminder(env, dateValue, paymentId) {
   if (!storageReady(env) || paymentId == null) return null;
   const object = await env.CERTIFICATES.get(paymentReminderKey(dateValue, paymentId));
@@ -367,38 +372,66 @@ async function getPaymentReminder(env, dateValue, paymentId) {
 async function listPaymentReminders(env, limit = 100) {
   if (!storageReady(env)) return [];
 
-  const listed = await env.CERTIFICATES.list({
-    prefix: "payment-reminders/",
-    limit: Math.max(1, Math.min(Number(limit) || 100, 500))
-  });
-
+  const maxRows = Math.max(1, Math.min(Number(limit) || 100, 500));
   const rows = [];
-  for (const object of listed.objects || []) {
-    const match = String(object.key || "").match(/^payment-reminders\/(\d{4}-\d{2}-\d{2})\/([^/]+)\.json$/);
-    if (!match) continue;
+  const seen = new Set();
 
-    const stored = await env.CERTIFICATES.get(object.key);
-    if (!stored) continue;
-
-    try {
-      const data = JSON.parse(await stored.text());
-      rows.push({
-        date: match[1],
-        paymentId: data.paymentId ?? match[2],
-        orderId: data.orderId ?? null,
-        sentAt: data.sentAt || null,
-        email: data.email || "",
-        payerFirstName: data.payerFirstName || "",
-        payerLastName: data.payerLastName || "",
-        members: Array.isArray(data.members) ? data.members : [],
-        amount: Number(data.amount || 0),
-        status: "sent"
+  async function collect(prefix, matcher) {
+    let cursor;
+    do {
+      const listed = await env.CERTIFICATES.list({
+        prefix,
+        limit: 1000,
+        cursor
       });
-    } catch {}
+
+      for (const object of listed.objects || []) {
+        const match = matcher(String(object.key || ""));
+        if (!match) continue;
+
+        const stored = await env.CERTIFICATES.get(object.key);
+        if (!stored) continue;
+
+        try {
+          const data = JSON.parse(await stored.text());
+          const date = match.date;
+          const paymentId = data.paymentId ?? match.paymentId;
+          const sentAt = data.sentAt || null;
+          const dedupeKey = [String(paymentId), String(sentAt || ""), String(data.email || "")].join("|");
+          if (seen.has(dedupeKey)) continue;
+          seen.add(dedupeKey);
+
+          rows.push({
+            date,
+            paymentId,
+            orderId: data.orderId ?? null,
+            sentAt,
+            email: data.email || "",
+            payerFirstName: data.payerFirstName || "",
+            payerLastName: data.payerLastName || "",
+            members: Array.isArray(data.members) ? data.members : [],
+            amount: Number(data.amount || 0),
+            status: "sent"
+          });
+        } catch {}
+      }
+
+      cursor = listed.truncated ? listed.cursor : undefined;
+    } while (cursor);
   }
 
+  await collect("payment-reminders-history/", (key) => {
+    const match = key.match(/^payment-reminders-history\/(\d{4}-\d{2}-\d{2})\/([^/]+)\/[^/]+\.json$/);
+    return match ? { date: match[1], paymentId: match[2] } : null;
+  });
+
+  await collect("payment-reminders/", (key) => {
+    const match = key.match(/^payment-reminders\/(\d{4}-\d{2}-\d{2})\/([^/]+)\.json$/);
+    return match ? { date: match[1], paymentId: match[2] } : null;
+  });
+
   rows.sort((a, b) => String(b.sentAt || "").localeCompare(String(a.sentAt || "")));
-  return rows;
+  return rows.slice(0, maxRows);
 }
 
 function formatDateFr(dateValue) {
@@ -748,17 +781,28 @@ async function storePaymentReminder(env, dateValue, payment) {
     members: paymentMemberNames(payment),
     amount: Number(payment?.amount || 0)
   };
+
+  const payload = JSON.stringify(record);
+  const metadata = {
+    httpMetadata: { contentType: "application/json" },
+    customMetadata: {
+      sentAt,
+      paymentId: String(payment.paymentId ?? "")
+    }
+  };
+
   await env.CERTIFICATES.put(
     paymentReminderKey(dateValue, payment.paymentId),
-    JSON.stringify(record),
-    {
-      httpMetadata: { contentType: "application/json" },
-      customMetadata: {
-        sentAt,
-        paymentId: String(payment.paymentId ?? "")
-      }
-    }
+    payload,
+    metadata
   );
+
+  await env.CERTIFICATES.put(
+    paymentReminderHistoryKey(dateValue, payment.paymentId, sentAt),
+    payload,
+    metadata
+  );
+
   return record;
 }
 
@@ -1396,17 +1440,6 @@ export default {
           const date = String(payment.dateKey || "").trim();
           if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
             results.push({ paymentId, status: "invalid_payment_date" });
-            continue;
-          }
-
-          const existing = await getPaymentReminder(env, date, payment.paymentId);
-          if (existing?.sentAt) {
-            results.push({
-              paymentId,
-              status: "already_sent",
-              sentAt: existing.sentAt,
-              email: existing.email || ""
-            });
             continue;
           }
 
