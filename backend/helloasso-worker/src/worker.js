@@ -437,10 +437,25 @@ function buildPaymentReminderMail(payment, dateValue) {
     "",
     "HelloAsso vous a envoyé un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
     "",
+    "Vous ne retrouvez pas l’e-mail HelloAsso ? Aucun problème.",
+    "",
+    "Vous pouvez accéder directement à votre espace HelloAsso et retrouver votre paiement :",
+    "1. Rendez-vous sur la page de connexion HelloAsso : https://auth.helloasso.com/connexion",
+    "2. Cliquez sur « Mot de passe oublié »",
+    "3. Saisissez l’adresse e-mail utilisée lors du paiement",
+    "4. Utilisez le lien reçu par e-mail pour créer ou réinitialiser votre mot de passe",
+    "5. Connectez-vous à votre espace HelloAsso",
+    "6. Retrouvez votre paiement au statut « Refusé » et procédez à sa régularisation",
+    "",
+    "Une fois la régularisation effectuée, le statut du paiement passera à « Payé ».",
+    "",
+    "Cette procédure vous permet donc de régulariser votre échéance même si vous ne retrouvez plus l’e-mail initial envoyé par HelloAsso.",
+    "",
     "Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.",
     "",
     "Cordialement,",
-    "Mix Martial Academy — Le Rove"
+    "Mix Martial Academy — Le Rove",
+    "www.mma-lerove.fr"
   ].join("\n");
 
   const htmlBody = `<!doctype html>
@@ -469,6 +484,43 @@ function buildPaymentReminderMail(payment, dateValue) {
                   Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams,
                   puis d’effectuer la régularisation dès que possible.
                 </p>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:22px 0;background:#f5f5f5;border:1px solid #dddddd;border-radius:12px;">
+                  <tr>
+                    <td style="padding:20px;">
+                      <p style="margin:0 0 12px;font-size:16px;line-height:1.5;font-weight:700;color:#171717;">
+                        Vous ne retrouvez pas l’e-mail HelloAsso ? Aucun problème.
+                      </p>
+                      <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#333333;">
+                        Vous pouvez accéder directement à votre espace HelloAsso et retrouver votre paiement :
+                      </p>
+                      <ol style="margin:0 0 18px;padding-left:20px;color:#333333;font-size:15px;line-height:1.7;">
+                        <li>Rendez-vous sur la page de connexion HelloAsso.</li>
+                        <li>Cliquez sur <strong>« Mot de passe oublié »</strong>.</li>
+                        <li>Saisissez <strong>l’adresse e-mail utilisée lors du paiement</strong>.</li>
+                        <li>Utilisez le lien reçu par e-mail pour créer ou réinitialiser votre mot de passe.</li>
+                        <li>Connectez-vous à votre espace HelloAsso.</li>
+                        <li>Retrouvez votre paiement au statut <strong>« Refusé »</strong> et procédez à sa régularisation.</li>
+                      </ol>
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto 16px;">
+                        <tr>
+                          <td align="center" bgcolor="#c90f13" style="border-radius:999px;">
+                            <a href="https://auth.helloasso.com/connexion" style="display:inline-block;padding:12px 22px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;">
+                              Se connecter à HelloAsso
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                      <p style="margin:0 0 10px;font-size:14px;line-height:1.6;color:#555555;">
+                        Une fois la régularisation effectuée, le statut du paiement passera à <strong>« Payé »</strong>.
+                      </p>
+                      <p style="margin:0;font-size:14px;line-height:1.6;color:#555555;">
+                        Cette procédure vous permet donc de régulariser votre échéance même si vous ne retrouvez plus l’e-mail initial envoyé par HelloAsso.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
                 <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#555555;">
                   Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.
                 </p>
