@@ -1,5 +1,5 @@
 {
-  "version": "20261005-icloud-smtp-diag-v1",
-  "deployedFrom": "main",
-  "note": "Diagnostic précis de l’envoi SMTP iCloud."
+  "version": "20261006-certificate-reminders-v1",
+  "deployedFrom": "feature/certificate-reminders",
+  "note": "Relances manuelles pour certificats médicaux dans l’espace administrateur."
 }
