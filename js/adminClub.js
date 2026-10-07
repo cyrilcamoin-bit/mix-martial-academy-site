@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const API_BASE = 'https://mma-lerove-api.cyril-camoin.workers.dev';
   const validViews = new Set(['dashboard', 'aides', 'certificats', 'paiements']);
   const views = {
     dashboard: document.getElementById('admin-club-dashboard'),
@@ -61,31 +62,41 @@
     });
   }
 
-  function waitForUnlockResult(timeoutMs = 12000) {
+  function waitForAidsUnlockResult(timeoutMs = 12000) {
     return new Promise((resolve) => {
       const started = Date.now();
       const timer = window.setInterval(() => {
         const aidsMessage = document.getElementById('admin-message')?.textContent || '';
-        const certificatesPanel = document.getElementById('certificates-admin-panel');
-        const certificatesStatus = document.getElementById('certificates-admin-status')?.textContent || '';
-
         const aidsOk = /demande\(s\) chargée\(s\)\./i.test(aidsMessage);
         const aidsBad = /code personnel incorrect/i.test(aidsMessage);
-        const certificatesOk = certificatesPanel && certificatesPanel.hidden === false;
-        const certificatesBad = /code administrateur incorrect/i.test(certificatesStatus);
 
-        if ((aidsOk || aidsBad) && (certificatesOk || certificatesBad)) {
+        if (aidsOk || aidsBad) {
           window.clearInterval(timer);
-          resolve({ aidsOk, certificatesOk, aidsBad, certificatesBad });
+          resolve({ aidsOk, aidsBad });
           return;
         }
 
         if (Date.now() - started >= timeoutMs) {
           window.clearInterval(timer);
-          resolve({ aidsOk, certificatesOk, aidsBad, certificatesBad, timeout: true });
+          resolve({ aidsOk, aidsBad, timeout: true });
         }
       }, 150);
     });
+  }
+
+  async function verifyCertificateAccess(code) {
+    try {
+      const response = await fetch(API_BASE + '/admin/mail/status', {
+        headers: { Authorization: 'Bearer ' + code },
+        cache: 'no-store'
+      });
+
+      if (response.status === 401) return { ok: false, badCode: true };
+      if (!response.ok) return { ok: false, unavailable: true };
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, unavailable: true };
+    }
   }
 
   async function unlockAll() {
@@ -107,12 +118,17 @@
     if (aidsInput) aidsInput.value = code;
     if (certificatesInput) certificatesInput.value = code;
 
+    const certificateCheckPromise = verifyCertificateAccess(code);
+
     aidsButton?.click();
     certificatesButton?.click();
 
-    const result = await waitForUnlockResult();
+    const [aidsResult, certificateResult] = await Promise.all([
+      waitForAidsUnlockResult(),
+      certificateCheckPromise
+    ]);
 
-    if (result.aidsOk && result.certificatesOk) {
+    if (aidsResult.aidsOk && certificateResult.ok) {
       document.body.classList.add('admin-club-unlocked');
       protectedControlsEnabled(true);
       if (masterInput) {
@@ -122,10 +138,14 @@
       masterButton.hidden = true;
       accessCard?.classList.add('is-unlocked');
       setMasterStatus('Administration déverrouillée : aides, certificats et échéances refusées sont accessibles.');
-    } else if (result.aidsOk && !result.certificatesOk) {
-      setMasterStatus('Le mot de passe ouvre les aides, mais pas encore les certificats. Le code Cloudflare ADMIN_API_TOKEN doit être identique au code des aides.', true);
-    } else if (!result.aidsOk && result.certificatesOk) {
-      setMasterStatus('Le mot de passe ouvre les certificats, mais pas les aides. Utilisez le code actuel des aides comme mot de passe principal.', true);
+    } else if (certificateResult.unavailable) {
+      setMasterStatus('Impossible de vérifier l’accès Cloudflare pour le moment. Réessayez dans quelques secondes.', true);
+    } else if (aidsResult.aidsOk && certificateResult.badCode) {
+      setMasterStatus('Le mot de passe ouvre les aides, mais pas les certificats. Vérifiez le code administrateur Cloudflare.', true);
+    } else if (aidsResult.aidsBad && certificateResult.ok) {
+      setMasterStatus('Le mot de passe ouvre les certificats, mais pas les aides. Vérifiez le code des aides.', true);
+    } else if (aidsResult.timeout) {
+      setMasterStatus('La vérification des aides prend plus de temps que prévu. Réessayez dans quelques secondes.', true);
     } else {
       setMasterStatus('Mot de passe incorrect.', true);
     }
