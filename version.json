@@ -1,5 +1,5 @@
 {
-  "version": "20261006-certificate-reminders-batch-v2",
+  "version": "20261007-admin-unlock-racefix-v1",
   "deployedFrom": "main",
-  "note": "Envoi des relances certificats par lots de 20 pour respecter la limite API."
+  "note": "Correction du faux message d’erreur lors du premier déverrouillage de l’administration."
 }
