@@ -247,6 +247,58 @@ function paymentDateKey(value) {
   return match ? match[1] : "";
 }
 
+function normalizeSmsPhone(value) {
+  let phone = String(value || "").trim();
+  if (!phone) return "";
+  phone = phone.replace(/[^\d+]/g, "");
+  if (phone.startsWith("00")) phone = "+" + phone.slice(2);
+  if (/^0\d{9}$/.test(phone)) phone = "+33" + phone.slice(1);
+  if (!/^\+?\d{8,15}$/.test(phone)) return "";
+  return phone;
+}
+
+function phoneFromCustomFields(fields) {
+  for (const field of Array.isArray(fields) ? fields : []) {
+    const type = String(field?.type || "").toLowerCase();
+    const name = normalizeText(field?.name || field?.label || "");
+    if (type === "phone" || /telephone|mobile|portable|tel/.test(name)) {
+      const phone = normalizeSmsPhone(field?.answer);
+      if (phone) return phone;
+    }
+  }
+  return "";
+}
+
+function phoneFromOrder(order, orderItems) {
+  const directCandidates = [
+    order?.payer?.phone,
+    order?.payer?.mobile,
+    order?.payer?.phoneNumber
+  ];
+  for (const candidate of directCandidates) {
+    const phone = normalizeSmsPhone(candidate);
+    if (phone) return phone;
+  }
+
+  for (const item of Array.isArray(orderItems) ? orderItems : []) {
+    const userCandidates = [item?.user?.phone, item?.user?.mobile, item?.user?.phoneNumber];
+    for (const candidate of userCandidates) {
+      const phone = normalizeSmsPhone(candidate);
+      if (phone) return phone;
+    }
+
+    const itemPhone = phoneFromCustomFields(item?.customFields);
+    if (itemPhone) return itemPhone;
+
+    for (const option of Array.isArray(item?.options) ? item.options : []) {
+      const optionPhone = phoneFromCustomFields(option?.customFields);
+      if (optionPhone) return optionPhone;
+    }
+  }
+
+  return "";
+}
+
 async function fetchRefusedPayments(env) {
   const token = await getAccessToken(env);
   const payments = [];
@@ -321,6 +373,7 @@ async function fetchRefusedPayments(env) {
       installmentNumber: payment?.installmentNumber ?? null,
       amount: Number(payment?.amount || 0),
       state: String(payment?.state || ""),
+      smsPhone: phoneFromOrder(order, orderItems),
       payer: {
         firstName: String(payer?.firstName || "").trim(),
         lastName: String(payer?.lastName || "").trim(),
