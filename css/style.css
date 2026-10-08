@@ -4730,8 +4730,8 @@ p {
 
 /* ── ACCUEIL — PLANNING INTÉGRÉ AU BLOC ESSAIS ───────────── */
 .home-trial-card-integrated {
-  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
-  gap: clamp(2rem, 4vw, 4rem);
+  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  gap: clamp(1.7rem, 3vw, 3rem);
 }
 
 .home-trial-inline-actions {
@@ -4765,13 +4765,14 @@ p {
   z-index: 1;
   align-self: stretch;
   display: grid;
-  align-content: center;
-  padding-left: clamp(1.6rem, 3vw, 3.1rem);
+  align-content: start;
+  padding-left: clamp(1.5rem, 2.5vw, 2.5rem);
+  padding-top: 0.35rem;
   border-left: 1px solid rgba(239, 64, 47, 0.30);
 }
 
 .home-trial-schedule-head {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.65rem;
 }
 
 .home-trial-schedule-kicker {
@@ -4787,8 +4788,8 @@ p {
 .home-trial-schedule-head h3 {
   margin: 0;
   color: #fff;
-  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
-  letter-spacing: -0.025em;
+  font-size: clamp(1.28rem, 1.8vw, 1.62rem);
+  letter-spacing: -0.02em;
 }
 
 .home-trial-schedule-list {
@@ -4796,11 +4797,11 @@ p {
 }
 
 .home-trial-schedule-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.95rem 0;
+  gap: 1.15rem;
+  padding: 1rem 0;
   border-top: 1px solid rgba(255,255,255,0.10);
   opacity: 0;
   animation: home-trial-schedule-enter 360ms ease-out forwards;
@@ -4815,24 +4816,26 @@ p {
 
 .home-trial-schedule-label strong {
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.96rem;
 }
 
 .home-trial-schedule-label small {
   color: rgba(255,255,255,0.58);
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 800;
 }
 
 .home-trial-schedule-time {
   flex: 0 0 auto;
-  padding: 0.48rem 0.72rem;
+  min-width: 118px;
+  padding: 0.42rem 0.62rem;
   border: 1px solid rgba(255, 92, 72, 0.35);
   border-radius: 999px;
   background: rgba(255, 73, 51, 0.12);
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 950;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -4893,5 +4896,28 @@ p {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+
+.home-trial-card-integrated .home-trial-copy {
+  max-width: 760px;
+}
+
+
+@media (max-width: 520px) {
+  .home-trial-schedule-row {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    text-align: center;
+  }
+
+  .home-trial-schedule-label {
+    text-align: center;
+  }
+
+  .home-trial-schedule-time {
+    justify-self: center;
+    min-width: 132px;
   }
 }
