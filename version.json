@@ -1,5 +1,5 @@
 {
-  "version": "20261008-action-labels-v3",
+  "version": "20261008-smart-schedule-v1",
   "deployedFrom": "main",
-  "note": "Forçage Safari avec nouveau fichier JS : RELANCE MAIL et RELANCE SMS."
+  "note": "Planning accueil regroupé en une carte Lundi & Mercredi avec micro-animation."
 }
