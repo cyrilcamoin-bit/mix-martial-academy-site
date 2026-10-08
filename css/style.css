@@ -3112,9 +3112,9 @@ p {
 .home-trial-card::before {
   width: 250px;
   height: 250px;
-  right: 22px;
-  top: 12px;
-  opacity: 0.18;
+  right: -34px;
+  top: -26px;
+  opacity: 0.10;
   background:
     linear-gradient(135deg, transparent 0 38%, #b43229 38% 61%, transparent 61%),
     linear-gradient(45deg, transparent 0 38%, #7e211c 38% 61%, transparent 61%);
@@ -4767,7 +4767,7 @@ p {
   display: grid;
   align-content: start;
   padding-left: clamp(1.5rem, 2.5vw, 2.5rem);
-  padding-top: 0.35rem;
+  padding-top: 1.05rem;
   border-left: 1px solid rgba(239, 64, 47, 0.30);
 }
 
@@ -4798,10 +4798,10 @@ p {
 
 .home-trial-schedule-row {
   display: grid;
-  grid-template-columns: minmax(130px, 1fr) auto;
+  grid-template-columns: minmax(155px, 1fr) 132px;
   align-items: center;
-  gap: 1.15rem;
-  padding: 1rem 0;
+  gap: 1.35rem;
+  padding: 1.08rem 0;
   border-top: 1px solid rgba(255,255,255,0.10);
   opacity: 0;
   animation: home-trial-schedule-enter 360ms ease-out forwards;
@@ -4827,13 +4827,14 @@ p {
 
 .home-trial-schedule-time {
   flex: 0 0 auto;
-  min-width: 118px;
-  padding: 0.42rem 0.62rem;
+  width: 132px;
+  min-width: 132px;
+  padding: 0.46rem 0.66rem;
   border: 1px solid rgba(255, 92, 72, 0.35);
   border-radius: 999px;
   background: rgba(255, 73, 51, 0.12);
   color: #fff;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 950;
   text-align: center;
   white-space: nowrap;
