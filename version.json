@@ -1,5 +1,5 @@
 {
-  "version": "20261008-actions-mail-sms-v2",
+  "version": "20261008-action-labels-v1",
   "deployedFrom": "main",
-  "note": "Interface échéances refusées simplifiée : uniquement Relancer par mail et SMS."
+  "note": "Libellés des actions échéances refusées : RELANCE MAIL et RELANCE SMS."
 }
