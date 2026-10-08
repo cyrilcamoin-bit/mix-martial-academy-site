@@ -91,13 +91,18 @@
     }
 
     var message = smsTemplate(payment);
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(message).catch(function () {});
-    }
-
     var isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
     var separator = isAppleMobile ? "&" : "?";
-    window.location.href = "sms:" + phone + separator + "body=" + encodeURIComponent(message);
+    var smsUrl = "sms:" + phone + separator + "body=" + encodeURIComponent(message);
+    var launchSms = function () {
+      window.location.href = smsUrl;
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(message).then(launchSms, launchSms);
+    } else {
+      launchSms();
+    }
   }
 
   function setStatus(message, kind) {
