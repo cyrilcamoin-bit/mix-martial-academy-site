@@ -74,15 +74,35 @@
     var payer = payment.payer || {};
     var firstName = String(payer.firstName || "").trim();
     var adherents = memberNames(payment);
-    var intro = firstName ? "Bonjour " + firstName + ", " : "Bonjour, ";
-    return intro +
-      "l’échéance de la cotisation au club de MMA, prévue le " + dateFr(payment.dateKey) +
-      (adherents !== "—" ? " pour l’adhésion de " + adherents : "") +
-      ", est actuellement refusée. Pour régulariser, rendez-vous sur https://auth.helloasso.com/connexion " +
-      "puis : 1) cliquez sur « Mot de passe oublié » ; 2) saisissez l’adresse e-mail utilisée lors du paiement ; " +
-      "3) ouvrez le lien reçu par e-mail et créez/réinitialisez votre mot de passe ; 4) connectez-vous à votre espace HelloAsso ; " +
-      "5) retrouvez le paiement au statut « Refusé » et régularisez-le. Une fois régularisé, son statut passera à « Payé ». " +
-      "Mix Martial Academy — Le Rove";
+    var intro = firstName ? "Bonjour " + firstName + "," : "Bonjour,";
+
+    return [
+      intro,
+      "",
+      "🥋 Cotisation Mix Martial Academy — Le Rove",
+      "L’échéance prévue le " + dateFr(payment.dateKey) +
+        (adherents !== "—" ? " pour l’adhésion de " + adherents : "") +
+        " est actuellement refusée.",
+      "",
+      "👉 Pour régulariser :",
+      "",
+      "1️⃣ Rendez-vous sur :",
+      "https://auth.helloasso.com/connexion",
+      "",
+      "2️⃣ Cliquez sur « Mot de passe oublié »",
+      "",
+      "3️⃣ Saisissez l’adresse e-mail utilisée lors du paiement",
+      "",
+      "4️⃣ Ouvrez le lien reçu par e-mail et créez/réinitialisez votre mot de passe",
+      "",
+      "5️⃣ Connectez-vous à votre espace HelloAsso",
+      "",
+      "6️⃣ Retrouvez le paiement au statut « Refusé » et procédez à sa régularisation",
+      "",
+      "✅ Une fois régularisé, le statut passera à « Payé ».",
+      "",
+      "Mix Martial Academy — Le Rove"
+    ].join("\n");
   }
 
   function openSms(payment) {
