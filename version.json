@@ -1,5 +1,5 @@
 {
-  "version": "20261008-action-labels-v1",
+  "version": "20261008-action-labels-v3",
   "deployedFrom": "main",
-  "note": "Libellés des actions échéances refusées : RELANCE MAIL et RELANCE SMS."
+  "note": "Forçage Safari avec nouveau fichier JS : RELANCE MAIL et RELANCE SMS."
 }
