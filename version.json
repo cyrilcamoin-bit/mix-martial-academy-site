@@ -1,5 +1,5 @@
 {
-  "version": "20261008-trial-schedule-v4",
+  "version": "20261008-trial-schedule-v5",
   "deployedFrom": "main",
-  "note": "Finition du module essais : horaires mieux alignés, motif atténué et espacement ajusté."
+  "note": "Refonte graphique du planning intégré : panneau dédié, proportions et hiérarchie visuelle revues."
 }
