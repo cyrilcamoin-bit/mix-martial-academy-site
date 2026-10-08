@@ -141,47 +141,6 @@
     mailState.className = "payment-mail-state" + (kind ? " is-" + kind : "");
   }
 
-  function emailTemplate(payment) {
-    var payer = payment.payer || {};
-    var firstName = String(payer.firstName || "").trim();
-    var adherents = memberNames(payment);
-    var intro = firstName ? "Bonjour " + firstName + "," : "Bonjour,";
-    var subject = "Échéance HelloAsso refusée — régularisation";
-    var body = [
-      intro,
-      "",
-      "Nous vous informons que l’échéance HelloAsso du " + dateFr(payment.dateKey) +
-        (adherents !== "—" ? " concernant l’adhésion de " + adherents : "") + " a été refusée.",
-      "",
-      "HelloAsso vous a envoyé un e-mail contenant le lien permettant de régulariser la situation. Merci de vérifier votre boîte de réception principale ainsi que vos messages indésirables / spams, puis d’effectuer la régularisation dès que possible.",
-      "",
-      "Vous ne retrouvez pas l’e-mail HelloAsso ? Aucun problème.",
-      "",
-      "Vous pouvez accéder directement à votre espace HelloAsso et retrouver votre paiement :",
-      "1. Rendez-vous sur la page de connexion HelloAsso : https://auth.helloasso.com/connexion",
-      "2. Cliquez sur « Mot de passe oublié »",
-      "3. Saisissez l’adresse e-mail utilisée lors du paiement",
-      "4. Utilisez le lien reçu par e-mail pour créer ou réinitialiser votre mot de passe",
-      "5. Connectez-vous à votre espace HelloAsso",
-      "6. Retrouvez votre paiement au statut « Refusé » et procédez à sa régularisation",
-      "",
-      "Une fois la régularisation effectuée, le statut du paiement passera à « Payé ».",
-      "",
-      "Cette procédure vous permet donc de régulariser votre échéance même si vous ne retrouvez plus l’e-mail initial envoyé par HelloAsso.",
-      "",
-      "Si la régularisation a déjà été effectuée entre-temps, vous pouvez ne pas tenir compte de ce message.",
-      "",
-      "Cordialement,",
-      "Mix Martial Academy — Le Rove",
-      "www.mma-lerove.fr"
-    ].join("\n");
-
-    return {
-      email: String(payer.email || "").trim(),
-      subject: subject,
-      body: body
-    };
-  }
 
   function selectedPaymentIds() {
     return Array.from(tbody.querySelectorAll(".payment-row-check:checked")).map(function (checkbox) {
@@ -231,10 +190,8 @@
         "<td data-label='Montant'>" + escapeHtml(euro(payment.amount)) + "</td>" +
         "<td data-label='Statut'>" + reminderStatus + "</td>" +
         "<td data-label='Actions'><div class='certificate-row-actions'>" +
-          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Relancer" : "Envoyer") + "</button>" +
+          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Relancer par mail" : "Envoyer par mail") + "</button>" +
           "<button class='button button-small button-outline payment-sms' data-index='" + index + "' type='button' " + (hasPhone ? "" : "disabled") + ">SMS</button>" +
-          "<button class='button button-small button-outline payment-copy-mail' data-index='" + index + "' type='button' " + (email ? "" : "disabled") + ">Copier</button>" +
-          "<a class='button button-small button-outline payment-open-mail' data-index='" + index + "' href='#' " + (email ? "" : "aria-disabled='true'") + ">Préparer</a>" +
         "</div></td>" +
       "</tr>";
     }).join("");
@@ -257,31 +214,6 @@
       });
     });
 
-    tbody.querySelectorAll(".payment-copy-mail").forEach(function (button) {
-      button.addEventListener("click", async function () {
-        var payment = payments[Number(button.getAttribute("data-index"))];
-        var template = emailTemplate(payment);
-        var text = "À : " + template.email + "\nObjet : " + template.subject + "\n\n" + template.body;
-        try {
-          await navigator.clipboard.writeText(text);
-          setStatus("Relance copiée dans le presse-papiers.", "success");
-        } catch (error) {
-          setStatus("Impossible de copier automatiquement la relance.", "error");
-        }
-      });
-    });
-
-    tbody.querySelectorAll(".payment-open-mail").forEach(function (link) {
-      var payment = payments[Number(link.getAttribute("data-index"))];
-      var template = emailTemplate(payment);
-      if (!template.email) {
-        link.addEventListener("click", function (event) { event.preventDefault(); });
-        return;
-      }
-      link.href = "mailto:" + encodeURIComponent(template.email) +
-        "?subject=" + encodeURIComponent(template.subject) +
-        "&body=" + encodeURIComponent(template.body);
-    });
 
     updateBulkButton();
   }
