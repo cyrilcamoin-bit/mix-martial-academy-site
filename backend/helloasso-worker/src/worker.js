@@ -342,6 +342,60 @@ async function fetchRefusedPayments(env) {
     }
   }
 
+
+  const historicalPhoneCache = new Map();
+
+  async function findHistoricalPhone(payerEmail, currentOrderId) {
+    const email = String(payerEmail || "").trim().toLowerCase();
+    if (!email) return "";
+    if (historicalPhoneCache.has(email)) return historicalPhoneCache.get(email);
+
+    let recovered = "";
+    try {
+      for (let pageIndex = 1; pageIndex <= 10 && !recovered; pageIndex += 1) {
+        const url = new URL(`${HELLOASSO_API}/v5/organizations/${ORGANIZATION_SLUG}/orders`);
+        url.searchParams.set("userSearchKey", email);
+        url.searchParams.append("formTypes", "Membership");
+        url.searchParams.set("pageIndex", String(pageIndex));
+        url.searchParams.set("pageSize", "100");
+        url.searchParams.set("withDetails", "true");
+        url.searchParams.set("sortOrder", "Desc");
+
+        const payload = await fetchHelloAssoJson(url, token, "HelloAsso organization orders");
+        const candidates = Array.isArray(payload?.data) ? payload.data : [];
+
+        for (const candidate of candidates) {
+          const candidateOrderId = candidate?.id ?? candidate?.order?.id ?? null;
+          if (candidateOrderId != null && String(candidateOrderId) === String(currentOrderId ?? "")) continue;
+
+          const candidatePayerEmail = String(candidate?.payer?.email || "").trim().toLowerCase();
+          if (candidatePayerEmail !== email) continue;
+
+          recovered = phoneFromOrder(candidate, Array.isArray(candidate?.items) ? candidate.items : []);
+          if (recovered) break;
+
+          if (candidateOrderId != null) {
+            const detailedOrder = await getOrder(candidateOrderId);
+            if (String(detailedOrder?.payer?.email || "").trim().toLowerCase() !== email) continue;
+            recovered = phoneFromOrder(
+              detailedOrder,
+              Array.isArray(detailedOrder?.items) ? detailedOrder.items : []
+            );
+            if (recovered) break;
+          }
+        }
+
+        const totalPages = Number(payload?.pagination?.totalPages || 0);
+        if (!candidates.length || (totalPages && pageIndex >= totalPages)) break;
+      }
+    } catch (error) {
+      console.error("Unable to load previous HelloAsso contact data", error);
+    }
+
+    historicalPhoneCache.set(email, recovered);
+    return recovered;
+  }
+
   const rows = [];
   for (const payment of payments) {
     const orderId = payment?.order?.id ?? null;
@@ -365,6 +419,12 @@ async function fetchRefusedPayments(env) {
     }
 
     const paymentDate = payment?.date || payment?.meta?.updatedAt || null;
+    const payerEmail = String(payer?.email || "").trim();
+    let smsPhone = phoneFromOrder(order, orderItems);
+    if (!smsPhone && payerEmail) {
+      smsPhone = await findHistoricalPhone(payerEmail, orderId);
+    }
+
     rows.push({
       paymentId: payment?.id ?? null,
       orderId,
@@ -373,11 +433,11 @@ async function fetchRefusedPayments(env) {
       installmentNumber: payment?.installmentNumber ?? null,
       amount: Number(payment?.amount || 0),
       state: String(payment?.state || ""),
-      smsPhone: phoneFromOrder(order, orderItems),
+      smsPhone,
       payer: {
         firstName: String(payer?.firstName || "").trim(),
         lastName: String(payer?.lastName || "").trim(),
-        email: String(payer?.email || "").trim()
+        email: payerEmail
       },
       members,
       itemNames: orderItems.map((item) => String(item?.name || "").trim()).filter(Boolean)
