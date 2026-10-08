@@ -1,5 +1,5 @@
 {
-  "version": "20261008-smart-schedule-v1",
+  "version": "20261008-trial-schedule-v2",
   "deployedFrom": "main",
-  "note": "Planning accueil regroupé en une carte Lundi & Mercredi avec micro-animation."
+  "note": "Horaires intégrés au module Pour commencer / cours d'essai."
 }
