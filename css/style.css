@@ -633,6 +633,84 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.schedule-grid.schedule-grid-smart {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(100%, 860px);
+  margin-inline: auto;
+}
+
+.schedule-card-smart {
+  padding: clamp(1.1rem, 2vw, 1.45rem);
+  animation: schedule-card-enter 420ms ease-out both;
+}
+
+.schedule-smart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.schedule-smart-head h3 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+}
+
+.schedule-smart-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.schedule-card-smart .schedule-list {
+  margin-top: 0.2rem;
+}
+
+.smart-schedule-row {
+  opacity: 0;
+  animation: schedule-row-enter 360ms ease-out forwards;
+}
+
+.smart-schedule-row:nth-child(1) { animation-delay: 90ms; }
+.smart-schedule-row:nth-child(2) { animation-delay: 170ms; }
+.smart-schedule-row:nth-child(3) { animation-delay: 250ms; }
+
+@keyframes schedule-card-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes schedule-row-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-card-smart,
+  .smart-schedule-row {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .schedule-smart-head {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .schedule-smart-subtitle {
+    text-align: center;
+  }
+}
+
 .schedule-card,
 .price-card,
 .material-card {
