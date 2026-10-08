@@ -50,9 +50,9 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261008-smart-schedule-v1">
+  <link rel="stylesheet" href="css/style.css?v=20261008-trial-schedule-v2">
   <script src="js/clubData.js?v=20260922-siege-gignac" defer></script>
-  <script src="js/inscription.js?v=20261008-smart-schedule-v1" defer></script>
+  <script src="js/inscription.js?v=20261008-trial-schedule-v2" defer></script>
   <script src="js/navigation.js?v=20260920-essais-dates" defer></script>
   <script src="js/mmaLeague.js?v=20260906-mma-league-labels" defer></script>
   <script src="js/chatbot.js?v=20260906-whatsapp" defer></script>
@@ -147,17 +147,8 @@
         </div>
       </div>
 
-      <div class="section home-courses" id="cours">
-        <div class="section-head home-section-head">
-          <p class="eyebrow">Cours &amp; horaires</p>
-          <h2>Votre cr&eacute;neau, simplement.</h2>
-          <p class="home-section-intro">Les m&ecirc;mes cr&eacute;neaux chaque lundi et mercredi. Choisissez simplement votre section selon l'&acirc;ge.</p>
-        </div>
-        <div class="schedule-grid" data-render="schedule"></div>
-      </div>
-
-      <div class="section band home-trial-band">
-        <div class="trial-card home-trial-card">
+      <div class="section band home-trial-band" id="cours">
+        <div class="trial-card home-trial-card home-trial-card-integrated">
           <div class="home-trial-copy">
             <div class="home-trial-kicker"><span class="home-trial-kicker-dot" aria-hidden="true"></span><span>Pour commencer</span><span class="home-trial-kicker-line" aria-hidden="true"></span></div>
             <h2>3 cours d'essai du 1er au 13 septembre</h2>
@@ -166,11 +157,18 @@
               <p><strong>&Agrave; partir du 14 septembre 2026,</strong> il reste possible de r&eacute;aliser 1 cours d'essai offert.</p>
               <p>Pas besoin de pr&eacute;venir : pr&eacute;sentez-vous directement au cr&eacute;neau de votre section.</p>
             </div>
+            <div class="home-trial-inline-actions">
+              <a class="button home-trial-primary" href="#tarifs"><span>Tarifs &amp; inscription</span><span class="home-trial-arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="button home-trial-secondary" href="#contact"><span>Nous contacter</span><span class="home-trial-arrow" aria-hidden="true">&rarr;</span></a>
+            </div>
           </div>
-          <div class="home-trial-actions">
-            <a class="button home-trial-primary" href="#cours"><span>Voir les horaires</span><span class="home-trial-arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="button home-trial-secondary" href="#tarifs"><span>Tarifs &amp; inscription</span><span class="home-trial-arrow" aria-hidden="true">&rarr;</span></a>
-          </div>
+          <aside class="home-trial-schedule" aria-label="Horaires des cours">
+            <div class="home-trial-schedule-head">
+              <span class="home-trial-schedule-kicker">Cours &amp; horaires</span>
+              <h3>Lundi &amp; Mercredi</h3>
+            </div>
+            <div class="home-trial-schedule-list" data-render="trial-schedule"></div>
+          </aside>
         </div>
       </div>
 
