@@ -70,6 +70,36 @@
     return names.length ? names.join(", ") : "—";
   }
 
+  function smsTemplate(payment) {
+    var payer = payment.payer || {};
+    var firstName = String(payer.firstName || "").trim();
+    var adherents = memberNames(payment);
+    var intro = firstName ? "Bonjour " + firstName + ", " : "Bonjour, ";
+    return intro +
+      "l’échéance HelloAsso du " + dateFr(payment.dateKey) +
+      (adherents !== "—" ? " concernant l’adhésion de " + adherents : "") +
+      " est actuellement refusée. Merci de la régulariser depuis votre espace HelloAsso : " +
+      "https://auth.helloasso.com/connexion (utilisez « Mot de passe oublié » si besoin). " +
+      "Mix Martial Academy — Le Rove";
+  }
+
+  function openSms(payment) {
+    var phone = String(payment.smsPhone || "").trim();
+    if (!phone) {
+      setStatus("Aucun numéro de téléphone exploitable n’a été trouvé dans HelloAsso.", "error");
+      return;
+    }
+
+    var message = smsTemplate(payment);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(message).catch(function () {});
+    }
+
+    var isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    var separator = isAppleMobile ? "&" : "?";
+    window.location.href = "sms:" + phone + separator + "body=" + encodeURIComponent(message);
+  }
+
   function setStatus(message, kind) {
     statusBox.hidden = !message;
     statusBox.textContent = message || "";
@@ -160,17 +190,19 @@
         ? "<span class='payment-sent-badge'>Envoyé le " + escapeHtml(dateTimeFr(payment.reminder.sentAt)) + "</span>"
         : "<span class='payment-refused-badge'>À relancer</span>";
 
+      var hasPhone = Boolean(String(payment.smsPhone || "").trim());
       return "<tr>" +
-        "<td><input class='payment-row-check' type='checkbox' value='" + escapeHtml(payment.paymentId) + "' " + (selectable ? "" : "disabled") + " aria-label='Sélectionner cette relance'></td>" +
-        "<td>" + escapeHtml(dateTimeFr(payment.paymentDate)) + "</td>" +
-        "<td><strong>" + escapeHtml(memberNames(payment)) + "</strong></td>" +
-        "<td>" + escapeHtml(payerName(payment)) + "</td>" +
-        "<td>" + (email ? "<a href='mailto:" + encodeURIComponent(email) + "'>" + escapeHtml(email) + "</a>" : "—") + "</td>" +
-        "<td>" + escapeHtml(payment.installmentNumber == null ? "—" : String(payment.installmentNumber)) + "</td>" +
-        "<td>" + escapeHtml(euro(payment.amount)) + "</td>" +
-        "<td>" + reminderStatus + "</td>" +
-        "<td><div class='certificate-row-actions'>" +
+        "<td data-label='Sélection'><input class='payment-row-check' type='checkbox' value='" + escapeHtml(payment.paymentId) + "' " + (selectable ? "" : "disabled") + " aria-label='Sélectionner cette relance'></td>" +
+        "<td data-label='Date'>" + escapeHtml(dateTimeFr(payment.paymentDate)) + "</td>" +
+        "<td data-label='Adhérent'><strong>" + escapeHtml(memberNames(payment)) + "</strong></td>" +
+        "<td data-label='Payeur'>" + escapeHtml(payerName(payment)) + "</td>" +
+        "<td data-label='E-mail'>" + (email ? "<a href='mailto:" + encodeURIComponent(email) + "'>" + escapeHtml(email) + "</a>" : "—") + "</td>" +
+        "<td data-label='Échéance'>" + escapeHtml(payment.installmentNumber == null ? "—" : String(payment.installmentNumber)) + "</td>" +
+        "<td data-label='Montant'>" + escapeHtml(euro(payment.amount)) + "</td>" +
+        "<td data-label='Statut'>" + reminderStatus + "</td>" +
+        "<td data-label='Actions'><div class='certificate-row-actions'>" +
           "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Relancer" : "Envoyer") + "</button>" +
+          "<button class='button button-small button-outline payment-sms' data-index='" + index + "' type='button' " + (hasPhone ? "" : "disabled") + ">SMS</button>" +
           "<button class='button button-small button-outline payment-copy-mail' data-index='" + index + "' type='button' " + (email ? "" : "disabled") + ">Copier</button>" +
           "<a class='button button-small button-outline payment-open-mail' data-index='" + index + "' href='#' " + (email ? "" : "aria-disabled='true'") + ">Préparer</a>" +
         "</div></td>" +
@@ -185,6 +217,13 @@
       button.addEventListener("click", function () {
         var payment = payments[Number(button.getAttribute("data-index"))];
         sendPayments([String(payment.paymentId)]);
+      });
+    });
+
+    tbody.querySelectorAll(".payment-sms").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var payment = payments[Number(button.getAttribute("data-index"))];
+        openSms(payment);
       });
     });
 
@@ -402,13 +441,13 @@
         var payer = [entry.payerFirstName, entry.payerLastName].filter(Boolean).join(" ").trim() || "—";
         var members = Array.isArray(entry.members) && entry.members.length ? entry.members.join(", ") : "—";
         return "<tr>" +
-          "<td>" + escapeHtml(dateTimeFr(entry.sentAt)) + "</td>" +
-          "<td>" + escapeHtml(dateFr(entry.date)) + "</td>" +
-          "<td><strong>" + escapeHtml(members) + "</strong></td>" +
-          "<td>" + escapeHtml(payer) + "</td>" +
-          "<td>" + escapeHtml(entry.email || "—") + "</td>" +
-          "<td>" + escapeHtml(euro(entry.amount || 0)) + "</td>" +
-          "<td><span class='payment-sent-badge'>Envoyé</span></td>" +
+          "<td data-label='Envoyé le'>" + escapeHtml(dateTimeFr(entry.sentAt)) + "</td>" +
+          "<td data-label='Échéance'>" + escapeHtml(dateFr(entry.date)) + "</td>" +
+          "<td data-label='Adhérent'><strong>" + escapeHtml(members) + "</strong></td>" +
+          "<td data-label='Payeur'>" + escapeHtml(payer) + "</td>" +
+          "<td data-label='Destinataire'>" + escapeHtml(entry.email || "—") + "</td>" +
+          "<td data-label='Montant'>" + escapeHtml(euro(entry.amount || 0)) + "</td>" +
+          "<td data-label='Statut'><span class='payment-sent-badge'>Envoyé</span></td>" +
         "</tr>";
       }).join("");
     } catch (error) {
