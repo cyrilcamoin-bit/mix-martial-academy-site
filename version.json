@@ -1,5 +1,5 @@
 {
-  "version": "20261007-admin-unlock-racefix-v1",
+  "version": "20261008-actions-mail-sms-v2",
   "deployedFrom": "main",
-  "note": "Correction du faux message d’erreur lors du premier déverrouillage de l’administration."
+  "note": "Interface échéances refusées simplifiée : uniquement Relancer par mail et SMS."
 }
