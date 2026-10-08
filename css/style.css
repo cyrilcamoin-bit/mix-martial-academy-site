@@ -4726,3 +4726,172 @@ p {
     width: 100%;
   }
 }
+
+
+/* ── ACCUEIL — PLANNING INTÉGRÉ AU BLOC ESSAIS ───────────── */
+.home-trial-card-integrated {
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.home-trial-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.7rem;
+}
+
+.home-trial-inline-actions .button {
+  width: auto;
+  min-height: 58px;
+  padding: 0 1.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 999px;
+  font-size: 0.98rem;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.home-trial-inline-actions .button:hover {
+  transform: translateY(-2px);
+}
+
+.home-trial-schedule {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  display: grid;
+  align-content: center;
+  padding-left: clamp(1.6rem, 3vw, 3.1rem);
+  border-left: 1px solid rgba(239, 64, 47, 0.30);
+}
+
+.home-trial-schedule-head {
+  margin-bottom: 0.85rem;
+}
+
+.home-trial-schedule-kicker {
+  display: block;
+  margin-bottom: 0.38rem;
+  color: rgba(255,255,255,0.62);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.home-trial-schedule-head h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  letter-spacing: -0.025em;
+}
+
+.home-trial-schedule-list {
+  display: grid;
+}
+
+.home-trial-schedule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid rgba(255,255,255,0.10);
+  opacity: 0;
+  animation: home-trial-schedule-enter 360ms ease-out forwards;
+  animation-delay: var(--schedule-delay, 0ms);
+}
+
+.home-trial-schedule-label {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.home-trial-schedule-label strong {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.home-trial-schedule-label small {
+  color: rgba(255,255,255,0.58);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.home-trial-schedule-time {
+  flex: 0 0 auto;
+  padding: 0.48rem 0.72rem;
+  border: 1px solid rgba(255, 92, 72, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 73, 51, 0.12);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+@keyframes home-trial-schedule-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1050px) {
+  .home-trial-card-integrated {
+    grid-template-columns: 1fr;
+  }
+
+  .home-trial-schedule {
+    padding-left: 0;
+    padding-top: 1.6rem;
+    border-left: 0;
+    border-top: 1px solid rgba(239, 64, 47, 0.28);
+  }
+}
+
+@media (max-width: 680px) {
+  .home-trial-inline-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 1.35rem;
+  }
+
+  .home-trial-inline-actions .button {
+    width: 100%;
+    min-height: 58px;
+    padding: 0 1.2rem;
+  }
+
+  .home-trial-schedule {
+    padding-top: 1.35rem;
+  }
+
+  .home-trial-schedule-head {
+    text-align: center;
+  }
+
+  .home-trial-schedule-row {
+    padding: 0.85rem 0;
+  }
+
+  .home-trial-schedule-label {
+    text-align: left;
+  }
+
+  .home-trial-schedule-time {
+    font-size: 0.84rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-trial-schedule-row {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
