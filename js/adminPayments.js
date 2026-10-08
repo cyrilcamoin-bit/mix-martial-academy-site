@@ -78,8 +78,10 @@
     return intro +
       "l’échéance HelloAsso du " + dateFr(payment.dateKey) +
       (adherents !== "—" ? " concernant l’adhésion de " + adherents : "") +
-      " est actuellement refusée. Merci de la régulariser depuis votre espace HelloAsso : " +
-      "https://auth.helloasso.com/connexion (utilisez « Mot de passe oublié » si besoin). " +
+      " est actuellement refusée. Pour régulariser, rendez-vous sur https://auth.helloasso.com/connexion " +
+      "puis : 1) cliquez sur « Mot de passe oublié » ; 2) saisissez l’adresse e-mail utilisée lors du paiement ; " +
+      "3) ouvrez le lien reçu par e-mail et créez/réinitialisez votre mot de passe ; 4) connectez-vous à votre espace HelloAsso ; " +
+      "5) retrouvez le paiement au statut « Refusé » et régularisez-le. Une fois régularisé, son statut passera à « Payé ». " +
       "Mix Martial Academy — Le Rove";
   }
 
