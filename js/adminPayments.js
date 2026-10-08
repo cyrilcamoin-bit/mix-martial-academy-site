@@ -190,8 +190,8 @@
         "<td data-label='Montant'>" + escapeHtml(euro(payment.amount)) + "</td>" +
         "<td data-label='Statut'>" + reminderStatus + "</td>" +
         "<td data-label='Actions'><div class='certificate-row-actions'>" +
-          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">" + (alreadySent ? "Relancer par mail" : "Envoyer par mail") + "</button>" +
-          "<button class='button button-small button-outline payment-sms' data-index='" + index + "' type='button' " + (hasPhone ? "" : "disabled") + ">SMS</button>" +
+          "<button class='button button-small payment-send-mail' data-index='" + index + "' type='button' " + (selectable && mailConfigured ? "" : "disabled") + ">RELANCE MAIL</button>" +
+          "<button class='button button-small button-outline payment-sms' data-index='" + index + "' type='button' " + (hasPhone ? "" : "disabled") + ">RELANCE SMS</button>" +
         "</div></td>" +
       "</tr>";
     }).join("");
