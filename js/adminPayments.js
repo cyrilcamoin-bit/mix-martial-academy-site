@@ -84,7 +84,10 @@
         (adherents !== "—" ? " pour l’adhésion de " + adherents : "") +
         " est actuellement refusée.",
       "",
-      "👉 Pour régulariser :",
+      "📩 HelloAsso vous a normalement envoyé un e-mail de régularisation.",
+      "Merci de vérifier en priorité votre boîte de réception principale ainsi que vos courriers indésirables / spams, puis d’utiliser le lien contenu dans cet e-mail pour régulariser l’échéance.",
+      "",
+      "👉 Si vous ne retrouvez pas cet e-mail, vous pouvez régulariser directement depuis votre espace HelloAsso :",
       "",
       "1️⃣ Rendez-vous sur :",
       "https://auth.helloasso.com/connexion",
