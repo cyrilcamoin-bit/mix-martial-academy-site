@@ -16,13 +16,18 @@
 
   function renderSchedule(data) {
     var container = document.querySelector('[data-render="schedule"]');
-    if (!container) return;
-    data.schedule.forEach(function (day) {
-      var card = el("article", "schedule-card");
-      card.appendChild(el("h3", "", day.day));
+    if (!container || !data.schedule.length) return;
+
+    function slotSignature(day) {
+      return day.slots.map(function (slot) {
+        return [slot.section, slot.age, slot.time].join("|");
+      }).join("||");
+    }
+
+    function appendSlots(card, slots, smartMode) {
       var ul = el("ul", "schedule-list");
-      day.slots.forEach(function (slot) {
-        var item = el("li", "schedule-row");
+      slots.forEach(function (slot) {
+        var item = el("li", "schedule-row" + (smartMode ? " smart-schedule-row" : ""));
         var label = el("span", "schedule-label");
         label.appendChild(el("strong", "", slot.section));
         label.appendChild(el("small", "", slot.age));
@@ -31,6 +36,30 @@
         ul.appendChild(item);
       });
       card.appendChild(ul);
+    }
+
+    var firstSignature = slotSignature(data.schedule[0]);
+    var sameSlotsEveryDay = data.schedule.length > 1 && data.schedule.every(function (day) {
+      return slotSignature(day) === firstSignature;
+    });
+
+    container.classList.toggle("schedule-grid-smart", sameSlotsEveryDay);
+
+    if (sameSlotsEveryDay) {
+      var smartCard = el("article", "schedule-card schedule-card-smart");
+      var heading = el("div", "schedule-smart-head");
+      heading.appendChild(el("h3", "", data.schedule.map(function (day) { return day.day; }).join(" & ")));
+      heading.appendChild(el("p", "schedule-smart-subtitle", "Mêmes horaires les deux jours"));
+      smartCard.appendChild(heading);
+      appendSlots(smartCard, data.schedule[0].slots, true);
+      container.appendChild(smartCard);
+      return;
+    }
+
+    data.schedule.forEach(function (day) {
+      var card = el("article", "schedule-card");
+      card.appendChild(el("h3", "", day.day));
+      appendSlots(card, day.slots, false);
       container.appendChild(card);
     });
   }
