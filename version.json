@@ -1,5 +1,5 @@
 {
-  "version": "20261009-header-width-v3",
+  "version": "20261009-header-optical-v6",
   "deployedFrom": "main",
-  "note": "Nom du club agrandi et aligné sur l'espace disponible à droite du logo, sans modification du logo."
+  "note": "Centrage optique vertical et largeur du nom du club réajustés, logo conservé."
 }
