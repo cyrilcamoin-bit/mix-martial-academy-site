@@ -1,5 +1,5 @@
 {
-  "version": "20261009-header-one-line-v2",
+  "version": "20261009-header-width-v3",
   "deployedFrom": "main",
-  "note": "Nom du club sur une ligne et ajusté à la largeur mobile, logo inchangé."
+  "note": "Nom du club agrandi et aligné sur l'espace disponible à droite du logo, sans modification du logo."
 }
