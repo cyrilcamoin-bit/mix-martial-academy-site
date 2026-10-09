@@ -1,5 +1,5 @@
 {
-  "version": "20261008-trial-schedule-v5",
+  "version": "20261009-admin-members-v1",
   "deployedFrom": "main",
-  "note": "Refonte graphique du planning intégré : panneau dédié, proportions et hiérarchie visuelle revues."
+  "note": "Administration : onglet listing adhérents HelloAsso et export Excel privé."
 }
