@@ -147,7 +147,7 @@ dialog{border:1px solid #7b3b41;background:#151518;color:white;border-radius:18p
       <div class="auth-notice">🔒 <b>Lecture seule :</b> aucune relance, suppression, modification ni paiement possible. Le code reste uniquement en mémoire pendant 20 minutes. Ce test est sur une URL distincte et ne modifie pas l’administration officielle. Aucun envoi ni modification autorisé.</div>
     </div>
   </section>
-  <div class="demo-banner" role="note"><span class="demo-pulse"></span> TEST V2 · DONNÉES RÉELLES · LECTURE SEULE</div>
+  <div class="demo-banner" role="note"><span class="demo-pulse"></span> TEST V2 · GESTION SÉCURISÉE · DONNÉES RÉELLES</div>
   <div class="app" id="app" hidden>
     <header class="site-header">
       <div class="identity">
@@ -332,7 +332,7 @@ function renderCertificates(){
  $('module-cert-count').textContent=cert?`${cert.missing} dossier(s)`:'Indisponible';
  if(!cert){$('certificate-list').innerHTML=empty('Chargement impossible : vérifie la connexion et réessaie.');return;}
  $('module-cert-count').textContent=`${cert.received} reçus · ${cert.missing} manquants`;
-  $('certificate-list').innerHTML='<div class="v2-action-tools"><label for="v2-cert-filter">Afficher </label><select id="v2-cert-filter"><option value="missing" '+(certificateFilter==='missing'?'selected':'')+'>Manquants</option><option value="received" '+(certificateFilter==='received'?'selected':'')+'>Déposés</option><option value="all" '+(certificateFilter==='all'?'selected':'')+'>Tous</option></select><button class="v2-action-btn" type="button" data-v2-cert-history>Historique des relances</button></div>'+cert.members.filter(c=>certificateFilter==='all'||(certificateFilter==='received'?c.received:!c.received)).map(c=>{
+  $('certificate-list').innerHTML='<div class="v2-action-tools"><label for="v2-cert-filter">Afficher </label><select id="v2-cert-filter"><option value="missing" '+(certificateFilter==='missing'?'selected':'')+'>Manquants</option><option value="received" '+(certificateFilter==='received'?'selected':'')+'>Déposés</option><option value="all" '+(certificateFilter==='all'?'selected':'')+'>Tous</option></select><button class="v2-action-btn" type="button" data-v2-cert-history>Historique des relances</button><button class="v2-action-btn" type="button" data-v2-cert-batch>Relancer les manquants par e-mail</button></div>'+cert.members.filter(c=>certificateFilter==='all'||(certificateFilter==='received'?c.received:!c.received)).map(c=>{
   const p=data.people.find(p=>p.id===String(c.memberId));
   return '<div class="v2-manage-row">'+moduleItem({ico:'file-heart',title:`${c.lastName||''} ${c.firstName||''}`,sub:p?categoryLabel(p.category):'Certificat',right:badge(c.received?'Reçu':'Manquant',c.received?'success':'danger'),id:p?.id,kind:c.received?'green-text':'red-text'})+'<div class="v2-actions">'+(c.received?'<button type="button" class="v2-action-btn" data-v2-cert-download="'+safe(c.memberId)+'">Télécharger</button>':'<button type="button" class="v2-action-btn" data-v2-cert-remind="'+safe(c.memberId)+'">Relance mail</button>')+'</div></div>';
  }).join('')||empty('Aucun certificat dans cette sélection.');
@@ -349,7 +349,7 @@ function renderPayments(){
 function renderAides(){
  const aids=data.aides;$('module-aides-sum').textContent=aids?money(aids.reduce((n,r)=>n+Number(r.data.montant||0),0)):'Indisponible';
  if(!aids){$('aide-list').innerHTML=empty('Aides indisponibles : le code de déchiffrement n’a pas été accepté, ou Firebase ne répond pas.');return;}
- $('aide-list').innerHTML=aids.map(r=>{
+ $('aide-list').innerHTML='<div class="v2-action-tools"><span>Remboursé : <strong>'+money(aids.reduce((n,r)=>n+(r.meta.refunded?Number(r.data.montant||0):0),0))+'</strong></span><span>À rembourser : <strong>'+money(aids.reduce((n,r)=>n+(!r.meta.refunded?Number(r.data.montant||0):0),0))+'</strong></span></div>'+aids.map(r=>{
   const person=data.people.find(p=>p.aidRecords?.some(a=>a.id===r.id));
   return '<div class="v2-manage-row">'+moduleItem({ico:'hand-coins',title:`${r.data.nom||''} ${r.data.prenom||''}`.trim(),sub:`${r.data.dispositif||'Aide'} · ${r.meta.refunded?'Remboursée':r.meta.verified?'Code vérifié':'Code non vérifié'}`,right:`<strong class="sum">${money(r.data.montant)}</strong>`,id:person?.id,kind:r.meta.refunded?'green-text':'amber-text'})+'<div class="v2-actions"><label class="v2-checkbox"><input type="checkbox" data-v2-aid-verify="'+safe(r.id)+'" '+(r.meta.verified?'checked':'')+'> Code vérifié</label><label class="v2-checkbox"><input type="checkbox" data-v2-aid-refund="'+safe(r.id)+'" '+(r.meta.refunded?'checked':'')+'> Remboursé</label>'+(r.meta.refundedAt?'<span class="v2-date">Le '+safe(prettyDate(r.meta.refundedAt))+'</span>':'')+'</div></div>';
  }).join('')||empty('Aucune demande d’aide enregistrée.');
@@ -581,6 +581,12 @@ function v2PaySms(id){
  if(!window.confirm('Ouvrir le SMS de relance destiné à '+paymentMembers(p)+' ?\\nVérifie le numéro et le texte avant envoi.'))return;
  location.href='sms:'+encodeURIComponent(tel)+(navigator.userAgent.includes('iPhone')?'&':'?')+'body='+encodeURIComponent(message);
 }
+async function v2CertBatch(){
+ const all=(data.certificates?.members||[]).filter(m=>!m.received&&m.email);if(!all.length){toast('Aucune relance possible.');return;}
+ if(!confirmAction('ENVOYER '+all.length+' RELANCES CERTIFICATS',all.length+' destinataires'))return;
+ let sent=0;for(let i=0;i<all.length;i+=20){await v2Write('/admin/certificates/reminders/send',{memberIds:all.slice(i,i+20).map(m=>m.memberId)});sent+=Math.min(20,all.length-i);}
+ toast(sent+' relances envoyées.');data.certificates=await get('/admin/certificates');renderCertificates();
+}
 async function v2CertHistory(){
  const d=await v2Api('/admin/certificates/reminders?limit=200');const rows=d.reminders||[];
  alert(rows.length?rows.slice(0,15).map(x=>[prettyDate(x.sentAt||x.createdAt),x.email||'',x.memberName||''].join(' — ')).join('\\n'):'Aucune relance enregistrée.');
@@ -589,12 +595,13 @@ async function v2CertHistory(){
 function eventHandlers(){
  $('auth-faceid').addEventListener('click',connectFaceIdV2);
  document.addEventListener('click',async e=>{
-  const action=e.target.closest('[data-v2-cert-download],[data-v2-cert-remind],[data-v2-payment-mail],[data-v2-payment-sms],[data-v2-cert-history]');
+  const action=e.target.closest('[data-v2-cert-download],[data-v2-cert-remind],[data-v2-payment-mail],[data-v2-payment-sms],[data-v2-cert-history],[data-v2-cert-batch]');
   if(action){e.preventDefault();action.disabled=true;try{
     if(action.hasAttribute('data-v2-cert-download'))await v2CertDownload(action.dataset.v2CertDownload);
     else if(action.hasAttribute('data-v2-cert-remind'))await v2CertRemind(action.dataset.v2CertRemind);
     else if(action.hasAttribute('data-v2-payment-mail'))await v2PayMail(action.dataset.v2PaymentMail);
     else if(action.hasAttribute('data-v2-payment-sms'))v2PaySms(action.dataset.v2PaymentSms);
+    else if(action.hasAttribute('data-v2-cert-batch'))await v2CertBatch();
     else await v2CertHistory();
    }catch(err){toast('Action impossible : '+err.message);}finally{action.disabled=false;}return;}
   const member=e.target.closest('[data-member-id]');if(member){const p=getPerson(member.dataset.memberId);if(p){state.returnView=state.view;state.profileId=p.id;navigation('profile');}return;}
