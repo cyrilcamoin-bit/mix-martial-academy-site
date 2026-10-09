@@ -2,12 +2,13 @@
   'use strict';
 
   const API_BASE = 'https://mma-lerove-api.cyril-camoin.workers.dev';
-  const validViews = new Set(['dashboard', 'aides', 'certificats', 'paiements']);
+  const validViews = new Set(['dashboard', 'aides', 'certificats', 'paiements', 'adherents']);
   const views = {
     dashboard: document.getElementById('admin-club-dashboard'),
     aides: document.getElementById('admin-club-aides'),
     certificats: document.getElementById('admin-club-certificats'),
-    paiements: document.getElementById('admin-club-paiements')
+    paiements: document.getElementById('admin-club-paiements'),
+    adherents: document.getElementById('admin-club-adherents')
   };
 
   const accessCard = document.getElementById('admin-club-access');
@@ -137,7 +138,7 @@
       }
       masterButton.hidden = true;
       accessCard?.classList.add('is-unlocked');
-      setMasterStatus('Administration déverrouillée : aides, certificats et échéances refusées sont accessibles.');
+      setMasterStatus('Administration déverrouillée : aides, certificats, échéances refusées et listing adhérents sont accessibles.');
     } else if (certificateResult.unavailable) {
       setMasterStatus('Impossible de vérifier l’accès Cloudflare pour le moment. Réessayez dans quelques secondes.', true);
     } else if (aidsResult.aidsOk && certificateResult.badCode) {
