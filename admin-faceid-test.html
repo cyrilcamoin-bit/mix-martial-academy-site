@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Test Face ID — Mix Martial Academy</title>
+  <meta http-equiv="Cache-Control" content="no-store">
+  <style>
+    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:dark}
+    *{box-sizing:border-box}
+    body{margin:0;background:#111216;color:#f8f8fa;min-height:100vh;padding:24px 16px}
+    main{max-width:490px;margin:0 auto}
+    h1{font-size:clamp(1.55rem,6vw,2.2rem);line-height:1.12;margin:.6rem 0 1rem}
+    .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#f04444;font-weight:800}
+    .intro{color:#bbc0c8;line-height:1.55}
+    .panel{border:1px solid #363943;border-radius:18px;padding:22px 18px;background:#1b1c21;margin-top:16px}
+    h2{font-size:1.12rem;margin:0 0 9px}
+    p{line-height:1.5}
+    .muted{color:#bdc0c8;font-size:.92rem}
+    label{display:block;font-size:.9rem;font-weight:700;margin:20px 0 7px}
+    input{width:100%;border:1px solid #555;border-radius:12px;padding:14px 12px;background:#0d0e11;color:white;font-size:16px}
+    button{width:100%;padding:15px 16px;border:none;border-radius:12px;background:#d51f2a;color:white;font-size:1rem;font-weight:800;margin-top:13px;cursor:pointer}
+    button.secondary{background:#30343b;border:1px solid #666}
+    button:disabled{opacity:.55;cursor:wait}
+    .status{border:1px solid #424950;border-radius:12px;padding:14px 15px;margin:18px 0 10px;line-height:1.5;white-space:pre-wrap}
+    .status[data-type="error"]{border-color:#e04444;color:#ffb3b3}
+    .status[data-type="ok"]{border-color:#497354;color:#b9efc3}
+    a{color:#eee;text-underline-offset:4px}
+    footer{margin-top:22px;font-size:.85rem;color:#b3b6c0}
+  </style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">MIX MARTIAL ACADEMY · LE ROVE</p>
+  <h1>Tester la connexion Face ID</h1>
+  <p class="intro">Cette page sert uniquement à enregistrer et vérifier ta clé d'accès iPhone. <strong>Ton administration actuelle ne change pas</strong> et ton mot de passe reste disponible.</p>
+
+  <section class="panel">
+    <h2>1 — Activer Face ID sur cet iPhone</h2>
+    <p class="muted">Une seule fois : saisis le mot de passe Admin habituel, puis confirme la création de la clé d'accès sur ton iPhone.</p>
+    <label for="adminCode">Mot de passe administrateur</label>
+    <input id="adminCode" type="password" autocomplete="current-password" placeholder="Ton mot de passe habituel">
+    <button id="register" type="button">Activer Face ID pour le test</button>
+  </section>
+
+  <section class="panel">
+    <h2>2 — Essayer Face ID sans le mot de passe</h2>
+    <p class="muted">Une fois activé, appuie sur ce bouton. L'iPhone doit demander ton authentification et le serveur doit la confirmer.</p>
+    <button id="login" type="button" class="secondary">Tester la connexion Face ID</button>
+  </section>
+
+  <div class="status" id="status" role="status" aria-live="polite">Prêt pour le test.</div>
+  <footer>
+    <p><strong>Mode test uniquement :</strong> la réussite ne déverrouille pas encore les modules sensibles. Aucune image de ton visage n'est envoyée au club ou à Cloudflare : seul le résultat cryptographique est vérifié.</p>
+    <p><a href="/admincyril.html">← Revenir à l'administration habituelle</a></p>
+  </footer>
+</main>
+<script>
+(() => {
+  "use strict";
+  const API = "https://feature-faceid-passkey-test-mma-lerove-api.cyril-camoin.workers.dev";
+  const $ = (id) => document.getElementById(id);
+  const reg = $("register"), login = $("login"), status = $("status"), code = $("adminCode");
+  const bytes = (value) => {
+    const s = value.replace(/-/g, "+").replace(/_/g, "/");
+    return Uint8Array.from(atob(s + "=".repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0));
+  };
+  const url64 = (buffer) => {
+    const bytesArr = new Uint8Array(buffer);
+    let str = "";
+    for (let i = 0; i < bytesArr.length; i += 8192) {
+      str += String.fromCharCode(...bytesArr.subarray(i, i+8192));
+    }
+    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  };
+  const msg = (value, type = "") => {
+    status.textContent = value;
+    status.dataset.type = type;
+  };
+  const busy = (state) => { reg.disabled = state; login.disabled = state; };
+  const request = async (path, data, secret = "") => {
+    const headers = { "Content-Type": "application/json" };
+    if (secret) headers.Authorization = "Bearer " + secret;
+    const response = await fetch(API + "/passkey-preview/" + path, {
+      method: "POST", headers, body: JSON.stringify(data || {}), cache: "no-store"
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || !body.ok) {
+      const messages = {
+        incorrect_admin_password: "Mot de passe administrateur incorrect.",
+        not_registered: "Face ID n'a pas encore été activé pour ce test.",
+        challenge_expired: "La confirmation a expiré. Recommence.",
+        credential_not_registered: "Cette clé d'accès n'est pas enregistrée.",
+        verification_failed: "Face ID ou la signature de l'iPhone n'a pas été validé.",
+        origin_not_allowed: "Ouvre cette page depuis le vrai site www.mma-lerove.fr.",
+        passkey_storage_unavailable: "Le stockage de test Cloudflare n'est pas disponible."
+      };
+      throw new Error(messages[body.error] || "Erreur serveur de test (" + response.status + ").");
+    }
+    return body;
+  };
+  const ensureSupport = () => {
+    if (!window.PublicKeyCredential || !navigator.credentials?.create || !navigator.credentials?.get) {
+      throw new Error("Ton navigateur ne prend pas en charge les clés d'accès. Essaie Safari sur ton iPhone.");
+    }
+  };
+  const serialized = (cred, operation) => {
+    if (typeof cred.toJSON === "function") return cred.toJSON();
+    const base = {
+      id: cred.id, rawId: url64(cred.rawId), type: cred.type,
+      authenticatorAttachment: cred.authenticatorAttachment,
+      clientExtensionResults: cred.getClientExtensionResults() || {}
+    };
+    if (operation === "create") {
+      base.response = {
+        attestationObject: url64(cred.response.attestationObject),
+        clientDataJSON: url64(cred.response.clientDataJSON),
+        transports: cred.response.getTransports?.() || []
+      };
+    } else {
+      base.response = {
+        authenticatorData: url64(cred.response.authenticatorData),
+        clientDataJSON: url64(cred.response.clientDataJSON),
+        signature: url64(cred.response.signature),
+        userHandle: cred.response.userHandle ? url64(cred.response.userHandle) : null
+      };
+    }
+    return base;
+  };
+
+  reg.addEventListener("click", async () => {
+    const password = code.value.trim();
+    if (!password) { msg("Saisis d'abord ton mot de passe habituel.", "error"); return; }
+    busy(true);
+    msg("Préparation de ta clé d'accès iPhone…");
+    try {
+      ensureSupport();
+      const {options, requestId} = await request("register/options", {}, password);
+      const pub = {
+        ...options,
+        challenge: bytes(options.challenge),
+        user: {...options.user, id: bytes(options.user.id)},
+        excludeCredentials: (options.excludeCredentials || []).map(c => ({...c, id: bytes(c.id)}))
+      };
+      const credential = await navigator.credentials.create({publicKey: pub});
+      if (!credential) throw new Error("L'authentification a été annulée.");
+      const result = await request("register/verify", {requestId, credential: serialized(credential, "create")}, password);
+      if (!result.enrolled) throw new Error("La clé d'accès n'a pas été enregistrée.");
+      code.value = "";
+      msg("Clé d'accès enregistrée ! Tu peux maintenant tester Face ID avec le deuxième bouton.", "ok");
+    } catch (error) {
+      msg(error.name === "NotAllowedError" ? "Demande annulée ou refusée par l'iPhone." : (error.message || "Échec de l'activation."), "error");
+    } finally { busy(false); }
+  });
+
+  login.addEventListener("click", async () => {
+    busy(true);
+    msg("Demande de reconnaissance Face ID…");
+    try {
+      ensureSupport();
+      const {options, requestId} = await request("login/options");
+      const pub = {
+        ...options,
+        challenge: bytes(options.challenge),
+        allowCredentials: (options.allowCredentials || []).map(c => ({...c, id: bytes(c.id)}))
+      };
+      const credential = await navigator.credentials.get({publicKey:pub});
+      if (!credential) throw new Error("L'authentification a été annulée.");
+      const result = await request("login/verify", {requestId, credential:serialized(credential, "get")});
+      if (!result.verified) throw new Error("La clé d'accès a été rejetée.");
+      msg("✅ Face ID a été vérifié par Cloudflare. Le test est réussi !\n\nTon administration n'a pas été déverrouillée : la connexion finale aux modules viendra après validation.", "ok");
+    } catch (error) {
+      msg(error.name === "NotAllowedError" ? "Demande Face ID annulée ou refusée." : (error.message || "Échec de la connexion."), "error");
+    } finally { busy(false); }
+  });
+})();
+</script>
+</body>
+</html>
