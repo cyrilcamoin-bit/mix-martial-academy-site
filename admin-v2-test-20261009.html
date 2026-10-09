@@ -125,6 +125,8 @@ dialog{border:1px solid #7b3b41;background:#151518;color:white;border-radius:18p
       <span class="auth-eyebrow">VERSION V2 · ACCÈS ADMINISTRATEUR</span>
       <h1>Nouvelle administration</h1>
       <p>Consulte les données réelles dans la nouvelle interface, sans toucher à ton administration actuelle.</p>
+      <button type="button" id="auth-faceid" style="width:100%;min-height:54px;background:#e32427;border:0;border-radius:12px;color:#fff;font-weight:800;margin:12px 0">🔐 Se connecter avec Face ID</button>
+      <p style="color:#aaa;font-size:13px">Ou utiliser le mot de passe habituel :</p>
       <form id="auth-form" autocomplete="off">
         <label for="auth-password">Code administrateur habituel</label>
         <input type="password" id="auth-password" placeholder="Ton mot de passe actuel" required autocomplete="off">
@@ -392,16 +394,38 @@ async function loadMembers(){
  data.people=result;
 }
 const base64Bytes=b64=>Uint8Array.from(atob(String(b64||'')),ch=>ch.charCodeAt(0));
-async function loadAides(password){
+async function loadAides(password, facePrf=null){
  const raw=await fetch('https://mix-martial-academy-default-rtdb.europe-west1.firebasedatabase.app/aides_inscription_v1.json',{method:'GET',cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Firebase indisponible.');return r.json()});
- const source=await fetch('/js/aides-admin.js',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Clé des aides indisponible.');return r.text()});
- const found=/const ADMIN_KEY_BLOB = (\{[^
-]*\});/.exec(source);
- if(!found)throw Error('Clé chiffrée des aides manquante.');
- const enc=JSON.parse(found[1]);
- const pwd=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
- const kek=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:base64Bytes(enc.salt),iterations:enc.iterations},pwd,{name:'AES-GCM',length:256},false,['decrypt']);
- const pemBytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64Bytes(enc.iv)},kek,base64Bytes(enc.ciphertext));
+ let pemBytes;
+ if(facePrf){
+   if(facePrf.byteLength!==32)throw Error('La clé Face ID ne permet pas le déchiffrement des aides.');
+   const db=await new Promise((resolve,reject)=>{
+     const open=indexedDB.open('mma-aides-faceid-v1',1);
+     open.onupgradeneeded=()=>open.result.createObjectStore('keys');
+     open.onsuccess=()=>resolve(open.result);
+     open.onerror=()=>reject(open.error);
+   });
+   let saved;
+   try{saved=await new Promise((resolve,reject)=>{
+     const q=db.transaction('keys','readonly').objectStore('keys').get('private-key-wrap');
+     q.onsuccess=()=>resolve(q.result);
+     q.onerror=()=>reject(q.error);
+   });}finally{db.close();}
+   if(!saved?.iv||!saved?.ciphertext)throw Error('Active une fois les aides Face ID sur l’administration officielle.');
+   const secret=new Uint8Array(facePrf).slice();
+   try{
+     const key=await crypto.subtle.importKey('raw',secret,{name:'AES-GCM'},false,['decrypt']);
+     pemBytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:new Uint8Array(saved.iv),additionalData:new TextEncoder().encode('mma-lerove.fr:aides:faceid-prf:v1'),tagLength:128},key,new Uint8Array(saved.ciphertext));
+   }finally{secret.fill(0);}
+ }else{
+   const source=await fetch('/js/aides-admin.js',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Clé des aides indisponible.');return r.text()});
+   const found=/const ADMIN_KEY_BLOB = (\{[^\n]*\});/.exec(source);
+   if(!found)throw Error('Clé chiffrée des aides manquante.');
+   const enc=JSON.parse(found[1]);
+   const pwd=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+   const kek=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:base64Bytes(enc.salt),iterations:enc.iterations},pwd,{name:'AES-GCM',length:256},false,['decrypt']);
+   pemBytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64Bytes(enc.iv)},kek,base64Bytes(enc.ciphertext));
+ }
  let pem=new TextDecoder().decode(pemBytes);
  let priv;
  try{
@@ -424,20 +448,57 @@ async function loadAides(password){
  if(unreadable)data.issues.push(`${unreadable} demande(s) d'aide illisible(s) : résultat partiel.`);
  data.aides=result.sort((a,b)=>String(b.meta.createdAt||'').localeCompare(String(a.meta.createdAt||'')));
 }
-async function populate(password){
+async function populate(password, facePrf=null){
  data.issues=[];sync('Connexion sécurisée aux sources officielles…');
  const jobs=[
   {name:'Adhérents',run:loadMembers},
   {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
   {name:'Échéances',run:async()=>{data.payments=await get('/api/payments');}},
-  {name:'Aides',run:async()=>{await loadAides(password);}}
+  {name:'Aides',run:async()=>{await loadAides(password,facePrf);}}
  ];
  // Le listing est lu page à page. Les autres sources sont indépendantes.
  await Promise.all(jobs.map(async job=>{try{await job.run();}catch(err){data.issues.push(`${job.name} : ${err.message}`);}}));
  attachConnections();renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
  sync(data.issues.length?'Certaines sources ne sont pas complètes : '+data.issues.join(' | '):`Données du club chargées · ${data.summary?.total??data.people.length} adhérents · Lecture seule`,data.issues.length?'warning':'ok');
 }
+
+const b64urlToBytes=value=>{const v=String(value).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(v+'='.repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));};
+const bytesToB64url=buf=>{const a=new Uint8Array(buf);let raw='';for(let i=0;i<a.length;i+=8192)raw+=String.fromCharCode(...a.subarray(i,i+8192));return btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/g,'');};
+const jsonAssertion=c=>({id:c.id,rawId:bytesToB64url(c.rawId),type:c.type,authenticatorAttachment:c.authenticatorAttachment,clientExtensionResults:{},response:{authenticatorData:bytesToB64url(c.response.authenticatorData),clientDataJSON:bytesToB64url(c.response.clientDataJSON),signature:bytesToB64url(c.response.signature),userHandle:c.response.userHandle?bytesToB64url(c.response.userHandle):null}});
+async function faceRequest(path,payload,token=''){
+  const headers={'Content-Type':'application/json'};if(token)headers.Authorization='Bearer '+token;
+  const resp=await fetch(API+path,{method:'POST',headers,body:JSON.stringify(payload),cache:'no-store'});
+  const val=await resp.json().catch(()=>({}));
+  if(!resp.ok||val.ok!==true)throw Error('Face ID indisponible ('+resp.status+').');
+  return val;
+}
+async function connectFaceIdV2(){
+ const button=$('auth-faceid');button.disabled=true;
+ $('auth-status').textContent='Connexion Face ID en cours…';
+ try{
+  if(!navigator.credentials?.get)throw Error('Face ID indisponible dans ce navigateur.');
+  const {options,requestId}=await faceRequest('/passkey-preview/login/options',{});
+  const salt=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('MMA-Le-Rove|aides|FaceID|PRF|v1')));
+  const publicKey={...options,challenge:b64urlToBytes(options.challenge),allowCredentials:(options.allowCredentials||[]).map(c=>({...c,id:b64urlToBytes(c.id)})),extensions:{...(options.extensions||{}),prf:{eval:{first:salt}}}};
+  const c=await navigator.credentials.get({publicKey});
+  if(!c)throw Error('Face ID annulé.');
+  const signed=await faceRequest('/passkey-preview/login/verify',{requestId,credential:jsonAssertion(c)});
+  if(!signed.verified||!signed.token?.startsWith('mma-fid1.'))throw Error('Session Face ID non reconnue.');
+  const p=await fetch(API+'/admin/mail/status',{headers:{Authorization:'Bearer '+signed.token},cache:'no-store'});
+  if(!p.ok)throw Error('Session Face ID refusée par Cloudflare ('+p.status+').');
+  const prf=c.getClientExtensionResults?.()?.prf?.results?.first||null;
+  activeToken=signed.token;authDeadline=Date.now()+20*60*1000;
+  state.loggedIn=true;$('auth-gate').hidden=true;$('app').hidden=false;$('mobile-nav').hidden=false;
+  await populate(null,prf);
+  if(prf instanceof ArrayBuffer)new Uint8Array(prf).fill(0);
+  navigation('dashboard',{scroll:false,hash:false});
+  setTimeout(()=>{if(state.loggedIn)location.reload();},20*60*1000);
+ }catch(err){$('auth-status').textContent=err.name==='NotAllowedError'?'Face ID annulé.':err.message;}
+ finally{button.disabled=false;}
+}
+
 function eventHandlers(){
+ $('auth-faceid').addEventListener('click',connectFaceIdV2);
  document.addEventListener('click',e=>{
   const member=e.target.closest('[data-member-id]');if(member){const p=getPerson(member.dataset.memberId);if(p){state.returnView=state.view;state.profileId=p.id;navigation('profile');}return;}
   const route=e.target.closest('[data-view]');if(route){navigation(route.dataset.view);return;}
@@ -457,7 +518,7 @@ function eventHandlers(){
   const button=$('auth-submit');button.disabled=true;$('auth-status').textContent='Vérification du code sur Cloudflare…';
   try{
    const response=await fetch(API+'/admin/mail/status',{method:'GET',headers:{Authorization:'Bearer '+password},cache:'no-store'});
-   const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw Error('Code incorrect ou connexion Cloudflare indisponible.');
+   const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw Error(response.status===401?'Code refusé par Cloudflare (401). Essaie Face ID.':'Connexion Cloudflare indisponible ('+response.status+'). Essaie Face ID.');
    activeToken=password;authDeadline=Date.now()+20*60*1000;
    state.loggedIn=true;field.value='';$('auth-gate').hidden=true;$('app').hidden=false;$('mobile-nav').hidden=false;
    await populate(password);
