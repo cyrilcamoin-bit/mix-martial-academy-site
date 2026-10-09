@@ -1,4 +1,5 @@
 import { connect } from "cloudflare:sockets";
+import { handlePasskeyPreview } from "./passkeyPreview.js";
 
 const HELLOASSO_API = "https://api.helloasso.com";
 const ORGANIZATION_SLUG = "mix-martial-academy";
@@ -1362,6 +1363,11 @@ export default {
     const url = new URL(request.url);
 
     try {
+      if (url.pathname.startsWith("/passkey-preview/")) {
+        // Laboratoire isolé : ne touche ni /admin ni les autres routes.
+        return handlePasskeyPreview(request, env, (data, status = 200) => json(request, data, status));
+      }
+
       if (request.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
         return json(request, {
           ok: true,
