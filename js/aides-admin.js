@@ -317,6 +317,20 @@
     URL.revokeObjectURL(url);
   }
 
+  // Passerelle locale Face ID : l'ancienne ouverture par code reste intacte.
+  // Le code déchiffre le PEM UNIQUEMENT dans le navigateur, jamais au serveur.
+  window.MMAAidesPreview = {
+    decryptPemWithCode: (code) => unlockWithCode(String(code || "")),
+    async unlockWithPem(pem) {
+      if (typeof pem !== 'string' || !pem.startsWith('-----BEGIN PRIVATE KEY-----')) {
+        throw new Error('invalid_private_key');
+      }
+      privateKey = await importPrivateKey(pem);
+      await loadRequests();
+      return true;
+    }
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     const codeInput = $('admin-code');
     const unlockButton = $('unlock-admin');
