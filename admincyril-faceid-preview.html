@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    (function () {
+      var endpoint = "/version.json?t=" + Date.now();
+      fetch(endpoint, { cache: "no-store" })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+          if (!data || !data.version) return;
+          var url = new URL(window.location.href);
+          if (url.searchParams.get("v") === data.version) return;
+          url.searchParams.set("v", data.version);
+          window.location.replace(url.pathname + url.search + url.hash);
+        })
+        .catch(function () {});
+    })();
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Test administration Face ID — Mix Martial Academy</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
+  <script src="js/faceid-test/adminClub.js?v=20261009-passkey-admin-preview-v1" defer></script>
+  <script src="js/faceid-test/adminMembers.js?v=20261009-passkey-admin-preview-v1" defer></script>
+  <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
+  <script src="js/faceid-test/adminCertificates.js?v=20261009-passkey-admin-preview-v1" defer></script>
+  <script src="js/faceid-test/adminPayments.js?v=20261009-passkey-admin-preview-v1" defer></script>
+</head>
+<body class="admin-aids-page admin-club-page admin-faceid-preview">
+  <main class="admin-club-shell">
+    <header class="admin-club-head">
+      <div>
+        <p class="eyebrow">Mix Martial Academy — Le Rove</p>
+        <h1>Administration du club — Test Face ID</h1>
+        <p>Version de validation séparée. L'administration habituelle et ses accès ne changent pas.</p>
+      </div>
+      <img src="assets/logo/mix-martial-academy-le-rove.svg" alt="Logo Mix Martial Academy">
+    </header>
+
+    <nav class="admin-club-tabs" aria-label="Gestion du club">
+      <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">Vue d'ensemble</button>
+      <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
+      <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
+      <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected disabled>Échéances refusées</button>
+      <button class="admin-club-tab" type="button" data-admin-view="adherents" data-admin-protected disabled>Listing adhérents</button>
+    </nav>
+
+    <section id="admin-club-access" class="admin-club-access-card">
+      <div>
+        <p class="eyebrow">Accès administrateur</p>
+        <h2>Déverrouiller l'administration</h2>
+        <p>Face ID ouvre le suivi Cloudflare en lecture : certificats, échéances et listing. Les aides chiffrées exigent encore leur code personnel. Mot de passe habituel conservé en secours.</p>
+      </div>
+      <div class="admin-club-access-actions">
+        <button id="admin-faceid-login" class="button" type="button" style="background:#d81e28">🔐 Entrer avec Face ID</button>
+        <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe de secours">
+        <button id="admin-club-unlock" class="button button-outline" type="button">Entrer avec le mot de passe</button>
+        <button id="admin-faceid-logout" class="button button-outline" type="button" hidden>Se déconnecter</button>
+      </div>
+      <p id="admin-club-access-status" class="note" aria-live="polite">Utilise Face ID. Le code n'est nécessaire qu'en secours.</p>
+      <p class="note" style="color:#f7c0c0">Version test : les actions d'envoi et de suppression sont bloquées pour les sessions Face ID. Pour les aides financières, utilise temporairement le code d'origine. <a href="/admincyril.html">Administration habituelle</a>.</p>
+    </section>
+
+    <section id="admin-club-dashboard" class="admin-club-view">
+      <div class="admin-club-dashboard-intro">
+        <p class="eyebrow">Gestion administrative</p>
+        <h2>Que souhaitez-vous gérer ?</h2>
+        <p>Test de connexion Face ID. Les opérations d'envoi ou de suppression restent bloquées avec cette session.</p>
+      </div>
+
+      <div class="admin-club-dashboard-grid">
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">€</div>
+          <div>
+            <p class="card-kicker">Aides à l'inscription</p>
+            <h3>Aides de l'État & organismes</h3>
+            <p>Consultez les demandes, vérifiez les codes, suivez les remboursements et exportez le suivi en CSV.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="aides" data-admin-protected disabled>Gérer les aides</button>
+        </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">+</div>
+          <div>
+            <p class="card-kicker">Documents médicaux</p>
+            <h3>Certificats médicaux</h3>
+            <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
+        </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">!</div>
+          <div>
+            <p class="card-kicker">HelloAsso</p>
+            <h3>Échéances refusées</h3>
+            <p>Repérez les paiements refusés par date, retrouvez le payeur et envoyez une relance personnalisée directement depuis l’adresse iCloud du club.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="paiements" data-admin-protected disabled>Voir les refus</button>
+        </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">≡</div>
+          <div>
+            <p class="card-kicker">HelloAsso — Saison 2026-2027</p>
+            <h3>Listing adhérents</h3>
+            <p>Retrouvez les effectifs actualisés et téléchargez le listing Excel officiel mis en forme, directement depuis HelloAsso.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="adherents" data-admin-protected disabled>Ouvrir le listing</button>
+        </article>
+      </div>
+
+    </section>
+
+    <section id="admin-club-aides" class="admin-club-view" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">Administration</p>
+          <h2>Aides à l'inscription</h2>
+          <p>Suivi des demandes Carte Collégien de Provence, Pass'Sport et Pass CAF Loisirs.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <section class="admin-aids-panel admin-club-internal-login">
+        <h2>Accès aux demandes</h2>
+        <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
+        <div class="admin-aids-actions">
+          <input id="admin-code" type="password" autocomplete="current-password" inputmode="text" placeholder="Code personnel">
+          <button class="button" id="unlock-admin" type="button">Ouvrir le suivi</button>
+          <button class="button button-outline" id="export-csv" type="button" disabled>Exporter CSV</button>
+        </div>
+        <p id="admin-message" class="note" aria-live="polite">Saisissez votre code personnel.</p>
+      </section>
+
+      <section class="admin-aids-metrics" aria-label="Résumé">
+        <div class="admin-aids-metric"><span>Demandes</span><strong id="metric-count">0</strong></div>
+        <div class="admin-aids-metric"><span>Total déclaré</span><strong id="metric-total">0,00 €</strong></div>
+        <div class="admin-aids-metric"><span>Remboursé</span><strong id="metric-refunded">0,00 €</strong></div>
+        <div class="admin-aids-metric"><span>Reste</span><strong id="metric-remaining">0,00 €</strong></div>
+      </section>
+
+      <section class="admin-aids-panel">
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Adhérent</th>
+                <th>Catégorie</th>
+                <th>Responsable légal</th>
+                <th>Dispositif</th>
+                <th>Code</th>
+                <th>Montant</th>
+                <th>Code vérifié</th>
+                <th>Remboursé</th>
+                <th>Date remboursement</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-aids-body">
+              <tr><td colspan="11" class="admin-aids-empty">Aucune donnée chargée.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="admin-club-certificats" class="admin-club-view admin-certificates-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">Administration</p>
+          <h2>Certificats médicaux</h2>
+          <p>Suivi des adhérents HelloAsso et téléchargement des certificats reçus.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <div id="certificates-admin-login" class="admin-login-card admin-club-internal-login">
+        <label for="admin-token">Code administrateur</label>
+        <input id="admin-token" type="password" autocomplete="current-password">
+        <button id="admin-login-button" class="button" type="button">Ouvrir le suivi</button>
+      </div>
+
+      <div id="certificates-admin-status" class="admin-status" hidden></div>
+
+      <div id="certificates-admin-panel" hidden>
+        <div id="certificates-admin-stats" class="admin-certificates-stats"></div>
+
+        <div class="admin-certificates-toolbar">
+          <input id="certificates-admin-search" type="search" placeholder="Rechercher un adhérent">
+          <select id="certificates-admin-filter">
+            <option value="all">Tous</option>
+            <option value="received">Reçus</option>
+            <option value="missing">Manquants</option>
+          </select>
+          <button id="certificates-download-selected" class="button button-outline" type="button">Télécharger la sélection</button>
+          <button id="certificates-download-all" class="button" type="button">Télécharger tous les reçus</button>
+          <button id="admin-logout-button" class="button button-ghost" type="button">Fermer</button>
+        </div>
+
+        <section class="admin-aids-panel admin-payments-mailbar admin-certificates-mailbar">
+          <div>
+            <p class="card-kicker">Relances certificats médicaux</p>
+            <strong>Envoi direct depuis mixmartialacademy@icloud.com</strong>
+            <p id="certificates-mail-state" class="payment-mail-state">Vérification de la configuration iCloud…</p>
+          </div>
+          <div class="admin-payments-mail-actions">
+            <button id="certificates-mail-test" class="button button-outline" type="button" disabled>Tester la relance</button>
+            <button id="certificates-reminder-send-selected" class="button" type="button" disabled>Envoyer les relances sélectionnées</button>
+          </div>
+        </section>
+
+        <div class="admin-certificates-table-wrap">
+          <table class="admin-certificates-table admin-certificates-reminder-table">
+            <thead>
+              <tr>
+                <th title="Sélection des PDF reçus"><input id="certificates-select-all" type="checkbox" aria-label="Sélectionner tous les certificats reçus"></th>
+                <th title="Sélection des relances"><input id="certificates-reminder-select-all" type="checkbox" aria-label="Sélectionner tous les certificats manquants à relancer"></th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Certificat</th>
+                <th>E-mail</th>
+                <th>Relance</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="certificates-admin-body"></tbody>
+          </table>
+        </div>
+
+        <section class="admin-aids-panel admin-payments-history admin-certificates-history">
+          <div class="admin-payments-history-head">
+            <div>
+              <p class="card-kicker">Historique</p>
+              <h3>Relances certificats envoyées</h3>
+              <p>Journal interne des relances réellement envoyées depuis l’adresse iCloud du club.</p>
+            </div>
+            <button id="certificates-history-refresh" class="button button-outline" type="button">Actualiser l’historique</button>
+          </div>
+          <div class="admin-aids-table-wrap">
+            <table class="admin-aids-table admin-certificates-history-table">
+              <thead>
+                <tr>
+                  <th>Envoyé le</th>
+                  <th>Adhérent</th>
+                  <th>Destinataire</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody id="certificates-history-body">
+                <tr><td colspan="4" class="admin-aids-empty">Aucune relance chargée.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="admin-club-paiements" class="admin-club-view admin-payments-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">HelloAsso</p>
+          <h2>Échéances refusées</h2>
+          <p>Recherche sécurisée dans la campagne Adhésion MMA 2026 - 2027.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+
+      <section class="admin-aids-panel admin-payments-controls">
+        <div class="admin-payments-scope">
+          <span>Campagne suivie</span>
+          <strong>Adhésion MMA 2026 - 2027</strong>
+          <p class="note">Toutes les échéances actuellement au statut « Refusé » sont affichées automatiquement, quelle que soit leur date.</p>
+        </div>
+        <button id="payments-refused-load" class="button" type="button">Actualiser les refus</button>
+      </section>
+
+      <div id="payments-refused-status" class="admin-status" hidden></div>
+
+      <section class="admin-aids-panel admin-payments-mailbar">
+        <div>
+          <p class="card-kicker">Relances personnalisées</p>
+          <strong>Envoi direct depuis mixmartialacademy@icloud.com</strong>
+          <p id="payments-mail-state" class="payment-mail-state">Vérification de la configuration iCloud…</p>
+        </div>
+        <div class="admin-payments-mail-actions">
+          <button id="payments-mail-test" class="button button-outline" type="button" disabled>Tester l’envoi iCloud</button>
+          <button id="payments-refused-send-selected" class="button" type="button" disabled>Envoyer les relances sélectionnées</button>
+        </div>
+      </section>
+
+      <section class="admin-aids-metrics admin-payments-metrics" aria-label="Résumé des échéances refusées">
+        <div class="admin-aids-metric"><span>Refus</span><strong id="payments-refused-count">0</strong></div>
+        <div class="admin-aids-metric"><span>Montant concerné</span><strong id="payments-refused-total">0,00 €</strong></div>
+      </section>
+
+      <section class="admin-aids-panel admin-payments-list-panel">
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table admin-payments-table">
+            <thead>
+              <tr>
+                <th><input id="payments-refused-select-all" type="checkbox" aria-label="Tout sélectionner"></th>
+                <th>Date</th>
+                <th>Adhérent(s)</th>
+                <th>Payeur</th>
+                <th>E-mail</th>
+                <th>Échéance</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Relance</th>
+              </tr>
+            </thead>
+            <tbody id="payments-refused-body">
+              <tr><td colspan="9" class="admin-aids-empty">Déverrouillez l’administration puis lancez la recherche.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-aids-panel admin-payments-history">
+        <div class="admin-payments-history-head">
+          <div>
+            <p class="card-kicker">Historique</p>
+            <h3>Relances envoyées</h3>
+            <p>Journal interne des messages réellement envoyés depuis l’adresse iCloud du club.</p>
+          </div>
+          <button id="payments-history-refresh" class="button button-outline" type="button">Actualiser l’historique</button>
+        </div>
+        <div class="admin-aids-table-wrap">
+          <table class="admin-aids-table">
+            <thead>
+              <tr>
+                <th>Envoyé le</th>
+                <th>Échéance</th>
+                <th>Adhérent(s)</th>
+                <th>Payeur</th>
+                <th>Destinataire</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="payments-history-body">
+              <tr><td colspan="7" class="admin-aids-empty">Aucune relance chargée.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="admin-club-adherents" class="admin-club-view admin-members-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">HelloAsso — Campagne officielle</p>
+          <h2>Listing adhérents</h2>
+          <p>Adhésion MMA 2026-2027 — récupération sécurisée des inscriptions à la demande.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+      <section class="admin-aids-panel admin-members-panel">
+        <p class="card-kicker">Effectifs de la saison</p>
+        <div class="admin-members-metrics" aria-label="Effectifs par catégorie">
+          <div><span>Enfants</span><strong id="members-count-enfants">—</strong></div>
+          <div><span>Ados</span><strong id="members-count-ados">—</strong></div>
+          <div><span>Adultes</span><strong id="members-count-adultes">—</strong></div>
+          <div><span>Total</span><strong id="members-count-total">—</strong></div>
+        </div>
+        <div class="admin-members-actions">
+          <button class="button" type="button" id="members-download" data-admin-protected disabled>Télécharger le listing Excel à jour</button>
+        </div>
+        <p class="note" id="members-status" role="alert" aria-live="assertive" hidden></p>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
