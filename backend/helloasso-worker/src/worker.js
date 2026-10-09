@@ -942,13 +942,14 @@ function storageReady(env) {
 }
 
 async function isAdmin(request, env) {
-  if (env.ADMIN_API_TOKEN &&
-    request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) return true;
-  // Phase de validation : la session Face ID ne peut ni supprimer ni
-  // envoyer des relances. L'export XLSX est une génération sans écriture.
+  // Isolation forte du Worker de TEST : aucune route Admin d'écriture,
+  // même avec le mot de passe historique. Exception : génération XLSX
+  // qui ne modifie aucune donnée distante.
   const path = new URL(request.url).pathname;
   if (!["GET", "HEAD"].includes(request.method) &&
       !(request.method === "POST" && path === "/admin/members/export.xlsx")) return false;
+  if (env.ADMIN_API_TOKEN &&
+    request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) return true;
   return verifyPasskeySession(request, env);
 }
 
