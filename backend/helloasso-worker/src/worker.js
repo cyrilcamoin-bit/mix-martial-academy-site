@@ -21,6 +21,29 @@ const ALLOWED_ORIGINS = new Set([
 
 let tokenCache = null;
 let membersCache = { expiresAt: 0, data: [] };
+// Cache uniquement dans la mémoire éphémère de l'instance Worker.
+// Jamais dans le navigateur ni dans un cache public/CDN. Durée maximale 45 s.
+// L'authentification est toujours vérifiée AVANT toute lecture du cache.
+const adminReadCache = new Map();
+const ADMIN_READ_TTL_MS = 45_000;
+function invalidateAdminReadCache() {
+  adminReadCache.clear();
+}
+async function memoAdminRead(key, loader, bypass = false) {
+  const now = Date.now();
+  if (!bypass) {
+    const current = adminReadCache.get(key);
+    if (current && current.expiresAt > now) return current.promise;
+  }
+  const promise = Promise.resolve().then(loader);
+  const entry = { expiresAt: now + ADMIN_READ_TTL_MS, promise };
+  adminReadCache.set(key, entry);
+  try { return await promise; }
+  catch (error) {
+    if (adminReadCache.get(key) === entry) adminReadCache.delete(key);
+    throw error;
+  }
+}
 
 function normalizeText(value = "") {
   return String(value)
@@ -1499,6 +1522,8 @@ export default {
       }
 
       if (request.method === "POST" && url.pathname === "/certificates/upload") {
+        // Le dépôt public ne passe pas par isAdmin : invalider son ancien suivi.
+        invalidateAdminReadCache();
         if (!storageReady(env)) {
           return json(request, { ok: false, error: "storage_not_configured" }, 503);
         }
@@ -1550,6 +1575,12 @@ export default {
         if (!(await isAdmin(request, env))) {
           return json(request, { ok: false, error: "unauthorized" }, 401);
         }
+      }
+      // Toute écriture autorisée rend immédiatement les caches de lecture obsolètes.
+      // La lecture ?refresh=1 permet également de forcer une récupération HelloAsso.
+      if (request.method !== "GET" && request.method !== "HEAD" &&
+          (url.pathname.startsWith("/admin/") || url.pathname === "/certificates/upload")) {
+        invalidateAdminReadCache();
       }
 
       if (url.pathname.startsWith("/admin/certificates/") && !storageReady(env)) {
@@ -1702,7 +1733,11 @@ export default {
       }
 
       if (request.method === "GET" && url.pathname === "/admin/payments/refused") {
-        const payments = await fetchRefusedPayments(env);
+        const payments = await memoAdminRead(
+          "payments-refused",
+          () => fetchRefusedPayments(env),
+          url.searchParams.get("refresh") === "1"
+        );
         return json(request, {
           ok: true,
           campaign: FORM_SLUG,
@@ -1895,7 +1930,11 @@ export default {
       }
 
       if (request.method === "GET" && url.pathname === "/admin/certificates/status") {
-        const members = await buildCertificateStatus(env);
+        const members = await memoAdminRead(
+          "certificate-status",
+          () => buildCertificateStatus(env),
+          url.searchParams.get("refresh") === "1"
+        );
         const received = members.filter((member) => member.received).length;
         return json(request, {
           ok: true,
