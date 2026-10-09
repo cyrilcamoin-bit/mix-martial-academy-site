@@ -5409,3 +5409,18 @@ p {
     text-align: left;
   }
 }
+
+
+/* Centrage optique vertical du titre — taille V3 conservée, logo inchangé */
+@media (max-width: 768px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.84rem, 3.88vw, 1.55rem);
+    line-height: 1;
+    transform: translateY(5px);
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.73rem, 3.6vw, .88rem);
+  }
+}
