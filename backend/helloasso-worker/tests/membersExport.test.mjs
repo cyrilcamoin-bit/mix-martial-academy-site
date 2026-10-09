@@ -76,3 +76,30 @@ test("does not expose the export outside existing admin auth middleware", () => 
   assert.ok(worker.indexOf('if (url.pathname.startsWith("/admin/"))') < worker.indexOf('url.pathname === "/admin/members/export.xlsx"'));
   assert.ok(worker.includes("return json(request, { ok: false, error: \"unauthorized\" }, 401)"));
 });
+
+
+test("reconstructs the annual amounts instead of showing one of three installments", () => {
+  const data = rowsFromOrders([{
+    payer: { email: "parent@example.test", address: "11 boulevard de test" },
+    items: [
+      item(12, "Enfant 6 à 11 ans", "P", "ONE", 9170),
+      item(13, "Ado 12 à 16 ans", "P", "TWO", 9670),
+      item(14, "Adulte", "P", "THREE", 11170)
+    ]
+  }]);
+  assert.deepEqual(data.map((r) => r.amount), [275.1, 290.1, 335.1]);
+  assert.ok(data.every((r) => r.address === "11 boulevard de test"));
+});
+
+test("prefers all scheduled payment shares and custom address fields when supplied", () => {
+  const results = rowsFromOrders([{
+    payer: { email: "parent@example.test" },
+    items: [item(21, "Enfant MMA", "P", "ONE", 9170, {
+      payments: [{ shareAmount: 9170 }, { shareAmount: 9170 }, { shareAmount: 9170 }],
+      customFields: [{name: "Adresse", answer: "8 rue des tests"}]
+    })]
+  }]);
+  assert.equal(results[0].amount, 275.1);
+  assert.equal(results[0].address, "8 rue des tests");
+  assert.equal(results[0].memberId, "21");
+});
