@@ -1,6 +1,7 @@
 import { connect } from "cloudflare:sockets";
 import { handlePasskeyPreview } from "./passkeyPreview.js";
 import { verifyPasskeySession } from "./passkeySession.js";
+import { rowsFromOrders, makeXlsx } from "./membersExport.js";
 
 const HELLOASSO_API = "https://api.helloasso.com";
 const ORGANIZATION_SLUG = "mix-martial-academy";
@@ -74,7 +75,7 @@ function corsHeaders(request) {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Expose-Headers": "Content-Disposition",
+    "Access-Control-Expose-Headers": "Content-Disposition, X-Members-Total, X-Members-Enfants, X-Members-Ados, X-Members-Adultes, X-Members-Incomplete",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
   };
@@ -943,7 +944,6 @@ function storageReady(env) {
 async function isAdmin(request, env) {
   if (env.ADMIN_API_TOKEN &&
     request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) return true;
-  // Jetons WebAuthn uniquement : aucun mot de passe n'est retransmis.
   return verifyPasskeySession(request, env);
 }
 
@@ -1355,6 +1355,81 @@ async function downloadMembersZip(request, env, memberIds) {
   });
 }
 
+
+async function fetchMembershipOrdersForExport(env) {
+  const token = await getAccessToken(env);
+  const orders = [];
+  const pageSize = 100;
+  for (let pageIndex = 1; pageIndex <= 50; pageIndex += 1) {
+    const url = new URL(
+      HELLOASSO_API + "/v5/organizations/" + ORGANIZATION_SLUG
+      + "/forms/" + FORM_TYPE + "/" + FORM_SLUG + "/orders"
+    );
+    url.searchParams.set("pageIndex", String(pageIndex));
+    url.searchParams.set("pageSize", String(pageSize));
+    url.searchParams.set("withDetails", "true");
+    const payload = await fetchHelloAssoJson(url, token, "HelloAsso members orders");
+    const page = Array.isArray(payload?.data) ? payload.data : [];
+    orders.push(...page);
+    const totalPages = Number(payload?.pagination?.totalPages || 0);
+    if (!page.length || (totalPages && pageIndex >= totalPages) || page.length < pageSize) {
+      return orders;
+    }
+  }
+  throw new Error("HelloAsso pagination limit reached; refusing an incomplete export");
+}
+
+// Les détails des commandes sont lus par pages de 20 afin de rester sous
+// le quota de sous-requêtes Cloudflare Free, même avec 100+ adhérents.
+async function fetchMembersExportPage(env, index) {
+  const pageSize = 20;
+  const token = await getAccessToken(env);
+  const url = new URL(
+    HELLOASSO_API + "/v5/organizations/" + ORGANIZATION_SLUG
+    + "/forms/" + FORM_TYPE + "/" + FORM_SLUG + "/orders"
+  );
+  url.searchParams.set("pageIndex", String(index));
+  url.searchParams.set("pageSize", String(pageSize));
+  url.searchParams.set("withDetails", "true");
+  const data = await fetchHelloAssoJson(url, token, "HelloAsso member order page");
+  const orders = Array.isArray(data?.data) ? data.data : [];
+  const hydrated = [];
+  for (let start = 0; start < orders.length; start += 5) {
+    const batch = orders.slice(start, start + 5);
+    const details = await Promise.all(batch.map(async (order) => {
+      if (order?.id == null) return order;
+      const detailUrl = new URL(
+        HELLOASSO_API + "/v5/orders/" + encodeURIComponent(order.id)
+      );
+      detailUrl.searchParams.set("withFormData", "true");
+      try {
+        const detail = await fetchHelloAssoJson(detailUrl, token, "HelloAsso order detail");
+        return {
+          ...order, ...detail,
+          payer: { ...(order.payer || {}), ...(detail.payer || {}) },
+          items: Array.isArray(detail.items) && detail.items.length ? detail.items : order.items
+        };
+      } catch (error) {
+        console.error("HelloAsso member detail unavailable", order.id, String(error));
+        return order;
+      }
+    }));
+    hydrated.push(...details);
+  }
+  const totalPages = Number(data?.pagination?.totalPages || 0);
+  // Les métadonnées totalPages de HelloAsso ne suffisent pas toujours
+  // pour connaître la fin. Continuer même après une page incomplète et
+  // arrêter seulement sur une page vide. L'interface bloque ensuite tout
+  // export dont le nombre et la répartition ne correspondent pas au total.
+  return {
+    members: rowsFromOrders(hydrated),
+    page: index,
+    ordersCount: orders.length,
+    hasMore: orders.length > 0, // Ne jamais se fier à totalPages : continuer jusqu’à une page vide.
+    totalPages
+  };
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -1365,7 +1440,6 @@ export default {
 
     try {
       if (url.pathname.startsWith("/passkey-preview/")) {
-        // Laboratoire isolé : ne touche ni /admin ni les autres routes.
         return handlePasskeyPreview(request, env, (data, status = 200) => json(request, data, status));
       }
 
@@ -1378,7 +1452,8 @@ export default {
           certificateDeletion: true,
           certificateReminders: true,
           refusedPayments: true,
-          refusedPaymentsScope: "campaign"
+          refusedPaymentsScope: "campaign",
+          membersExportRevision: "20261009-complete-pagination-v2"
         });
       }
 
@@ -1466,6 +1541,86 @@ export default {
 
       if (url.pathname.startsWith("/admin/certificates/") && !storageReady(env)) {
         return json(request, { ok: false, error: "storage_not_configured" }, 503);
+      }
+
+
+      if (request.method === "GET" && url.pathname === "/admin/members/page") {
+        const pageIndex = Number(url.searchParams.get("page") || 1);
+        if (!Number.isSafeInteger(pageIndex) || pageIndex < 1 || pageIndex > 100) {
+          return json(request, { ok: false, error: "invalid_page" }, 400);
+        }
+        const batch = await fetchMembersExportPage(env, pageIndex);
+        return json(request, { ok: true, ...batch });
+      }
+
+      if (request.method === "GET" && url.pathname === "/admin/members/summary") {
+        // Autorisation contrôlée plus haut pour l'ensemble des routes /admin/.
+        // Lire HelloAsso à chaque action : aucune mise en cache de la liste nominative.
+        const orders = await fetchMembershipOrdersForExport(env);
+        const members = rowsFromOrders(orders);
+        const counts = {
+          Enfant: members.filter((member) => member.category === "Enfant").length,
+          Ado: members.filter((member) => member.category === "Ado").length,
+          Adulte: members.filter((member) => member.category === "Adulte").length
+        };
+        const incomplete = members.filter((member) =>
+          !member.address || !member.postal || !member.phone
+        ).length;
+        return json(request, {
+          ok: true, campaign: FORM_SLUG,
+          total: members.length, enfants: counts.Enfant,
+          ados: counts.Ado, adultes: counts.Adulte,
+          incomplete, fullDetailsLoaded: false
+        });
+      }
+
+      if (request.method === "POST" && url.pathname === "/admin/members/export.xlsx") {
+        const payload = await request.json().catch(() => null);
+        const submitted = Array.isArray(payload?.members) ? payload.members : [];
+        if (!submitted.length || submitted.length > 5000) {
+          return json(request, { ok: false, error: "invalid_member_list" }, 400);
+        }
+        const allowed = new Set(["Enfant", "Ado", "Adulte"]);
+        if (submitted.some((m) =>
+          !allowed.has(m?.category) ||
+          typeof m?.lastName !== "string" || !m.lastName.trim() ||
+          typeof m?.firstName !== "string" || !m.firstName.trim() ||
+          String(m.lastName).length > 255 || String(m.firstName).length > 255
+        )) return json(request, { ok: false, error: "invalid_member_data" }, 400);
+        const seen = new Set();
+        const members = submitted.filter((m) => {
+          const key = String(m.memberId || "")
+            || [m.lastName,m.firstName,m.birthDate].join("|");
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        const positions = { Enfant: 0, Ado: 1, Adulte: 2 };
+        members.sort((a, b) =>
+          positions[a.category] - positions[b.category]
+          || a.lastName.localeCompare(b.lastName, "fr", { sensitivity: "base" })
+          || a.firstName.localeCompare(b.firstName, "fr", { sensitivity: "base" })
+        );
+        const book = makeXlsx(members, createZip);
+        const date = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit"
+        }).format(new Date());
+        const fileName = "listing_adherents_Mix_Martial_Academy_2026-2027_" + date + ".xlsx";
+        return new Response(book.bytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders(request),
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Content-Disposition": 'attachment; filename="' + fileName + '"',
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+            "X-Members-Total": String(book.total),
+            "X-Members-Enfants": String(book.counts.Enfant),
+            "X-Members-Ados": String(book.counts.Ado),
+            "X-Members-Adultes": String(book.counts.Adulte),
+            "X-Members-Incomplete": String(book.missing)
+          }
+        });
       }
 
       if (request.method === "GET" && url.pathname === "/admin/mail/status") {
