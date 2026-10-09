@@ -1,5 +1,6 @@
 import { connect } from "cloudflare:sockets";
 import { handlePasskeyPreview } from "./passkeyPreview.js";
+import { verifyPasskeySession } from "./passkeySession.js";
 
 const HELLOASSO_API = "https://api.helloasso.com";
 const ORGANIZATION_SLUG = "mix-martial-academy";
@@ -939,11 +940,11 @@ function storageReady(env) {
   return Boolean(env.CERTIFICATES && typeof env.CERTIFICATES.put === "function");
 }
 
-function isAdmin(request, env) {
-  return Boolean(
-    env.ADMIN_API_TOKEN &&
-    request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`
-  );
+async function isAdmin(request, env) {
+  if (env.ADMIN_API_TOKEN &&
+    request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) return true;
+  // Jetons WebAuthn uniquement : aucun mot de passe n'est retransmis.
+  return verifyPasskeySession(request, env);
 }
 
 async function certificateObjectForMember(env, memberId) {
@@ -1458,7 +1459,7 @@ export default {
       }
 
       if (url.pathname.startsWith("/admin/")) {
-        if (!isAdmin(request, env)) {
+        if (!(await isAdmin(request, env))) {
           return json(request, { ok: false, error: "unauthorized" }, 401);
         }
       }
