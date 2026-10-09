@@ -3,11 +3,12 @@
  *
  * IMPORTANT :
  * - Version de test uniquement ; ces routes ne déverrouillent aucun module admin.
- * - Pas de session API, pas de mot de passe stocké, jamais de code retourné.
+ * - Un jeton de session opaque de courte durée remplace le mot de passe pour les routes Cloudflare de test.
  * - L'enrôlement requiert le véritable ADMIN_API_TOKEN côté Cloudflare.
  * - Les challenges et la clé publique sont cantonnés au préfixe R2 passkey-preview/.
  * - La validation WebAuthn complète est réalisée par @simplewebauthn/server.
  */
+import { issuePasskeySession, revokePasskeySession } from "./passkeySession.js";
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -142,6 +143,11 @@ export async function handlePasskeyPreview(request, env, reply) {
     }
   }
 
+  if (route === "/passkey-preview/logout") {
+    await revokePasskeySession(request, env);
+    return reply({ ok: true, revoked: true });
+  }
+
   if (route === "/passkey-preview/login/options") {
     const saved = await readJSON(env.CERTIFICATES, SAVED_KEY);
     if (!saved) return reply({ ok: false, error: "not_registered" }, 404);
@@ -182,8 +188,10 @@ export async function handlePasskeyPreview(request, env, reply) {
       }
       saved.counter = verification.authenticationInfo.newCounter;
       await storeJSON(env.CERTIFICATES, SAVED_KEY, saved);
-      // Le prototype n'émet AUCUN jeton donnant accès à l'Admin en production.
-      return reply({ ok: true, verified: true, testOnly: true, adminUnlocked: false });
+      // Session valable uniquement sur le Worker de prévisualisation.
+      // Le code de production et les aides chiffrées restent inchangés.
+      const session = await issuePasskeySession(env);
+      return reply({ ok: true, verified: true, testOnly: true, cloudflareSession: true, ...session });
     } catch {
       return reply({ ok: false, error: "verification_failed" }, 401);
     }
