@@ -144,7 +144,7 @@ dialog{border:1px solid #7b3b41;background:#151518;color:white;border-radius:18p
         <button type="submit" id="auth-submit">Ouvrir le test sécurisé</button>
       </form>
       <p id="auth-status" role="status" aria-live="polite"></p>
-      <div class="auth-notice">🔒 <b>Lecture seule :</b> aucune relance, suppression, modification ni paiement possible. Le code reste uniquement en mémoire pendant 20 minutes. Ce test est sur une URL distincte et ne modifie pas l’administration officielle. Aucun envoi ni modification autorisé.</div>
+      <div class="auth-notice">🔒 <b>Gestion V2 de test :</b> les mises à jour de statut et relances nécessitent une confirmation. Aucun paiement ni remboursement bancaire n’est déclenché ici. Le code reste uniquement en mémoire pendant 20 minutes. Ce test est sur une URL distincte et ne modifie pas l’administration officielle. Aucun envoi ni modification autorisé.</div>
     </div>
   </section>
   <div class="demo-banner" role="note"><span class="demo-pulse"></span> TEST V2 · GESTION SÉCURISÉE · DONNÉES RÉELLES</div>
@@ -497,7 +497,7 @@ async function populate(password, facePrf=null){
  await aidsJob;
  attachConnections();
  renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
- sync(data.issues.length?'Sources à vérifier : '+data.issues.join(' | '):'Données du club chargées · '+(data.summary?.total??data.people.length)+' adhérents · Lecture seule',data.issues.length?'warning':'ok');
+ sync(data.issues.length?'Sources à vérifier : '+data.issues.join(' | '):'Données du club chargées · '+(data.summary?.total??data.people.length)+' adhérents · Gestion V2 de test',data.issues.length?'warning':'ok');
 }
 
 const b64urlToBytes=value=>{const v=String(value).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(v+'='.repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));};
