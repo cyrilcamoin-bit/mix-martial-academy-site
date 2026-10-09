@@ -5324,3 +5324,39 @@ p {
     font-size: clamp(.94rem, 3.85vw, 1.12rem);
   }
 }
+
+
+/* Marque mobile sur une seule ligne, utilisant toute la largeur libre sans toucher au logo */
+@media (max-width: 768px) {
+  .site-header .brand {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+  .site-header .brand > span {
+    flex: 1 1 auto;
+    width: 0;
+    max-width: none;
+    min-width: 0;
+    min-height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .site-header .brand strong.club-name-font {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    font-size: clamp(.72rem, 3.15vw, 1.12rem);
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-align: center;
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.62rem, 2.95vw, .79rem);
+  }
+}
