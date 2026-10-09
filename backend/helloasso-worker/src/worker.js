@@ -438,7 +438,9 @@ async function fetchRefusedPayments(env) {
   }
 
   const rows = [];
-  for (const payment of payments) {
+  // Par lots de 3 : les recherches de commandes ne bloquent plus chaque paiement.
+  for (let start = 0; start < payments.length; start += 3) {
+    const batch = await Promise.all(payments.slice(start, start + 3).map(async (payment) => {
     const orderId = payment?.order?.id ?? null;
     const order = await getOrder(orderId);
     const payer = payment?.payer || order?.payer || {};
@@ -466,7 +468,7 @@ async function fetchRefusedPayments(env) {
       smsPhone = await findHistoricalPhone(payerEmail, orderId);
     }
 
-    rows.push({
+    return {
       paymentId: payment?.id ?? null,
       orderId,
       paymentDate,
@@ -482,14 +484,17 @@ async function fetchRefusedPayments(env) {
       },
       members,
       itemNames: orderItems.map((item) => String(item?.name || "").trim()).filter(Boolean)
-    });
+    };
+    }));
+    rows.push(...batch);
   }
 
-  for (const row of rows) {
+  // Statuts des relances R2 récupérés en parallèle ; aucune écriture.
+  await Promise.all(rows.map(async (row) => {
     row.reminder = row.dateKey
       ? await getPaymentReminder(env, row.dateKey, row.paymentId)
       : null;
-  }
+  }));
 
   return rows;
 }
