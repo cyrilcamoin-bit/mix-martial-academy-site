@@ -5360,3 +5360,26 @@ p {
     font-size: clamp(.62rem, 2.95vw, .79rem);
   }
 }
+
+
+/* Ajustement final : le nom occupe l'espace utile à droite du logo. */
+@media (max-width: 768px) {
+  .site-header .brand {
+    gap: .45rem;
+  }
+  .site-header .brand > span {
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.84rem, 3.88vw, 1.55rem);
+    line-height: 1;
+    text-align: left;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.73rem, 3.6vw, .88rem);
+  }
+}
