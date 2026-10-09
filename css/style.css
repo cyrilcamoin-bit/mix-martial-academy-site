@@ -5240,3 +5240,19 @@ p {
   .site-header .nav-links a.nav-cta { min-height: 56px; padding: .3rem .08rem; }
   .site-header .nav-links .nav-label { font-size: .56rem; }
 }
+
+/* SVG du menu mobile : pictogrammes homogènes */
+@media (max-width: 768px) {
+  .site-header .nav-links svg.nav-icon.nav-svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    color: #f1483a;
+    stroke: currentColor;
+    overflow: visible;
+  }
+  .site-header .nav-links a.is-active svg.nav-icon.nav-svg {
+    color: #fff;
+  }
+}
