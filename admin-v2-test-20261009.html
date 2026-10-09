@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <meta name="theme-color" content="#0a0a0d">
+  <title>TEST PRIVÉ — Administration MMA Le Rove (données réelles)</title>
+  <style>
+:root {
+  color-scheme: dark;
+  --bg:#070709; --surface:#111114; --surface-hi:#19191c; --surface-mid:#141417;
+  --line:#29292e; --line-hi:#393940; --txt:#f6f6f8; --muted:#a1a1aa;
+  --red:#e32427; --red-light:#f04448; --red-dim:#2d1518;
+  --green:#30d78c; --green-dim:#11291f; --amber:#edb24a;
+  --radius:17px;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse 70% 500px at 50% -250px,#271011 0,transparent 80%),var(--bg);color:var(--txt);min-height:100vh}
+button,input{font:inherit} button{cursor:pointer;color:inherit} button:focus-visible,input:focus-visible{outline:2px solid #f46568;outline-offset:3px}
+button:disabled{cursor:not-allowed;opacity:.55}
+[hidden]{display:none!important}
+.ui-icon{width:20px;height:20px;display:block;flex-shrink:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.demo-banner{background:linear-gradient(90deg,#391417,#251519 60%,#391417);border-bottom:1px solid #703034;letter-spacing:.105em;color:#f9c5c7;text-align:center;font-weight:750;font-size:10px;min-height:31px;padding:8px 10px;display:flex;justify-content:center;align-items:center;gap:9px}
+.demo-pulse{height:7px;width:7px;display:inline-block;border-radius:100%;background:var(--red-light);box-shadow:0 0 10px #eb454b}
+.app{width:min(1440px,100%);margin:0 auto;padding:0 24px 26px}
+.site-header{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:103px}
+.identity{display:flex;align-items:center;gap:12px;min-width:0}
+.logo-box{width:64px;height:64px;flex:0 0 auto;border:1px solid #9c252a;background:radial-gradient(circle at 50% 42%,#541b22,transparent 65%),#111;display:flex;align-items:center;justify-content:center;clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%)}
+.octagon{font-size:27px;line-height:1;font-weight:950;letter-spacing:-.1em;text-shadow:1px 2px 5px black}
+.brand{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;margin-right:25px;line-height:.98}
+.brand strong{font-size:15px;letter-spacing:-.045em;display:flex;flex-direction:column;font-weight:950}
+.brand .red,.brand small{color:var(--red-light)}.brand small{font-size:11px;font-weight:800;letter-spacing:.14em;margin-top:5px}
+.header-title{display:flex;align-items:center;gap:18px}.header-rule{width:1px;height:39px;background:var(--line-hi)}.header-title>div{display:flex;flex-direction:column;gap:5px}.header-title strong{letter-spacing:.035em;font-size:19px}.header-title small{color:var(--muted);font-size:13px}
+.header-actions{display:flex;align-items:center;gap:12px}.connection-pill{min-height:55px;border-radius:12px;background:#141416;border:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 16px}
+.connection-pill>span{display:flex;flex-direction:column;gap:5px}.connection-pill strong{font-size:12px;font-weight:750}.connection-pill small{color:var(--muted);font-size:11px}.connection-dot{width:10px;height:10px;display:block;border:2px solid var(--amber);border-radius:100%;box-shadow:0 0 0 3px rgba(237,178,74,.09)}
+.ghost-btn,.outline-button,.back-button{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:1px solid var(--line-hi);background:var(--surface);border-radius:11px;padding:11px 16px;font-size:12px;font-weight:750;min-height:46px}
+.ghost-btn:hover,.outline-button:hover,.back-button:hover{border-color:#7d7d84;background:#1d1d23}
+.top-nav{height:57px;display:grid;grid-template-columns:1.15fr repeat(4,1fr);gap:4px;padding:5px;border:1px solid #222227;border-radius:13px;background:#101013}
+.nav-btn{border:0;border-radius:10px;background:transparent;display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;font-weight:720;color:#c9c9d0;white-space:nowrap;position:relative;transition:background .15s}
+.nav-btn .ui-icon{height:18px;width:18px}.nav-btn:hover{background:#202025;color:white}
+.nav-btn.active{background:linear-gradient(115deg,#631113,#a81417 75%,#751013);color:white;box-shadow:inset 0 0 0 1px rgba(234,46,54,.15),0 4px 14px #250608}
+.nav-btn.active::after{content:"";position:absolute;height:2px;width:45%;bottom:-4px;border-radius:3px;background:#ff6769;box-shadow:0 -1px 10px #ec292c}
+main{min-height:600px}.page-view{animation:open .18s ease-out}
+@keyframes open{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin:34px 0 22px}
+.kicker{color:#f1a8a8;display:flex;align-items:center;gap:10px;letter-spacing:.13em;font-size:11px;font-weight:850}.kicker-mark{display:inline-block;width:8px;height:8px;background:var(--red);border-radius:50%;box-shadow:0 0 12px #a81e23}
+h1{font-size:clamp(28px,3vw,43px);line-height:1.12;letter-spacing:-.055em;margin:12px 0 10px;font-weight:860}.page-heading p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.subtle-date{border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;gap:8px;color:#d9d9e0;font-size:12px;padding:10px 14px;background:#101012;white-space:nowrap}.subtle-date .ui-icon{width:15px;height:15px;color:var(--red-light)}.subtle-date small{color:var(--muted)}
+.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.metric-card{display:flex;flex-direction:column;align-items:stretch;text-align:left;min-height:230px;padding:18px;outline:0;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(154deg,#151517,#101012);transition:transform .18s,border-color .18s,box-shadow .18s;overflow:hidden}
+.metric-card:hover{transform:translateY(-2px);border-color:#754044;box-shadow:0 9px 28px #0005}
+.metric-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}.icon-blob{height:43px;width:43px;display:inline-flex;align-items:center;justify-content:center;border-radius:13px;background:var(--red-dim);color:#f43b41;flex-shrink:0}.icon-blob .ui-icon{width:23px;height:23px}.card-arrow{color:#666670}.card-arrow .ui-icon{width:17px;height:17px}
+.metric-name{font-size:13px;font-weight:750;line-height:1.4}.metric-value{font-size:clamp(33px,3.1vw,48px);font-weight:860;line-height:1;letter-spacing:-.055em;margin:13px 0}
+.metric-denominator{color:#929298;font-size:16px}.metric-foot{display:flex;border-top:1px solid #2b2b2f;margin-top:auto;padding-top:13px;gap:9px;justify-content:space-between;font-size:11px;color:#aaabb4;flex-wrap:wrap}.metric-foot b{font-weight:800;color:white;margin-left:2px}
+.metric-notice{margin-top:auto;background:#212123;border:1px solid #262629;border-radius:9px;padding:9px 10px;display:flex;gap:7px;align-items:center;font-size:12px;font-weight:750;color:#d8d8db;min-height:41px}.metric-notice .ui-icon{width:16px;height:16px}.metric-notice .ui-icon:last-child{margin-left:auto}.red-text{color:#ff5a61!important}.green-text{color:var(--green)!important}.amber-text{color:var(--amber)!important}
+.certificate-value{display:flex;justify-content:space-between;align-items:center;margin:auto 0 8px}.certificate-value .metric-value{margin:0}.donut{--pct:0%;width:69px;height:69px;border-radius:50%;background:conic-gradient(var(--green) var(--pct),#2c2c30 0);padding:7px;display:flex;align-items:center;justify-content:center}.donut b{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#121214;font-size:16px}
+.dashboard-middle{margin:15px 0 0;display:grid;grid-template-columns:1.06fr .94fr;gap:15px}
+.panel{background:linear-gradient(180deg,#141416,#101012);border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.panel-title{min-height:70px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 17px;border-bottom:1px solid var(--line)}.panel-title>div{display:flex;align-items:center;gap:11px}.panel-title h2{margin:0;font-size:15px;letter-spacing:-.02em;font-weight:800}.panel-title .panel-icon .ui-icon{height:21px;width:21px}.tag{font-size:10px;font-weight:750;border-radius:50px;padding:7px 10px;white-space:nowrap}.ghost-tag{background:#1d1d21;border:1px solid var(--line-hi);color:#b6b6be}.red-tag{background:var(--red-dim);color:#ff8a8b;border:1px solid #5d282c}
+.priority-list{padding:9px}.priority-item{width:100%;border:1px solid #27272b;background:#1b1b1e;display:flex;align-items:center;gap:15px;border-radius:11px;margin-bottom:8px;padding:13px 13px;text-align:left;min-height:83px}.priority-item:last-child{margin-bottom:0}.priority-item:hover{background:#25252a;border-color:#58353a}.priority-icon{color:#f64348;background:#301719;display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:9px;flex-shrink:0}.priority-icon .ui-icon{width:23px;height:23px}.priority-text{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}.priority-text strong{font-size:13px;line-height:1.35}.priority-text small{font-size:11px;color:#9999a2;line-height:1.4}.priority-chevron{color:#ff4b50}.priority-chevron .ui-icon{width:18px;height:18px}
+.activity-list{padding:4px 16px}.activity-item{display:flex;align-items:center;gap:12px;border-bottom:1px solid #27272b;padding:15px 0;min-height:62px}.activity-item:last-child{border:0}.activity-time{font-size:11px;color:#aaaab2;min-width:43px}.activity-icon{color:#b6b6bc}.activity-icon .ui-icon{width:18px;height:18px}.activity-icon.green{color:var(--green)}.activity-icon.amber{color:var(--amber)}.activity-text{display:flex;flex-direction:column;gap:4px;min-width:0}.activity-text strong{font-size:12px;font-weight:760}.activity-text small{font-size:11px;color:var(--muted);line-height:1.4}
+.quick-search{margin:15px 0 0;padding:19px 19px 21px;border-radius:var(--radius);background:linear-gradient(110deg,#1a1a1d,#131316);border:1px solid var(--line)}.quick-search-copy h2{font-size:17px;margin:0 0 5px}.quick-search-copy p{font-size:12px;color:var(--muted);margin:0 0 13px}.quick-search-form{display:flex;align-items:center;gap:10px;position:relative}.quick-search-form>.ui-icon{position:absolute;left:14px;width:19px;height:19px;color:#aaaab2}.quick-search-form input,.search-field input{outline:none;border:1px solid #414149;border-radius:9px;background:#101013;color:white;min-height:53px;padding:0 14px 0 45px;font-size:13px;min-width:0;flex:1}.quick-search-form input:focus,.search-field input:focus{border-color:#c04248;outline:1px solid #c04248}.quick-search-form input::placeholder,.search-field input::placeholder{color:#858590}
+.primary-button{border:1px solid #ff4d51;background:linear-gradient(165deg,#f02b2e,#c31216);padding:13px 20px;min-height:52px;min-width:135px;border-radius:10px;color:white;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary-button:hover{filter:brightness(1.13)}.primary-button .ui-icon{width:17px;height:17px}
+/* Annuaire */
+.directory-panel{overflow:hidden}.directory-tools{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px}.search-field{position:relative;display:flex;flex:1;min-width:170px;max-width:540px}.search-field .ui-icon{position:absolute;left:15px;top:17px;color:#a1a1a9}.search-field input{width:100%;min-height:49px}.filter-chips{display:flex;gap:7px;flex-wrap:wrap}.filter-chip{border:1px solid var(--line-hi);border-radius:30px;background:#202024;font-size:11px;padding:10px 13px;min-height:39px;color:#c3c3cb;font-weight:750}.filter-chip.active{background:#941719;border-color:#d5292d;color:white}
+.list-header{display:grid;grid-template-columns:minmax(210px,2.3fr) minmax(110px,1fr) minmax(110px,1fr) minmax(100px,1fr) 22px;gap:10px;border-block:1px solid var(--line);padding:13px 18px;font-size:10px;color:#888892;font-weight:800;letter-spacing:.095em}
+.member-row{display:grid;grid-template-columns:minmax(210px,2.3fr) minmax(110px,1fr) minmax(110px,1fr) minmax(100px,1fr) 22px;gap:10px;align-items:center;background:transparent;border:0;border-bottom:1px solid #252529;text-align:left;padding:13px 18px;min-height:75px;width:100%}.member-row:hover{background:#1b1b20}.member-person{display:flex;align-items:center;gap:13px;min-width:0}.avatar{display:flex;align-items:center;justify-content:center;border-radius:50%;flex:0 0 auto;width:43px;height:43px;background:#d2d2d7;color:#202025;font-size:14px;font-weight:850}.avatar.gray{background:#3a3a41;color:white}.name-stack{min-width:0;display:flex;flex-direction:column;gap:5px}.name-stack strong{font-weight:790;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.name-stack small{font-size:11px;color:var(--muted)}.directory-category{font-size:12px;color:#c5c5cc}.status-pill{font-size:10px;padding:6px 9px;border-radius:50px;white-space:nowrap;display:inline-flex;width:fit-content;border:1px solid transparent;font-weight:750}.status-pill.success{color:#89edbf;background:#123227;border-color:#245541}.status-pill.danger{color:#ffa5a7;background:#451d21;border-color:#703034}.status-pill.warning{color:#f3c885;background:#43301b;border-color:#6f4f25}.status-pill.neutral{color:#c8c8cc;background:#2a2a2e;border-color:#404048}.row-arrow{color:#92929b;display:flex;align-items:center;justify-content:end}.row-arrow .ui-icon{width:18px;height:18px}.list-footer{font-size:11px;color:#9797a1;padding:16px 18px}.empty-state{padding:50px 20px;text-align:center;font-size:14px}.empty-state small{color:var(--muted);line-height:1.9}
+/* Modules */
+.module-panel{padding:0 0 10px}.module-summary{display:flex;align-items:center;gap:16px;padding:22px;border-bottom:1px solid var(--line)}.module-summary>div{display:flex;flex-direction:column;gap:6px;flex:1}.module-summary small{font-size:12px;color:#bbbcc3}.module-summary strong{font-size:25px;letter-spacing:-.04em}.module-hint,.safety-line{font-size:12px;color:#b4b4bb;line-height:1.6;margin:15px 20px}.safety-line{display:flex;align-items:center;gap:10px}.safety-line .ui-icon{color:var(--green)}
+.module-item{display:flex;align-items:center;gap:13px;text-align:left;padding:15px 20px;background:transparent;border:0;border-bottom:1px solid var(--line);min-height:77px;width:100%}.module-item:last-child{border:0}.module-item:hover{background:#1c1c20}.module-item-icon{background:#28282d;border-radius:9px;display:flex;justify-content:center;align-items:center;height:41px;width:41px;flex-shrink:0}.module-item-text{display:flex;flex:1;flex-direction:column;gap:5px;min-width:0}.module-item-text strong{font-size:13px}.module-item-text small{font-size:11px;color:var(--muted)}.module-item-right{font-size:12px;text-align:right;max-width:45%}.sum{white-space:nowrap}
+/* Fiche */
+.profile-bar{display:flex;justify-content:space-between;align-items:center;margin-top:26px}.profile-title-row{margin-top:23px}.profile-identity{display:flex;align-items:center;gap:20px;padding:25px;margin-bottom:15px}.profile-avatar{width:76px;height:76px;flex-shrink:0;display:grid;place-items:center;background:#dedee2;color:#242426;font-size:25px;border-radius:50%;font-weight:850}.profile-identity-text{display:flex;flex-direction:column;gap:9px}.identity-name{display:flex;gap:15px;align-items:center;flex-wrap:wrap}.identity-name h2{margin:0;font-size:24px}.profile-identity-text p{margin:0;font-size:13px;color:#c5c5cb}.profile-identity-text small{display:flex;gap:6px;color:var(--muted);align-items:center;font-size:11px}.profile-identity-text small .ui-icon{width:16px;height:16px}.profile-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.profile-status{min-height:210px;background:linear-gradient(155deg,#161618,#101012);border:1px solid var(--line);border-radius:14px;padding:18px}.profile-status-icon{display:flex;justify-content:center;align-items:center;width:41px;height:41px;border-radius:50%;margin-bottom:15px;background:#302025;color:#ff6268}.profile-status-icon.success{background:#163226;color:var(--green)}.profile-status-icon.warning{background:#3e2c1b;color:var(--amber)}.profile-status-icon.neutral{background:#29292f;color:#c2c2ca}.profile-status-body small{font-size:11px;color:var(--muted)}.profile-status-body h3{font-size:18px;margin:6px 0 10px}.profile-status-body p{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}.profile-bottom{margin-top:15px;padding-bottom:18px}.profile-bottom>.panel-title{border-bottom:0}.profile-bottom .panel-title>div>.ui-icon{color:var(--red)}.profile-bottom>p{color:#b8b8c0;font-size:13px;line-height:1.8;margin:0 20px 18px}.profile-bottom>.outline-button{margin-left:20px}.profile-bottom .outline-button .ui-icon{width:14px}
+.app-footer{color:#80808c;border-top:1px solid #27272b;margin-top:45px;padding:17px 10px 5px;text-align:center;font-size:10px;letter-spacing:.02em;line-height:1.6}
+.mobile-nav{display:none}
+dialog{border:1px solid #7b3b41;background:#151518;color:white;border-radius:18px;max-width:min(480px,calc(100vw - 28px));padding:0;box-shadow:0 20px 90px #000b}dialog::backdrop{background:#000c;backdrop-filter:blur(4px)}.dialog-inner{padding:30px;position:relative}.dialog-close{position:absolute;right:14px;top:14px;border:1px solid #3c3c41;background:#242427;border-radius:9px;width:38px;height:38px;display:grid;place-items:center}.dialog-inner h2{margin:18px 0 10px}.dialog-inner p{font-size:13px;line-height:1.75;color:#c5c5ca}.dialog-inner .large{height:52px;width:52px}.dialog-inner .primary-button{margin-top:12px;width:100%}.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);padding:13px 18px;border:1px solid #865055;background:#281719;color:#fff;border-radius:10px;z-index:20;box-shadow:0 12px 40px #0009;max-width:90%;font-size:12px;text-align:center}
+@media (max-width:1110px){.header-title strong{font-size:16px}.header-title{gap:12px}.brand{margin-right:8px}.metric-grid{gap:10px}.metric-card{padding:14px}.metric-foot{font-size:10px;gap:7px}.priority-text strong{font-size:12px}.dashboard-middle{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.header-title{display:none}.nav-btn{font-size:11px;gap:5px}.nav-btn .ui-icon{width:17px}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-card{min-height:200px}.dashboard-middle{grid-template-columns:1fr 1fr}.profile-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.directory-tools{flex-wrap:wrap}.search-field{max-width:none;width:100%;flex-basis:100%}.list-header,.member-row{grid-template-columns:minmax(170px,2fr) minmax(80px,1fr) minmax(84px,1fr) minmax(70px,1fr) 18px}}
+@media (max-width:660px){
+  .demo-banner{font-size:9px;line-height:1.4;letter-spacing:.065em;padding:6px 8px;min-height:35px}
+  .app{padding:0 14px 95px}
+  .site-header{min-height:83px}.logo-box{width:47px;height:47px}.octagon{font-size:22px}.identity{gap:8px}.brand{margin-right:0}.brand strong{font-size:12px}.brand small{font-size:9px;margin-top:4px}.header-actions{gap:7px}.connection-pill{min-height:41px;padding:6px 8px;gap:6px;border-radius:9px}.connection-dot{width:7px;height:7px}.connection-pill strong{font-size:10px}.connection-pill small{font-size:9px}.ghost-btn{min-height:41px;width:39px;padding:0}.ghost-btn .ui-icon{width:18px}.desktop-label{display:none}
+  .top-nav{display:none}.mobile-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;z-index:11;bottom:0;left:0;right:0;background:rgba(14,14,16,.97);backdrop-filter:blur(15px);border-top:1px solid #3d3d43;height:calc(69px + env(safe-area-inset-bottom));padding:6px 5px calc(9px + env(safe-area-inset-bottom));gap:0}
+  .mobile-nav-btn{border:0;background:transparent;border-radius:9px;color:#a3a3ad;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:9px;font-weight:700;min-width:0;padding:4px 0}.mobile-nav-btn .ui-icon{width:20px;height:20px}.mobile-nav-btn.active{color:#fb4145;background:#371719}
+  .page-heading{margin:23px 0 18px;display:block}.page-heading h1{font-size:29px;line-height:1.12;letter-spacing:-.04em;margin-top:10px}.page-heading p{font-size:12px}.kicker{font-size:9px}.subtle-date{display:none}
+  .metric-grid{gap:10px}.metric-card{min-height:173px;padding:14px;border-radius:13px}.metric-head{margin-bottom:11px}.icon-blob{width:38px;height:38px;border-radius:11px}.icon-blob .ui-icon{width:21px;height:21px}.metric-name{font-size:12px}.metric-value{font-size:35px;margin:11px 0}.metric-foot{gap:5px;font-size:9px;padding-top:11px;justify-content:flex-start}.metric-foot>span{display:inline-flex;align-items:center;gap:3px}.metric-foot b{font-size:10px;margin-left:0}
+  .certificate-value{margin:10px 0 auto}.certificate-value .metric-value{margin:0}.metric-denominator{font-size:12px}.donut{width:53px;height:53px;padding:6px}.donut b{font-size:13px}.metric-notice{font-size:10px;padding:7px 7px;min-height:36px;line-height:1.2;gap:5px}.metric-notice .ui-icon{width:14px;height:14px;flex-shrink:0}.card-arrow .ui-icon{width:15px;height:15px}
+  .dashboard-middle{grid-template-columns:1fr;gap:12px;margin-top:12px}.panel-title{min-height:62px;padding:11px 13px}.panel-title h2{font-size:14px}.panel-title .panel-icon .ui-icon{width:18px}.priority-list{padding:8px}.priority-item{min-height:74px;padding:10px;gap:12px}.priority-icon{width:39px;height:39px}.priority-icon .ui-icon{width:21px}.priority-text strong{font-size:12px}.priority-text small{font-size:10px}.activity-list{padding:3px 14px}.activity-item{padding:12px 0}.activity-time{font-size:10px;min-width:38px}.activity-text strong{font-size:11px}.activity-text small{font-size:10px}
+  .quick-search{margin-top:12px;padding:15px}.quick-search-copy h2{font-size:15px}.quick-search-copy p{font-size:11px}.quick-search-form{flex-wrap:wrap}.quick-search-form input{min-height:46px;flex-basis:100%;font-size:12px}.quick-search-form>.ui-icon{top:13px}.quick-search-form .primary-button{width:100%;min-height:43px}
+  .directory-tools{padding:12px;gap:12px}.filter-chips{gap:5px}.filter-chip{padding:8px 11px;min-height:34px;font-size:10px}.search-field input{min-height:46px}.search-field .ui-icon{top:13px}.list-header{display:none}.member-row{grid-template-columns:minmax(0,1fr) auto 16px;gap:7px;min-height:72px;padding:11px 13px}.avatar{width:39px;height:39px;font-size:12px}.member-person{gap:10px}.name-stack strong{font-size:12px}.name-stack small{font-size:10px}.directory-category,.directory-pay{display:none}.directory-cert{display:block}.status-pill{font-size:9px;padding:5px 8px}.list-footer{font-size:10px;line-height:1.6}
+  .module-summary{padding:14px;gap:12px}.module-summary strong{font-size:22px}.module-summary small{font-size:11px}.module-summary>.tag{font-size:9px}.module-item{padding:12px;gap:10px;min-height:68px}.module-item-icon{width:36px;height:36px}.module-item-text strong{font-size:12px}.module-item-text small{font-size:10px}.module-item-right .status-pill{font-size:9px}.module-item-right .sum{font-size:11px}.safety-line{font-size:11px;margin:13px}
+  .profile-bar{margin-top:16px}.back-button{padding:10px 13px;font-size:11px}.profile-title-row{margin-top:12px}.profile-identity{padding:17px;gap:13px}.profile-avatar{width:61px;height:61px;font-size:19px}.identity-name{gap:7px}.identity-name h2{font-size:19px}.profile-identity-text p{font-size:11px}.profile-identity-text small{font-size:10px}.profile-summary-grid{gap:9px}.profile-status{min-height:198px;padding:13px;border-radius:11px}.profile-status-icon{width:36px;height:36px;margin-bottom:11px}.profile-status-body h3{font-size:15px}.profile-status-body p{font-size:10px}
+  .app-footer{font-size:9px;margin-top:30px}
+}
+@media (max-width:360px){.app{padding-inline:10px}.metric-card{padding:11px}.metric-foot{gap:4px}.metric-notice{font-size:9px}.connection-pill{padding:5px}.connection-pill small{display:none}.brand strong{font-size:11px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page-view{animation:none}.metric-card{transition:none}}
+
+/* Test local sécurisé : nouvelle interface sans publication */
+.auth-gate{min-height:100vh;background:radial-gradient(ellipse at 50% 5%,#571014 0,transparent 40%),#08080b;display:grid;place-items:center;padding:24px;color:#fff}
+.auth-gate[hidden],.app[hidden]{display:none!important}
+.auth-card{width:min(490px,100%);background:#121216;border:1px solid #34343b;border-radius:24px;padding:clamp(24px,5vw,40px);box-shadow:0 28px 70px #0008}
+.auth-emblem{font-size:25px;font-weight:900;letter-spacing:3px;margin-bottom:32px}.auth-emblem span{color:#fb3139;font-size:13px;letter-spacing:1px;margin-left:8px}
+.auth-eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;color:#ff565f}.auth-card h1{font-size:clamp(27px,4vw,39px);margin:12px 0 10px}.auth-card p{line-height:1.6;color:#c4c4cc}
+.auth-card form{display:grid;gap:11px;margin-top:26px}.auth-card label{font-size:14px;font-weight:700}.auth-card input{width:100%;padding:16px;border:1px solid #52525b;border-radius:12px;background:#0c0c10;color:white;font:inherit}
+.auth-card button{border:0;border-radius:12px;background:#e62029;color:white;font:inherit;font-weight:800;min-height:54px;cursor:pointer;margin-top:6px}
+.auth-card button:disabled{opacity:.5;cursor:wait}.auth-notice{border-top:1px solid #303037;margin-top:28px;padding-top:20px;font-size:12px;line-height:1.7;color:#b4b4ba}
+.auth-card #auth-status{min-height:22px;margin:13px 0 0;font-size:14px}.sync-status{margin:13px 20px;padding:12px 15px;border:1px solid #393944;border-radius:11px;background:#151518;color:#ddd;font-size:13px}
+.sync-status.is-warning{color:#ffc38b;border-color:#7d512d}.sync-status.is-ok{color:#a4ebc1;border-color:#2b6c4b}
+.demo-banner{position:sticky;top:0;z-index:100}.header-actions{gap:9px}.top-nav{margin-top:12px}
+
+.mobile-nav[hidden]{display:none!important}
+
+</style>
+  
+  
+</head>
+<body>
+  <section class="auth-gate" id="auth-gate">
+    <div class="auth-card">
+      <div class="auth-emblem">MMA <span>LE ROVE</span></div>
+      <span class="auth-eyebrow">VERSION V2 · ACCÈS ADMINISTRATEUR</span>
+      <h1>Nouvelle administration</h1>
+      <p>Consulte les données réelles dans la nouvelle interface, sans toucher à ton administration actuelle.</p>
+      <form id="auth-form" autocomplete="off">
+        <label for="auth-password">Code administrateur habituel</label>
+        <input type="password" id="auth-password" placeholder="Ton mot de passe actuel" required autocomplete="off">
+        <button type="submit" id="auth-submit">Ouvrir le test sécurisé</button>
+      </form>
+      <p id="auth-status" role="status" aria-live="polite"></p>
+      <div class="auth-notice">🔒 <b>Lecture seule :</b> aucune relance, suppression, modification ni paiement possible. Le code reste uniquement en mémoire pendant 20 minutes. Ce test est sur une URL distincte et ne modifie pas l’administration officielle. Aucun envoi ni modification autorisé.</div>
+    </div>
+  </section>
+  <div class="demo-banner" role="note"><span class="demo-pulse"></span> TEST V2 · DONNÉES RÉELLES · LECTURE SEULE</div>
+  <div class="app" id="app" hidden>
+    <header class="site-header">
+      <div class="identity">
+        <div class="logo-box" aria-hidden="true"><span class="octagon">M</span></div>
+        <div class="brand"><strong><span>MIX</span><span class="red">MARTIAL</span><span>ACADEMY</span></strong><small>LE ROVE</small></div>
+        <div class="header-title"><span class="header-rule"></span><div><strong>ADMINISTRATION</strong><small>Gestion du club</small></div></div>
+      </div>
+      <div class="header-actions">
+        <span class="connection-pill"><i class="connection-dot"></i><span><strong>Test V2 sécurisé</strong><small>Session temporaire</small></span></span>
+        <button type="button" id="logout-button" class="ghost-btn" aria-label="Fermer la session et déconnecter"><span data-icon="lock"></span><span class="desktop-label">Déconnexion</span></button><button type="button" id="about-test" class="ghost-btn" aria-label="À propos de cette maquette"><span data-icon="info"></span><span class="desktop-label">Infos test</span></button>
+      </div>
+    </header>
+    <nav class="top-nav" aria-label="Navigation administration">
+      <button type="button" class="nav-btn active" data-view="dashboard" aria-current="page"><span data-icon="home"></span><span>Tableau de bord</span></button>
+      <button type="button" class="nav-btn" data-view="members"><span data-icon="users"></span><span>Adhérents</span></button>
+      <button type="button" class="nav-btn" data-view="certificates"><span data-icon="file-heart"></span><span>Certificats</span></button>
+      <button type="button" class="nav-btn" data-view="payments"><span data-icon="credit-card"></span><span>Échéances</span></button>
+      <button type="button" class="nav-btn" data-view="aides"><span data-icon="hand-coins"></span><span>Aides</span></button>
+    </nav>
+
+    <div id="sync-status" class="sync-status" role="status" aria-live="polite">Connexion aux données réelles…</div><main id="main-content" tabindex="-1">
+      <section class="page-view" data-page="dashboard" aria-labelledby="dashboard-title">
+        <div class="page-heading">
+          <div><div class="kicker"><i class="kicker-mark"></i> VUE D'ENSEMBLE · SAISON 2026–2027</div><h1 id="dashboard-title">Votre club, en un coup d'œil.</h1><p>Les indicateurs essentiels et les dossiers à suivre, au même endroit.</p></div>
+          <div class="subtle-date"><span data-icon="calendar-days"></span><span>Octobre 2026 <small>· en direct</small></span></div>
+        </div>
+
+        <section aria-label="Indicateurs du club" class="metric-grid">
+          <button type="button" class="metric-card" data-view="members"><div class="metric-head"><span class="icon-blob"><span data-icon="users"></span></span><span class="card-arrow" data-icon="arrow-up-right"></span></div><div class="metric-name">Adhérents</div><div class="metric-value" id="count-members">—</div><div class="metric-foot"><span>Enfants <b id="count-child">—</b></span><span>Ados <b id="count-teen">—</b></span><span>Adultes <b id="count-adult">—</b></span></div></button>
+          <button type="button" class="metric-card" data-view="certificates"><div class="metric-head"><span class="icon-blob"><span data-icon="file-heart"></span></span><span class="card-arrow" data-icon="arrow-up-right"></span></div><div class="metric-name">Certificats médicaux</div><div class="certificate-value"><div><span class="metric-value" id="count-certs">—</span><span class="metric-denominator" id="count-total-certs"> / —</span></div><div class="donut" id="cert-donut" aria-label="Taux de certificats reçus"><b id="cert-pct">—</b></div></div><div class="metric-notice red-text"><span data-icon="alert-circle"></span><span id="cert-missing">— manquants</span><span data-icon="chevron-right"></span></div></button>
+          <button type="button" class="metric-card" data-view="payments"><div class="metric-head"><span class="icon-blob"><span data-icon="credit-card"></span></span><span class="card-arrow" data-icon="arrow-up-right"></span></div><div class="metric-name">Échéances refusées</div><div class="metric-value" id="count-payments">—</div><div class="metric-notice red-text"><span data-icon="alert-triangle"></span><span id="payment-total">— à régulariser</span><span data-icon="chevron-right"></span></div></button>
+          <button type="button" class="metric-card" data-view="aides"><div class="metric-head"><span class="icon-blob"><span data-icon="hand-coins"></span></span><span class="card-arrow" data-icon="arrow-up-right"></span></div><div class="metric-name">Aides financières</div><div class="metric-value" id="count-aides">—</div><div class="metric-notice"><span data-icon="wallet"></span><span id="aides-total">— déclarés</span><span data-icon="chevron-right"></span></div></button>
+        </section>
+
+        <div class="dashboard-middle">
+          <section class="panel priority-panel" aria-labelledby="priority-title"><div class="panel-title"><div><span class="panel-icon red-text" data-icon="alert-triangle"></span><h2 id="priority-title">À traiter en priorité</h2></div><span class="tag ghost-tag">Accès direct</span></div><div class="priority-list" id="priority-list"></div></section>
+          <section class="panel activity-panel" aria-labelledby="activity-title"><div class="panel-title"><div><span class="panel-icon red-text" data-icon="clock-3"></span><h2 id="activity-title">Activité récente</h2></div><span class="tag ghost-tag">Données reçues</span></div><div class="activity-list" id="activity-list"></div></section>
+        </div>
+
+        <section class="quick-search" aria-labelledby="quick-search-title"><div class="quick-search-copy"><h2 id="quick-search-title">Retrouver un adhérent</h2><p>Une recherche, toutes les informations au même endroit.</p></div><form id="dashboard-search-form" class="quick-search-form"><label class="sr-only" for="dashboard-search">Nom ou prénom de l'adhérent</label><span data-icon="search"></span><input id="dashboard-search" type="search" placeholder="Rechercher un nom ou un prénom…" autocomplete="off"><button type="submit" class="primary-button">Rechercher <span data-icon="arrow-right"></span></button></form></section>
+      </section>
+
+      <section class="page-view" data-page="members" aria-labelledby="members-title" hidden><div class="page-heading"><div><div class="kicker"><i class="kicker-mark"></i> ANNÉE 2026–2027</div><h1 id="members-title">Adhérents</h1><p>Recherche et consultation des dossiers du club.</p></div><span class="tag ghost-tag">Données HelloAsso</span></div><div class="panel directory-panel"><div class="directory-tools"><div class="search-field"><span data-icon="search"></span><label class="sr-only" for="member-search">Rechercher un adhérent</label><input type="search" id="member-search" placeholder="Nom ou prénom…" autocomplete="off"></div><div class="filter-chips" role="group" aria-label="Filtrer par section"><button class="filter-chip active" type="button" data-category="all">Tous</button><button class="filter-chip" type="button" data-category="Enfant">Enfants</button><button class="filter-chip" type="button" data-category="Ado">Ados</button><button class="filter-chip" type="button" data-category="Adulte">Adultes</button></div></div><div class="list-header"><span>ADHÉRENT</span><span>CATÉGORIE</span><span>CERTIFICAT</span><span>PAIEMENT</span><span></span></div><div id="member-list" class="member-list"></div><div class="list-footer">Données nominatives : uniquement sur cet appareil, en mémoire, après authentification.</div></div></section>
+
+      <section class="page-view" data-page="certificates" hidden aria-labelledby="certificates-title"><div class="page-heading"><div><div class="kicker"><i class="kicker-mark"></i> SUIVI DES DOCUMENTS</div><h1 id="certificates-title">Certificats médicaux</h1><p>Voir les dossiers incomplets et retrouver rapidement les membres concernés.</p></div></div><div class="panel module-panel"><div class="module-summary"><span class="icon-blob"><span data-icon="file-heart"></span></span><div><small>Certificats à vérifier</small><strong id="module-cert-count">—</strong></div><span class="tag red-tag">Lecture seule</span></div><p class="module-hint">Adhérents dont aucun certificat déposé n’a été détecté dans le suivi du club.</p><div id="certificate-list" class="module-list"></div></div></section>
+
+      <section class="page-view" data-page="payments" hidden aria-labelledby="payments-title"><div class="page-heading"><div><div class="kicker"><i class="kicker-mark"></i> HELLOASSO · SUIVI</div><h1 id="payments-title">Échéances refusées</h1><p>Repérer les régularisations à suivre, sans envoyer de relance depuis la maquette.</p></div></div><div class="panel module-panel"><div class="module-summary"><span class="icon-blob"><span data-icon="credit-card"></span></span><div><small>Montant total des échéances refusées</small><strong id="module-payment-sum">—</strong></div><span class="tag red-tag">Lecture seule</span></div><div id="payment-list" class="module-list"></div><p class="safety-line"><span data-icon="shield-check"></span> Aucun SMS ni e-mail ne peut être envoyé ici.</p></div></section>
+
+      <section class="page-view" data-page="aides" hidden aria-labelledby="aides-title"><div class="page-heading"><div><div class="kicker"><i class="kicker-mark"></i> AIDES DE L'ÉTAT & ORGANISMES</div><h1 id="aides-title">Aides financières</h1><p>Suivi CAF, Pass’Sport et Collégien de Provence, en consultation.</p></div></div><div class="panel module-panel"><div class="module-summary"><span class="icon-blob"><span data-icon="hand-coins"></span></span><div><small>Total des aides déclarées</small><strong id="module-aides-sum">—</strong></div><span class="tag red-tag">Lecture seule</span></div><div id="aide-list" class="module-list"></div><p class="safety-line"><span data-icon="shield-check"></span> Aucune demande ni aucun remboursement ne peut être modifié.</p></div></section>
+
+      <section class="page-view" data-page="profile" hidden aria-labelledby="profile-title"><div class="profile-bar"><button id="profile-back" class="back-button" type="button"><span data-icon="arrow-left"></span> Retour</button><span class="tag ghost-tag">Dossier réel</span></div><div class="page-heading profile-title-row"><div><div class="kicker"><i class="kicker-mark"></i> DOSSIER ADHÉRENT</div><h1 id="profile-title">Fiche adhérent</h1><p>Vision centralisée du dossier administratif.</p></div></div><div id="profile-content"></div></section>
+    </main>
+
+    <footer class="app-footer">TEST V2 EN LECTURE SEULE — Données HelloAsso / certificats / aides chiffrées consultées après authentification · Ne remplace pas l’administration active</footer>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" hidden aria-label="Navigation mobile">
+    <button type="button" class="mobile-nav-btn active" data-view="dashboard"><span data-icon="home"></span><span>Accueil</span></button>
+    <button type="button" class="mobile-nav-btn" data-view="members"><span data-icon="users"></span><span>Adhérents</span></button>
+    <button type="button" class="mobile-nav-btn" data-view="certificates"><span data-icon="file-heart"></span><span>Certificats</span></button>
+    <button type="button" class="mobile-nav-btn" data-view="payments"><span data-icon="credit-card"></span><span>Échéances</span></button>
+    <button type="button" class="mobile-nav-btn" data-view="aides"><span data-icon="hand-coins"></span><span>Aides</span></button>
+  </nav>
+  <dialog id="about-dialog" aria-labelledby="about-title"><div class="dialog-inner"><button id="close-about" type="button" class="dialog-close" aria-label="Fermer"><span data-icon="x"></span></button><span class="icon-blob large"><span data-icon="shield-check"></span></span><h2 id="about-title">Version de test uniquement</h2><p>Cette version de test interroge les API officielles uniquement en lecture après validation du mot de passe. Les données restent en mémoire et ne sont jamais enregistrées dans un fichier local.</p><p>Les boutons permettent de consulter et de rechercher les vraies données. Aucune relance, suppression, modification, inscription ou transaction n’est possible.</p><button id="okay-about" class="primary-button" type="button">J'ai compris</button></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+/* MIX MARTIAL ACADEMY — Admin V2 / test Safari sécurisé.
+ * READ ONLY: seuls des GET distants sont possibles. Aucun mot de passe en stockage.
+ */
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const API='https://mma-lerove-api.cyril-camoin.workers.dev';
+let activeToken='';
+let authDeadline=0;
+const isAuthorized=()=>Boolean(activeToken)&&Date.now()<authDeadline;
+const money = n => Number(n || 0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+const safe = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const norm = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+const views=['dashboard','members','certificates','payments','aides','profile'];
+const data={people:[],summary:null,certificates:null,payments:null,aides:null,issues:[]};
+const state={view:'dashboard',search:'',category:'all',profileId:null,returnView:'members',loggedIn:false};
+const icons={
+ home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+ 'file-heart':'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18.3s-4-2.3-4-4.6a2 2 0 0 1 4-1 2 2 0 0 1 4 1c0 2.3-4 4.6-4 4.6z"/>',
+ 'credit-card':'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h3"/>',
+ 'hand-coins':'<path d="M2 13h3l3 2 4.5-1a2 2 0 0 1 2.5 2 2 2 0 0 1-1.5 2L9 20l-7-2"/><path d="M9 12l3-3 4 1 4-2a2 2 0 0 1 2 3l-4 3"/><circle cx="13" cy="4" r="2"/>',
+ 'arrow-up-right':'<path d="M7 17 17 7M7 7h10v10"/>',
+ 'arrow-right':'<path d="M5 12h14m-7-7 7 7-7 7"/>',
+ 'arrow-left':'<path d="M19 12H5m7 7-7-7 7-7"/>',
+ 'alert-circle':'<circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>',
+ 'alert-triangle':'<path d="M10.3 3.8 2.2 17.8A2 2 0 0 0 4 21h16a2 2 0 0 0 1.8-3.2l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/>',
+ 'chevron-right':'<path d="m9 18 6-6-6-6"/>',
+ 'clock-3':'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ 'calendar-days':'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+ wallet:'<rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 8h16a2 2 0 0 1 2 2v8M16 14h2"/>',
+ 'check-circle':'<circle cx="12" cy="12" r="10"/><path d="m8 12 2.5 2.5L16 9"/>',
+ 'shield-check':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+ mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/>',
+ search:'<circle cx="10.9" cy="10.9" r="7.1"/><path d="m16 16 5 5"/>',
+ info:'<circle cx="12" cy="12" r="10"/><path d="M12 11v5m0-9h.01"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ 'user-round':'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
+ activity:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/>',
+ lock:'<rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+ filter:'<path d="M4 5h16M7 12h10M10 19h4"/>'
+};
+const icon=n=>`<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[n]||icons.info}</svg>`;
+const fillIcons=()=>document.querySelectorAll('[data-icon]').forEach(el=>el.innerHTML=icon(el.dataset.icon));
+const badge=(label,kind='neutral')=>`<span class="status-pill ${kind}">${safe(label)}</span>`;
+const getPerson=id=>data.people.find(p=>p.id===String(id));
+const fullName=p=>`${p.last} ${p.first}`.trim();
+const prettyDate=d=>{if(!d)return 'Date non disponible';const t=new Date(d);return Number.isFinite(t.getTime())?t.toLocaleDateString('fr-FR'):'Date non disponible';};
+const categoryLabel=c=>({Enfant:'Enfants',Ado:'Ados',Adulte:'Adultes'})[c]||c||'Non classé';
+function toast(message){const e=$('toast');e.textContent=message;e.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>e.hidden=true,3900);}
+function sync(message,tone=''){const el=$('sync-status');el.textContent=message;el.className='sync-status'+(tone?' is-'+tone:'');}
+async function get(path){
+ if(!isAuthorized())throw Error('Session expirée : reconnecte-toi.');
+ const target=path.replace(/^\/api\//,'/admin/').replace('/admin/summary','/admin/members/summary').replace('/admin/certificates','/admin/certificates/status').replace('/admin/payments','/admin/payments/refused').replace('/admin/members/page','/admin/members/page');
+ const response=await fetch(API+target,{method:'GET',headers:{Authorization:'Bearer '+activeToken},cache:'no-store'});
+ const obj=await response.json().catch(()=>({}));
+ if(!response.ok||obj.ok===false)throw Error(response.status===401?'Session expirée ou code incorrect.':(obj.error||`Erreur API (${response.status})`));return obj;
+}
+function navigation(view,{scroll=true,hash=true}={}){
+ if(!views.includes(view))view='dashboard';
+ state.view=view;
+ document.querySelectorAll('[data-page]').forEach(page=>page.hidden=page.dataset.page!==view);
+ document.querySelectorAll('[data-view]').forEach(b=>{const selected=b.dataset.view===view;b.classList.toggle('active',selected);b.setAttribute('aria-current',selected?'page':'false');});
+ if(view==='members')renderMembers();
+ if(view==='certificates')renderCertificates();
+ if(view==='payments')renderPayments();
+ if(view==='aides')renderAides();
+ if(view==='profile')renderProfile();
+ if(hash)history.replaceState(null,'','#'+view);
+ if(scroll)scrollTo({top:0,behavior:'instant'});
+}
+function empty(msg){return `<div class="empty-state">${safe(msg)}</div>`;}
+function renderOverview(){
+ const sum=data.summary;const cert=data.certificates;const pay=data.payments;const aid=data.aides;
+ const count=Number.isFinite(sum?.total)?sum.total:(data.people.length||null);
+ const sections={Enfant:sum?.enfants,Ado:sum?.ados,Adulte:sum?.adultes};
+ $('count-members').textContent=count??'—';
+ $('count-child').textContent=sections.Enfant??'—';$('count-teen').textContent=sections.Ado??'—';$('count-adult').textContent=sections.Adulte??'—';
+ $('count-certs').textContent=cert?.received??'—';$('count-total-certs').textContent='/ '+(cert?.total??'—');
+ $('cert-missing').textContent=cert?`${cert.missing} manquants`:'Données non chargées';
+ const pct=cert&&cert.total>0?Math.round(cert.received/cert.total*100):0;
+ $('cert-donut').style.setProperty('--pct',pct+'%');$('cert-pct').textContent=cert?.total?pct+'%':'—';
+ $('count-payments').textContent=pay?.total??'—';$('payment-total').textContent=pay?`${money(pay.totalAmount)} à régulariser`:'Données non chargées';
+ $('count-aides').textContent=aid?.length??'—';$('aides-total').textContent=aid?`${money(aid.reduce((n,r)=>n+Number(r.data.montant||0),0))} déclarés`:'Données non chargées';
+ const items=[
+  {view:'certificates',ico:'file-heart',title:cert?`${cert.missing} certificats manquants`:'Certificats en cours de lecture',sub:'Accéder aux dossiers concernés'},
+  {view:'payments',ico:'credit-card',title:pay?`${pay.total} échéances refusées`:'Paiements en cours de lecture',sub:pay?`Montant total : ${money(pay.totalAmount)}`:'Chargement…'},
+  {view:'aides',ico:'hand-coins',title:aid?`${aid.filter(x=>!x.meta.refunded).length} aide(s) non remboursée(s)`:'Aides chiffrées en cours de lecture',sub:aid?`${aid.length} demandes reçues, toutes dates confondues`:'Chargement…'}
+ ];
+ $('priority-list').innerHTML=items.map(r=>`<button type="button" class="priority-item" data-view="${r.view}"><span class="priority-icon">${icon(r.ico)}</span><span class="priority-text"><strong>${safe(r.title)}</strong><small>${safe(r.sub)}</small></span><span class="priority-chevron">${icon('chevron-right')}</span></button>`).join('');
+ const activities=[];
+ for(const a of aid||[])if(a.meta.createdAt)activities.push({d:a.meta.createdAt,label:'Demande d’aide enregistrée',detail:`${a.data.nom||''} ${a.data.prenom||''}`,ico:'hand-coins'});
+ for(const p of pay?.payments||[])if(p.date)activities.push({d:p.date,label:'Échéance refusée',detail:(p.members||[]).map(x=>`${x.lastName||''} ${x.firstName||''}`).join(', ') || 'Paiement HelloAsso',ico:'credit-card'});
+ for(const c of cert?.members||[])if(c.lastReminderAt)activities.push({d:c.lastReminderAt,label:'Relance certificat enregistrée',detail:`${c.lastName||''} ${c.firstName||''}`,ico:'mail'});
+ activities.sort((a,b)=>new Date(b.d)-new Date(a.d));
+ $('activity-list').innerHTML=activities.length?activities.slice(0,6).map(x=>`<div class="activity-item"><span class="activity-time">${safe(prettyDate(x.d))}</span><span class="activity-icon">${icon(x.ico)}</span><span class="activity-text"><strong>${safe(x.label)}</strong><small>${safe(x.detail)}</small></span></div>`).join(''):empty('Aucun historique d’événement disponible dans les sources actuelles.');
+}
+function certBadge(p){return p.certificate==='valide'?badge('Reçu','success'):p.certificate==='manquant'?badge('Manquant','danger'):badge('Non vérifié');}
+function payBadge(p){return p.payment==='refusé'?badge('Refusé','danger'):p.payment==='sans_refus'?badge('Aucun refus trouvé','neutral'):badge('Non vérifié');}
+function aidBadge(p){return p.aidRecords?.length?badge(`${p.aidRecords.length} aide(s)`,'warning'):badge('Aucune liée');}
+function renderMembers(){
+ $('member-search').value=state.search;
+ document.querySelectorAll('[data-category]').forEach(b=>{const selected=b.dataset.category===state.category;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected?'true':'false');});
+ const query=norm(state.search);const matching=data.people.filter(p=>(state.category==='all'||p.category===state.category)&&(!query||norm(fullName(p)).includes(query)||norm(`${p.first} ${p.last}`).includes(query)));
+ $('member-list').innerHTML=matching.length?matching.map((p,i)=>`<button type="button" class="member-row" data-member-id="${safe(p.id)}"><span class="member-person"><span class="avatar ${i%3===1?'gray':''}">${safe(p.initials)}</span><span class="name-stack"><strong>${safe(fullName(p))}</strong><small>${p.age==null?'':safe(p.age)+' ans · '}${safe(categoryLabel(p.category))}</small></span></span><span class="directory-category">${safe(categoryLabel(p.category))}</span><span class="directory-cert">${certBadge(p)}</span><span class="directory-pay">${payBadge(p)}</span><span class="row-arrow">${icon('chevron-right')}</span></button>`).join(''):empty(data.people.length?'Aucun adhérent ne correspond aux filtres.':'Les adhérents n’ont pas pu être chargés.');
+}
+function moduleItem({ico,title,sub,right,id,kind='neutral'}){
+ const common=`<span class="module-item-icon ${kind}">${icon(ico)}</span><span class="module-item-text"><strong>${safe(title)}</strong><small>${safe(sub)}</small></span><span class="module-item-right">${right}</span><span class="row-arrow">${id?icon('chevron-right'):''}</span>`;
+ return id?`<button type="button" class="module-item" data-member-id="${safe(id)}">${common}</button>`:`<div class="module-item">${common}</div>`;
+}
+function renderCertificates(){
+ const cert=data.certificates;
+ $('module-cert-count').textContent=cert?`${cert.missing} dossier(s)`:'Indisponible';
+ if(!cert){$('certificate-list').innerHTML=empty('Chargement impossible : vérifie la connexion et réessaie.');return;}
+ $('certificate-list').innerHTML=cert.members.filter(c=>!c.received).map(c=>{
+  const p=data.people.find(p=>p.id===String(c.memberId));
+  return moduleItem({ico:'file-heart',title:`${c.lastName||''} ${c.firstName||''}`,sub:p?categoryLabel(p.category):'Certificat à fournir',right:badge('Manquant','danger'),id:p?.id,kind:'red-text'});
+ }).join('')||empty('Tous les certificats sont présents selon le suivi des dépôts.');
+}
+function paymentMembers(pay){const names=(pay.members||[]).map(m=>[m.lastName,m.firstName].filter(Boolean).join(' ')).filter(Boolean);return names.length?names.join(', '):[pay.payer?.lastName,pay.payer?.firstName].filter(Boolean).join(' ')||'Adhérent non identifié';}
+function renderPayments(){
+ const info=data.payments;$('module-payment-sum').textContent=info?money(info.totalAmount):'Indisponible';
+ if(!info){$('payment-list').innerHTML=empty('Échéances indisponibles.');return;}
+ $('payment-list').innerHTML=(info.payments||[]).map(f=>{
+  const person=data.people.find(p=>p.failedPayments?.some(x=>x.paymentId===f.paymentId));
+  return moduleItem({ico:'credit-card',title:paymentMembers(f),sub:`Refus ${prettyDate(f.date)} · ${f.reminder?.sentAt?'Relance envoyée':'Relance non confirmée'}`,right:`<strong class="sum">${money(f.amount)}</strong>`,id:person?.id,kind:'red-text'});
+ }).join('')||empty('Aucune échéance refusée actuellement.');
+}
+function renderAides(){
+ const aids=data.aides;$('module-aides-sum').textContent=aids?money(aids.reduce((n,r)=>n+Number(r.data.montant||0),0)):'Indisponible';
+ if(!aids){$('aide-list').innerHTML=empty('Aides indisponibles : le code de déchiffrement n’a pas été accepté, ou Firebase ne répond pas.');return;}
+ $('aide-list').innerHTML=aids.map(r=>{
+  const person=data.people.find(p=>p.aidRecords?.some(a=>a.id===r.id));
+  return moduleItem({ico:'hand-coins',title:`${r.data.nom||''} ${r.data.prenom||''}`.trim(),sub:`${r.data.dispositif||'Aide'} · ${r.meta.refunded?'Remboursée':r.meta.verified?'Code vérifié':'Code non vérifié'}`,right:`<strong class="sum">${money(r.data.montant)}</strong>`,id:person?.id,kind:r.meta.refunded?'green-text':'amber-text'});
+ }).join('')||empty('Aucune demande d’aide enregistrée.');
+}
+function profileStatus(iconName,headline,title,status,kind,details){return `<article class="profile-status"><span class="profile-status-icon ${kind}">${icon(iconName)}</span><div class="profile-status-body"><small>${safe(headline)}</small><h3>${safe(title)}</h3>${status?badge(status,kind):''}<p>${safe(details)}</p></div></article>`;}
+function renderProfile(){
+ const p=getPerson(state.profileId);if(!p){navigation('members');return;}
+ $('profile-title').textContent=fullName(p);
+ const failed=p.failedPayments||[],aids=p.aidRecords||[];
+ const aidSum=aids.reduce((n,r)=>n+Number(r.data.montant||0),0);
+ $('profile-content').innerHTML=`
+  <section class="panel profile-identity"><span class="profile-avatar">${safe(p.initials)}</span><div class="profile-identity-text"><div class="identity-name"><h2>${safe(fullName(p))}</h2>${badge('Dossier HelloAsso','success')}</div><p>${p.age!=null?safe(p.age)+' ans · ':''}${safe(categoryLabel(p.category))}</p><small>${icon('shield-check')} Lecture seule · Montant adhésion ${p.amount!=null?money(p.amount):'non renseigné'}</small></div></section>
+  <div class="profile-summary-grid">
+  ${profileStatus('user-round','Coordonnées',p.phone||'Téléphone non renseigné',p.email||'Email non renseigné','neutral',[p.address,p.postal].filter(Boolean).join(' · ')||'Adresse absente')}
+  ${profileStatus('credit-card','Échéances refusées',failed.length?`${failed.length} refus · ${money(failed.reduce((n,x)=>n+Number(x.amount||0),0))}`:'Aucun refus trouvé',failed.length?'Action à contrôler':'Source HelloAsso',failed.length?'danger':'neutral',failed.length?failed.map(x=>`Refus du ${prettyDate(x.date)}`).join(' · '):'Ceci ne confirme pas que toutes les échéances sont payées.')}
+  ${profileStatus('file-heart','Certificat médical',p.certificate==='valide'?'Déposé':p.certificate==='manquant'?'Manquant':'Non vérifié',p.certificate==='valide'?'Présent':p.certificate==='manquant'?'À fournir':'Source indisponible',p.certificate==='valide'?'success':p.certificate==='manquant'?'danger':'neutral',p.lastReminderAt?`Dernière relance : ${prettyDate(p.lastReminderAt)}`:'Aucun historique de relance disponible')}
+  ${profileStatus('hand-coins','Aides financières',aids.length?`${aids.length} demande(s) · ${money(aidSum)}`:data.aides?'Aucune demande reliée':'Aides indisponibles',aids.length?aids.map(a=>a.data.dispositif||'Aide').join(', '):'Correspondance stricte par nom et prénom',aids.length?'warning':'neutral',aids.length?aids.map(a=>a.meta.refunded?'Remboursée':'Non remboursée').join(' · '):'Les demandes non reliées restent visibles dans l’onglet Aides.')}
+  </div>
+  <section class="panel profile-bottom"><div class="panel-title"><div>${icon('shield-check')}<h2>Consultation uniquement</h2></div></div><p>Fiche construite à partir de HelloAsso et des données disponibles. Les rapprochements de paiements et d’aides exigent une correspondance identifiable ; en cas d’ambiguïté, aucune attribution automatique n’est effectuée.</p><button class="outline-button" type="button" id="profile-close-bottom">Retour aux listes ${icon('arrow-left')}</button></section>`;
+}
+function attachConnections(){
+ const certMap=new Map((data.certificates?.members||[]).map(x=>[String(x.memberId),x]));
+ for(const person of data.people){
+  const c=certMap.get(person.id);person.certificate=c?(c.received?'valide':'manquant'):'inconnu';person.lastReminderAt=c?.lastReminderAt||null;
+  person.failedPayments=[];person.aidRecords=[];
+ }
+ // Attributions uniquement en cas de nom/prénom exact et unique.
+ const index=new Map();
+ for(const p of data.people){const k=norm(fullName(p));index.set(k,index.has(k)?null:p);}
+ for(const payment of data.payments?.payments||[]){
+  const raw=payment.members||[];
+  const matched=[...new Set(raw.map(m=>index.get(norm([m.lastName,m.firstName].filter(Boolean).join(' ')))).filter(Boolean))];
+  if(matched.length===1&&raw.length===1)matched[0].failedPayments.push(payment);
+ }
+ for(const aid of data.aides||[]){const p=index.get(norm(`${aid.data.nom||''} ${aid.data.prenom||''}`));if(p)p.aidRecords.push(aid);}
+ for(const p of data.people)p.payment=data.payments?(p.failedPayments.length?'refusé':'sans_refus'):'inconnu';
+}
+function dateFromExcelSerial(serial){if(!Number.isFinite(Number(serial))||!serial)return null;return new Date(Date.UTC(1899,11,30)+Number(serial)*86400000);}
+function ageFromSerial(serial){const dt=dateFromExcelSerial(serial);if(!dt)return null;const now=new Date();let years=now.getFullYear()-dt.getUTCFullYear();if(now.getMonth()<dt.getUTCMonth()||(now.getMonth()===dt.getUTCMonth()&&now.getDate()<dt.getUTCDate()))years--;return years>=0&&years<110?years:null;}
+async function loadMembers(){
+ let result=[],unique=new Set(),failed=false;
+ const summary=await get('/api/summary');data.summary=summary;
+ for(let page=1;page<=35;page++){
+  sync(`Lecture sécurisée des adhérents… page ${page} · ${result.length}/${summary.total}`);
+  let current;
+  try{current=await get('/api/members/page?page='+page);}catch(e){failed=true;data.issues.push('Liste adhérents incomplète : '+e.message);break;}
+  for(const person of current.members||[]){
+   const id=String(person.memberId||'');if(!id||unique.has(id))continue;unique.add(id);
+   result.push({id,last:String(person.lastName||'').toUpperCase(),first:person.firstName||'',initials:(String(person.firstName||'')[0]||'')+(String(person.lastName||'')[0]||''),category:person.category,age:ageFromSerial(person.birthDate),birthDate:person.birthDate,amount:person.amount,email:person.email,phone:person.phone,address:person.address,postal:person.postal});
+  }
+  if(current.ordersCount===0)break;
+  if(page===35)failed=true;
+ }
+ const countOk=result.length===summary.total;
+ if(!countOk||failed)data.issues.push(`Attention : ${result.length} dossiers chargés pour ${summary.total} inscrits attendus. Le listing peut être incomplet.`);
+ data.people=result;
+}
+const base64Bytes=b64=>Uint8Array.from(atob(String(b64||'')),ch=>ch.charCodeAt(0));
+async function loadAides(password){
+ const raw=await fetch('https://mix-martial-academy-default-rtdb.europe-west1.firebasedatabase.app/aides_inscription_v1.json',{method:'GET',cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Firebase indisponible.');return r.json()});
+ const source=await fetch('/js/aides-admin.js',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Clé des aides indisponible.');return r.text()});
+ const found=/const ADMIN_KEY_BLOB = (\{[^
+]*\});/.exec(source);
+ if(!found)throw Error('Clé chiffrée des aides manquante.');
+ const enc=JSON.parse(found[1]);
+ const pwd=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+ const kek=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:base64Bytes(enc.salt),iterations:enc.iterations},pwd,{name:'AES-GCM',length:256},false,['decrypt']);
+ const pemBytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64Bytes(enc.iv)},kek,base64Bytes(enc.ciphertext));
+ let pem=new TextDecoder().decode(pemBytes);
+ let priv;
+ try{
+  const asn1=base64Bytes(pem.replace(/-----(?:BEGIN|END) PRIVATE KEY-----/g,'').replace(/\s+/g,''));
+  priv=await crypto.subtle.importKey('pkcs8',asn1,{name:'RSA-OAEP',hash:'SHA-256'},false,['decrypt']);
+  asn1.fill(0);
+ }finally{pem='';new Uint8Array(pemBytes).fill(0);}
+ const result=[];let unreadable=0;
+ for(const [id,meta] of Object.entries(raw||{})){
+  if(!meta?.wrappedKey||!meta?.iv||!meta?.ciphertext)continue;
+  try{
+   const rawKey=await crypto.subtle.decrypt({name:'RSA-OAEP'},priv,base64Bytes(meta.wrappedKey));
+   const aes=await crypto.subtle.importKey('raw',rawKey,{name:'AES-GCM'},false,['decrypt']);
+   new Uint8Array(rawKey).fill(0);
+   const clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64Bytes(meta.iv)},aes,base64Bytes(meta.ciphertext));
+   const values=JSON.parse(new TextDecoder().decode(clear));new Uint8Array(clear).fill(0);
+   result.push({id,data:values,meta:{createdAt:meta.createdAt||values.submittedAt||null,verified:Boolean(meta.verified),refunded:Boolean(meta.refunded),refundedAt:meta.refundedAt||null}});
+  }catch{unreadable++;}
+ }
+ if(unreadable)data.issues.push(`${unreadable} demande(s) d'aide illisible(s) : résultat partiel.`);
+ data.aides=result.sort((a,b)=>String(b.meta.createdAt||'').localeCompare(String(a.meta.createdAt||'')));
+}
+async function populate(password){
+ data.issues=[];sync('Connexion sécurisée aux sources officielles…');
+ const jobs=[
+  {name:'Adhérents',run:loadMembers},
+  {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
+  {name:'Échéances',run:async()=>{data.payments=await get('/api/payments');}},
+  {name:'Aides',run:async()=>{await loadAides(password);}}
+ ];
+ // Le listing est lu page à page. Les autres sources sont indépendantes.
+ await Promise.all(jobs.map(async job=>{try{await job.run();}catch(err){data.issues.push(`${job.name} : ${err.message}`);}}));
+ attachConnections();renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
+ sync(data.issues.length?'Certaines sources ne sont pas complètes : '+data.issues.join(' | '):`Données du club chargées · ${data.summary?.total??data.people.length} adhérents · Lecture seule`,data.issues.length?'warning':'ok');
+}
+function eventHandlers(){
+ document.addEventListener('click',e=>{
+  const member=e.target.closest('[data-member-id]');if(member){const p=getPerson(member.dataset.memberId);if(p){state.returnView=state.view;state.profileId=p.id;navigation('profile');}return;}
+  const route=e.target.closest('[data-view]');if(route){navigation(route.dataset.view);return;}
+  const filter=e.target.closest('[data-category]');if(filter){state.category=filter.dataset.category;renderMembers();return;}
+  if(e.target.closest('#profile-back')||e.target.closest('#profile-close-bottom'))navigation(state.returnView||'members');
+ });
+ $('member-search').addEventListener('input',e=>{state.search=e.target.value;renderMembers();});
+ $('dashboard-search-form').addEventListener('submit',e=>{e.preventDefault();state.category='all';state.search=$('dashboard-search').value.trim();navigation('members');$('member-search').focus();});
+ $('about-test').addEventListener('click',()=>{const d=$('about-dialog');if(d.showModal)d.showModal();});
+ $('close-about').addEventListener('click',()=>$('about-dialog').close());
+ $('okay-about').addEventListener('click',()=>$('about-dialog').close());
+ $('about-dialog').addEventListener('click',e=>{if(e.target===$('about-dialog'))e.target.close();});
+ $('logout-button').addEventListener('click',()=>{activeToken='';authDeadline=0;location.reload();});
+ addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(views.includes(v)&&v!=='profile'&&state.loggedIn)navigation(v,{hash:false});});
+ $('auth-form').addEventListener('submit',async e=>{
+  e.preventDefault();const field=$('auth-password'),password=field.value;
+  const button=$('auth-submit');button.disabled=true;$('auth-status').textContent='Vérification du code sur Cloudflare…';
+  try{
+   const response=await fetch(API+'/admin/mail/status',{method:'GET',headers:{Authorization:'Bearer '+password},cache:'no-store'});
+   const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw Error('Code incorrect ou connexion Cloudflare indisponible.');
+   activeToken=password;authDeadline=Date.now()+20*60*1000;
+   state.loggedIn=true;field.value='';$('auth-gate').hidden=true;$('app').hidden=false;$('mobile-nav').hidden=false;
+   await populate(password);
+   navigation('dashboard',{scroll:false,hash:false});
+   setTimeout(()=>{if(state.loggedIn){toast('La session de 20 minutes est expirée.');setTimeout(()=>location.reload(),1400);}},20*60*1000);
+  }catch(err){$('auth-status').textContent=err.message;button.disabled=false;}
+ });
+}
+fillIcons();eventHandlers();
+})();
+
+</script>
+</body>
+</html>
