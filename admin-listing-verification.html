@@ -67,7 +67,7 @@
 <script>
 (() => {
   "use strict";
-  const API = "https://683bcbcd-mma-lerove-api.cyril-camoin.workers.dev";
+  const API = "https://feature-admin-listing-adherents-mma-lerove-api.cyril-camoin.workers.dev";
   const code = document.getElementById("code");
   const result = document.getElementById("result");
   const load = document.getElementById("load");
@@ -128,7 +128,26 @@
     setBusy(true);
     status("Génération du listing Excel…");
     try {
-      const response = await fetch(API + "/admin/members/export.xlsx", {headers, cache:"no-store"});
+      const members = [];
+      let finished = false;
+      for (let page = 1; page <= 100 && !finished; page++) {
+        status("Récupération des informations complètes, lot " + page + "…");
+        const part = await fetch(API + "/admin/members/page?page=" + page, {headers, cache:"no-store"});
+        const data = await part.json().catch(() => ({}));
+        if (!part.ok || !data.ok || !Array.isArray(data.members)) {
+          throw Error(description(part, data));
+        }
+        members.push(...data.members);
+        finished = !data.hasMore;
+      }
+      if (!finished || !members.length) throw Error("Impossible de charger toutes les inscriptions.");
+      status("Création du classeur Excel pour " + members.length + " adhérents…");
+      const response = await fetch(API + "/admin/members/export.xlsx", {
+        method:"POST",
+        headers: {...headers, "Content-Type":"application/json"},
+        body:JSON.stringify({members}),
+        cache:"no-store"
+      });
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
         throw Error(description(response,data));
