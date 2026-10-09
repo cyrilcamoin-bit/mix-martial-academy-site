@@ -1,5 +1,5 @@
 {
-  "version": "20261009-header-brand-height-v1",
+  "version": "20261009-header-one-line-v2",
   "deployedFrom": "main",
-  "note": "Le Rove retiré de l'en-tête ; nom du club sur deux lignes à hauteur du logo sur mobile, logo inchangé."
+  "note": "Nom du club sur une ligne et ajusté à la largeur mobile, logo inchangé."
 }
