@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-header-clean-v1",
+  "version": "20261009-admin-clean-text-v2",
   "deployedFrom": "main",
-  "note": "Suppression du texte descriptif sous Administration du club."
+  "note": "Suppression des deux textes explicatifs de l'interface administration."
 }
