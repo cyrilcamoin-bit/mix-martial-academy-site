@@ -473,27 +473,27 @@ async function populate(password, facePrf=null){
    catch(err){data.issues.push('Aides : '+err.message);}
    finally{renderOverview();renderAides();}
  })();
- // Éviter plusieurs requêtes lourdes HelloAsso simultanées.
- const cloudJobs=[
-   {name:'Adhérents',run:loadMembers},
-   {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
-   {name:'Échéances',run:async()=>{data.payments=await get('/api/payments');}}
- ];
- for(let i=0;i<cloudJobs.length;i++){
-   const job=cloudJobs[i];
-   sync('Lecture '+job.name.toLowerCase()+'… ('+(i+1)+'/3)');
+ // Charger les membres d'abord pour préserver le nombre exact d'inscrits.
+ // Les certificats et paiements sont deux lectures indépendantes :
+ // les exécuter ensemble réduit leur temps d'attente cumulé.
+ async function runWithRetry(name,run,render) {
    let error=null;
    for(let attempt=1;attempt<=2;attempt++){
      if(!isAuthorized()){error=new Error('La session a expiré. Reconnecte-toi avec Face ID.');break;}
-     try{await job.run();error=null;break;}
-     catch(err){error=err;if(attempt===1){sync(job.name+' indisponible, nouvelle tentative…','warning');await wait(1000);}}
+     try{await run();error=null;break;}
+     catch(err){error=err;if(attempt===1){sync(name+' indisponible, nouvelle tentative…','warning');await wait(1000);}}
    }
-   if(error)data.issues.push(job.name+' : '+error.message);
+   if(error)data.issues.push(name+' : '+error.message);
    renderOverview();
-   if(job.name==='Adhérents')renderMembers();
-   if(job.name==='Certificats')renderCertificates();
-   if(job.name==='Échéances')renderPayments();
+   render();
  }
+ sync('Lecture des adhérents…');
+ await runWithRetry('Adhérents',loadMembers,renderMembers);
+ sync('Lecture simultanée des certificats et des échéances…');
+ await Promise.all([
+   runWithRetry('Certificats',async()=>{data.certificates=await get('/api/certificates');},renderCertificates),
+   runWithRetry('Échéances',async()=>{data.payments=await get('/api/payments');},renderPayments)
+ ]);
  await aidsJob;
  attachConnections();
  renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
