@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>Test listing adhérents — Mix Martial Academy</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #08080a; color: #f7f7f8; font-family: system-ui, -apple-system, sans-serif; }
+    main { width: min(660px, calc(100% - 30px)); margin: 28px auto 90px; }
+    .head { display: flex; align-items: center; gap: 16px; margin: 0 0 24px; }
+    .head img { width: 74px; height: 74px; object-fit: contain; }
+    small, .muted { color: #b8b8c0; }
+    .eyebrow { color: #ed3436; font-size: .83rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { font-size: clamp(2rem, 7vw, 2.85rem); margin: .2em 0; line-height: 1.1; }
+    h2 { margin: 0 0 15px; font-size: 1.25rem; }
+    p { line-height: 1.55; }
+    .panel { background: #17171b; border: 1px solid #303036; border-radius: 20px; padding: 22px; margin: 20px 0; }
+    .warning { background: #25171a; border: 1px solid #793034; border-radius: 12px; padding: 13px; color: #f9d9d9; font-size: .9rem; }
+    label { display: block; font-weight: 700; margin-bottom: 9px; }
+    input { width: 100%; font: inherit; color: #fff; background: #09090b; border: 1px solid #55545a; border-radius: 12px; padding: 15px 14px; margin-bottom: 14px; }
+    input:focus { outline: 2px solid #f04444; outline-offset: 2px; }
+    button { width: 100%; min-height: 52px; padding: 12px 16px; font: inherit; font-weight: 800; border: 0; border-radius: 12px; background: #df2028; color: #fff; cursor: pointer; }
+    button.outline { background: #29292f; border: 1px solid #55545a; margin-bottom: 11px; }
+    button:disabled { opacity: .55; cursor: wait; }
+    .metrics { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 14px 0 22px; }
+    .metric { padding: 13px; text-align: center; border: 1px solid #35353a; border-radius: 12px; background: #202024; }
+    .metric span { display: block; color: #babac2; font-size: .87rem; }
+    .metric strong { display: block; margin: 4px 0 0; font-size: 1.9rem; }
+    #message { min-height: 30px; overflow-wrap: anywhere; color: #e2e2e6; }
+    #message.error { color: #ff898e; }
+    a { color: #fff; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <header class="head">
+    <img src="/assets/logo/mix-martial-academy-le-rove.svg" alt="Logo MMA Le Rove">
+    <div><span class="eyebrow">Administration — essai</span><h1>Listing adhérents</h1><small>Saison 2026–2027</small></div>
+  </header>
+  <p class="warning"><strong>Page de vérification uniquement.</strong> Ton administration habituelle, tes certificats médicaux et tes relances restent inchangés. Cette page contacte la version de test de Cloudflare, pas la production.</p>
+  <section class="panel">
+    <h2>Accès administrateur</h2>
+    <label for="code">Ton mot de passe Admin habituel</label>
+    <input id="code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Code administrateur">
+    <p class="muted" style="margin-top:0;font-size:.9rem">Le code est transmis en HTTPS au Worker pour authentification. Cette page ne le stocke pas et ne l'inscrit pas dans l'URL.</p>
+    <button type="button" id="load">1 — Vérifier les effectifs</button>
+  </section>
+  <section class="panel" id="result" hidden>
+    <h2>Effectifs récupérés dans HelloAsso</h2>
+    <div class="metrics">
+      <div class="metric"><span>Enfants</span><strong id="children">—</strong></div>
+      <div class="metric"><span>Ados</span><strong id="teens">—</strong></div>
+      <div class="metric"><span>Adultes</span><strong id="adults">—</strong></div>
+      <div class="metric"><span>Total</span><strong id="total">—</strong></div>
+    </div>
+    <button type="button" id="download" class="outline">2 — Télécharger le fichier Excel de test</button>
+    <p class="muted" style="font-size:.9rem">Le fichier est généré sur demande, sans enregistrer les adhérents sur GitHub.</p>
+  </section>
+  <p id="message" role="status" aria-live="polite"></p>
+  <p><a href="/admincyril.html">← Revenir à mon administration habituelle</a></p>
+</main>
+<script>
+(() => {
+  "use strict";
+  const API = "https://683bcbcd-mma-lerove-api.cyril-camoin.workers.dev";
+  const code = document.getElementById("code");
+  const result = document.getElementById("result");
+  const load = document.getElementById("load");
+  const download = document.getElementById("download");
+  const message = document.getElementById("message");
+  let busy = false;
+
+  function status(text, error = false) {
+    message.textContent = text;
+    message.classList.toggle("error", error);
+  }
+  function setBusy(value) {
+    busy = value;
+    load.disabled = value;
+    download.disabled = value;
+  }
+  function auth() {
+    const value = code.value.trim();
+    if (!value) {
+      status("Renseigne ton mot de passe administrateur.", true);
+      code.focus();
+      return null;
+    }
+    return {Authorization: "Bearer " + value};
+  }
+  function description(response, data) {
+    if (response.status === 401) return "Mot de passe Admin incorrect ou absent.";
+    if (data?.error) return "Erreur Cloudflare : " + data.error;
+    return "Impossible de consulter HelloAsso pour le moment (HTTP " + response.status + ").";
+  }
+  load.addEventListener("click", async () => {
+    if (busy) return;
+    const headers = auth();
+    if (!headers) return;
+    setBusy(true);
+    status("Connexion à HelloAsso en cours…");
+    try {
+      const response = await fetch(API + "/admin/members/summary", {headers, cache:"no-store"});
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) throw Error(description(response,data));
+      document.getElementById("children").textContent = data.enfants;
+      document.getElementById("teens").textContent = data.ados;
+      document.getElementById("adults").textContent = data.adultes;
+      document.getElementById("total").textContent = data.total;
+      result.hidden = false;
+      status("Effectifs reçus. Vérifie les chiffres, puis télécharge le fichier Excel."
+        + (data.incomplete ? " " + data.incomplete + " fiche(s) ont des coordonnées incomplètes." : ""));
+    } catch (error) {
+      status(error.message || "Échec de récupération.", true);
+    } finally {
+      setBusy(false);
+    }
+  });
+  download.addEventListener("click", async () => {
+    if (busy) return;
+    const headers = auth();
+    if (!headers) return;
+    setBusy(true);
+    status("Génération du listing Excel…");
+    try {
+      const response = await fetch(API + "/admin/members/export.xlsx", {headers, cache:"no-store"});
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw Error(description(response,data));
+      }
+      const blob = await response.blob();
+      if (!blob.size) throw Error("Le fichier généré est vide.");
+      const disposition = response.headers.get("Content-Disposition") || "";
+      const name = /filename="([^"]+)"/.exec(disposition)?.[1] || "listing_adherents_mma-test.xlsx";
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = href;
+      link.download = name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 60000);
+      status("Téléchargement demandé. Ouvre le fichier depuis les téléchargements de Safari.");
+    } catch (error) {
+      status(error.message || "Échec du téléchargement.", true);
+    } finally {
+      setBusy(false);
+    }
+  });
+})();
+</script>
+</body>
+</html>
