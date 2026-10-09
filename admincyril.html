@@ -32,12 +32,7 @@
   <script src="js/adminAidesFaceId.js?v=20261009-faceid-vault-v1" defer></script>
   <script src="js/adminCertificates.js?v=20261006-certificate-reminders-batch-v2" defer></script>
   <script src="js/adminPayments-20261008-v2.js" defer></script>
-<style>
-.admin-club-card .mma-meter{display:flex;align-items:center;gap:14px;padding:11px 13px;margin:8px 0 18px;border:1px solid #3a3537;background:rgba(0,0,0,.18);border-radius:13px}
-.mma-dial{--value:0;--accent:#33cd85;flex:none;width:60px;height:60px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(closest-side,#1b1b1d 72%,transparent 74%),conic-gradient(var(--accent) calc(var(--value)*1%),#493234 0);color:#fff;font-size:16px;font-weight:900}
-.mma-meter>div:last-child{display:flex;flex-direction:column;gap:5px;min-width:0}.mma-meter strong{color:#fff;font-size:16px}.mma-meter small{font-size:12px;color:#c6c4c6}.mma-meter .mma-ok{color:#50e39c}.mma-meter .mma-bad{color:#ff676f}
-@media(max-width:540px){.mma-dial{width:52px;height:52px}.mma-meter strong{font-size:14px}}
-</style></head>
+</head>
 <body class="admin-aids-page admin-club-page">
   <main class="admin-club-shell">
     <header class="admin-club-head">
@@ -87,7 +82,6 @@
             <h3>Aides de l'État & organismes</h3>
             <p>Consultez les demandes, vérifiez les codes, suivez les remboursements et exportez le suivi en CSV.</p>
           </div>
-          <div class="mma-meter"><div class="mma-dial" id="mma-aides-dial">—</div><div><strong id="mma-aides-number">Codes vérifiés : —</strong><small>Sur l'ensemble des demandes d'aides</small></div></div>
           <button class="button admin-club-open" type="button" data-admin-view="aides" data-admin-protected disabled>Gérer les aides</button>
         </article>
 
@@ -98,7 +92,6 @@
             <h3>Certificats médicaux</h3>
             <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
           </div>
-          <div class="mma-meter"><div class="mma-dial" id="mma-certs-dial">—</div><div><strong><span class="mma-ok" id="mma-certs-received">— reçus</span> <span class="mma-bad" id="mma-certs-missing">— manquants</span></strong><small>Certificats médicaux</small></div></div>
           <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
         </article>
 
@@ -109,7 +102,6 @@
             <h3>Échéances refusées</h3>
             <p>Repérez les paiements refusés par date, retrouvez le payeur et envoyez une relance personnalisée directement depuis l’adresse iCloud du club.</p>
           </div>
-          <div class="mma-meter"><div class="mma-dial" id="mma-pay-dial">€</div><div><strong class="mma-bad" id="mma-pay-total">— €</strong><small id="mma-pay-people">À régulariser · — personnes</small></div></div>
           <button class="button admin-club-open" type="button" data-admin-view="paiements" data-admin-protected disabled>Voir les refus</button>
         </article>
 
@@ -120,7 +112,6 @@
             <h3>Listing adhérents</h3>
             <p>Retrouvez les effectifs actualisés et téléchargez le listing Excel officiel mis en forme, directement depuis HelloAsso.</p>
           </div>
-          <div class="mma-meter"><div class="mma-dial" id="mma-members-dial">—</div><div><strong id="mma-members-total">— adhérents</strong><small id="mma-members-types">Effectif saison 2026–2027</small></div></div>
           <button class="button admin-club-open" type="button" data-admin-view="adherents" data-admin-protected disabled>Ouvrir le listing</button>
         </article>
       </div>
@@ -397,59 +388,5 @@
       </section>
     </section>
   </main>
-<script>(function(){
-"use strict";
-const API="https://mma-lerove-api.cyril-camoin.workers.dev";
-const byId=id=>document.getElementById(id);
-const count=n=>Number(n||0).toLocaleString("fr-FR");
-function gauge(id,n){const el=byId(id);if(el)el.style.setProperty("--value",String(Math.max(0,Math.min(100,n||0))))}
-function updateAides(){
- const rows=[...(byId("admin-aids-body")?.querySelectorAll("tr")||[])];
- const pairs=rows.map(row=>row.querySelectorAll('input[type="checkbox"]')).filter(x=>x.length>=2);
- if(!pairs.length)return;
- const verified=pairs.filter(x=>x[0].checked).length;
- const total=pairs.length,percent=Math.round(100*verified/total);
- byId("mma-aides-number").textContent=count(verified)+" / "+count(total)+" codes vérifiés";
- byId("mma-aides-dial").textContent=percent+" %";gauge("mma-aides-dial",percent);
-}
-let loadedAt=0,loading=false,tokenWas="";
-async function updateOthers(){
- const token=String(byId("admin-token")?.value||"").trim();
- if(!token || ![...document.querySelectorAll("[data-admin-protected]")].some(x=>!x.disabled) || loading)return;
- if(token===tokenWas && Date.now()-loadedAt<120000)return;
- tokenWas=token;loadedAt=Date.now();loading=true;
- async function read(path){const response=await fetch(API+path,{headers:{Authorization:"Bearer "+token},cache:"no-store"});if(!response.ok)throw Error("status "+response.status);return response.json();}
- try{
- const [members,certs,payments]=await Promise.allSettled([read("/admin/members/summary"),read("/admin/certificates/status"),read("/admin/payments/refused")]);
- if(token!==String(byId("admin-token")?.value||"").trim())return;
- if(members.status==="fulfilled"){
-   const d=members.value,n=Number(d.total||0);
-   byId("mma-members-total").textContent=count(n)+" adhérents";byId("mma-members-dial").textContent=count(n);gauge("mma-members-dial",n?100:0);
-   const obj=d.categories||d.counts||{};
-   const a=Number(obj.Enfant??obj.enfants??d.enfants??0),b=Number(obj.Ado??obj.ados??d.ados??0),c=Number(obj.Adulte??obj.adultes??d.adultes??0);
-   if(a+b+c===n&&n)byId("mma-members-types").textContent=a+" enfants · "+b+" ados · "+c+" adultes";
- }
- if(certs.status==="fulfilled"){
-   const d=certs.value,recd=Number(d.received||0),miss=Number(d.missing||0),pct=recd+miss?Math.round(100*recd/(recd+miss)):0;
-   byId("mma-certs-received").textContent=count(recd)+" reçus";
-   byId("mma-certs-missing").textContent=count(miss)+" manquants";
-   byId("mma-certs-dial").textContent=pct+" %";gauge("mma-certs-dial",pct);
- }
- if(payments.status==="fulfilled"){
-   const d=payments.value,items=Array.isArray(d.payments)?d.payments:[];
-   byId("mma-pay-total").textContent=(Number(d.totalAmount||0)/100).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
-   const unique=new Set(items.map(p=>String(p.payer?.email||[p.payer?.lastName,p.payer?.firstName].join(" ")).trim().toLowerCase()).filter(Boolean));
-   byId("mma-pay-people").textContent=(unique.size||Number(d.total||0))+" payeur(s) · "+items.length+" échéance(s) refusée(s)";
-   byId("mma-pay-dial").textContent=items.length;byId("mma-pay-dial").style.setProperty("--accent","#f45b63");gauge("mma-pay-dial",items.length?80:0);
- }
- }finally{loading=false;}
-}
-document.addEventListener("DOMContentLoaded",()=>{
- const tbody=byId("admin-aids-body");
- if(tbody)new MutationObserver(updateAides).observe(tbody,{childList:true,subtree:true});
- document.addEventListener("change",e=>{if(e.target.closest("#admin-aids-body"))setTimeout(updateAides,600)});
- setInterval(()=>{if(document.visibilityState==="visible"){updateAides();updateOthers().catch(()=>{});}},4000);
- setTimeout(()=>updateOthers().catch(()=>{}),1600);
-});
-})();</script></body>
+</body>
 </html>
