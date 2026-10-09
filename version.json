@@ -1,5 +1,5 @@
 {
-  "version": "20261009-logo-detoure-v1",
+  "version": "20261009-logo-cutout-precise-v2",
   "deployedFrom": "main",
-  "note": "Remplacement des logos visibles par version SVG détourée, favicon inchangé."
+  "note": "Contours de l'emblème détourés précisément sur l'ensemble des pages et de l'administration; favicon inchangé."
 }
