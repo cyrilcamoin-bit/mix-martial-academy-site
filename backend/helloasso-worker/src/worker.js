@@ -1173,22 +1173,29 @@ async function listCertificateReminderRecords(env, limit = 500) {
     limit: Math.max(1, Math.min(Number(limit) || 500, 1000))
   });
 
+  // Les lectures R2 étaient toutes séquentielles ; 8 en parallèle
+  // réduisent l'attente initiale sans déclencher une rafale illimitée.
+  const objects = listed.objects || [];
   const rows = [];
-  for (const object of listed.objects || []) {
-    const stored = await env.CERTIFICATES.get(object.key);
-    if (!stored) continue;
-    try {
-      const data = JSON.parse(await stored.text());
-      rows.push({
-        memberId: String(data.memberId || ""),
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
-        email: data.email || "",
-        recipientFirstName: data.recipientFirstName || "",
-        sentAt: data.sentAt || null,
-        status: data.status || "sent"
-      });
-    } catch {}
+  for (let start = 0; start < objects.length; start += 8) {
+    const batch = objects.slice(start, start + 8);
+    const results = await Promise.all(batch.map(async (object) => {
+      try {
+        const stored = await env.CERTIFICATES.get(object.key);
+        if (!stored) return null;
+        const data = JSON.parse(await stored.text());
+        return {
+          memberId: String(data.memberId || ""),
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || "",
+          recipientFirstName: data.recipientFirstName || "",
+          sentAt: data.sentAt || null,
+          status: data.status || "sent"
+        };
+      } catch { return null; }
+    }));
+    rows.push(...results.filter(Boolean));
   }
 
   rows.sort((a, b) => String(b.sentAt || "").localeCompare(String(a.sentAt || "")));
