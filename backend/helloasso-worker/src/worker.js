@@ -1416,10 +1416,16 @@ async function fetchMembersExportPage(env, index) {
     hydrated.push(...details);
   }
   const totalPages = Number(data?.pagination?.totalPages || 0);
+  // Certaines réponses HelloAsso renvoient totalPages=1 alors qu'une page
+  // de 20 commandes est pleine. Ne jamais interrompre la récupération
+  // tant qu'une page est pleine : interroger la suivante jusqu'à une page
+  // incomplète ou vide. Une page vide sert de fin si le total est multiple
+  // de 20. L'interface vérifie ensuite le total exact des adhérents.
   return {
     members: rowsFromOrders(hydrated),
     page: index,
-    hasMore: totalPages ? index < totalPages : orders.length === pageSize,
+    ordersCount: orders.length,
+    hasMore: orders.length >= pageSize || (totalPages > 0 && index < totalPages),
     totalPages
   };
 }
