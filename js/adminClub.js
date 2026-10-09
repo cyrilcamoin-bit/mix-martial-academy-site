@@ -15,6 +15,10 @@
   const masterInput = document.getElementById('admin-club-code');
   const masterButton = document.getElementById('admin-club-unlock');
   const masterStatus = document.getElementById('admin-club-access-status');
+  const faceLoginButton = document.getElementById('admin-faceid-login');
+  const faceLogoutButton = document.getElementById('admin-faceid-logout');
+  let faceIdEnabled = false;
+  let faceIdBusy = false;
 
   function normalizeView(value) {
     return validViews.has(value) ? value : 'dashboard';
@@ -154,6 +158,185 @@
     masterButton.disabled = false;
   }
 
+
+  // Protection double : le site n'affiche Face ID QUE si le Worker
+  // déclare officiellement une version en production permettant toutes
+  // les opérations Admin. Le Worker preview n'autorise aucune écriture.
+  async function checkFaceIdAvailability() {
+    try {
+      const response = await fetch(API_BASE + '/passkey-preview/health', { cache: 'no-store' });
+      const state = await response.json().catch(() => null);
+      faceIdEnabled = Boolean(
+        response.ok && state?.ok && state.adminWritable === true &&
+        state.storage === true &&
+        state.version === 'faceid-full-admin-20261009-v1'
+      );
+      if (faceLoginButton) faceLoginButton.hidden = !faceIdEnabled;
+    } catch (_) {
+      faceIdEnabled = false;
+      if (faceLoginButton) faceLoginButton.hidden = true;
+    }
+  }
+
+  function bytesFromBase64Url(value) {
+    const raw = String(value).replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(raw + '='.repeat((4 - raw.length % 4) % 4)), ch => ch.charCodeAt(0));
+  }
+
+  function bytesToBase64Url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let raw = '';
+    for (let i = 0; i < bytes.length; i += 8192) {
+      raw += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    }
+    return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  }
+
+  // Ne PAS utiliser credential.toJSON() : l'extension PRF peut y ajouter
+  // la matière secrète destinée aux aides. Elle reste sur cet iPhone.
+  function serializeFaceIdAssertion(credential) {
+    return {
+      id: credential.id,
+      rawId: bytesToBase64Url(credential.rawId),
+      type: credential.type,
+      authenticatorAttachment: credential.authenticatorAttachment,
+      clientExtensionResults: {},
+      response: {
+        authenticatorData: bytesToBase64Url(credential.response.authenticatorData),
+        clientDataJSON: bytesToBase64Url(credential.response.clientDataJSON),
+        signature: bytesToBase64Url(credential.response.signature),
+        userHandle: credential.response.userHandle ? bytesToBase64Url(credential.response.userHandle) : null
+      }
+    };
+  }
+
+  async function faceIdJson(path, data, authToken = '') {
+    const headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers.Authorization = 'Bearer ' + authToken;
+    const response = await fetch(API_BASE + path, {
+      method: 'POST', headers,
+      body: JSON.stringify(data),
+      cache: 'no-store'
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || body.ok !== true) {
+      throw new Error(response.status === 401
+        ? 'Face ID non reconnu. Essaie de nouveau ou utilise ton mot de passe.'
+        : 'Connexion Face ID indisponible (' + response.status + ').');
+    }
+    return body;
+  }
+
+  async function unlockWithFaceId() {
+    if (!faceIdEnabled || faceIdBusy ||
+        document.body.classList.contains('admin-club-unlocked')) return;
+    faceIdBusy = true;
+    if (faceLoginButton) faceLoginButton.disabled = true;
+    masterButton.disabled = true;
+    setMasterStatus('Reconnaissance Face ID en cours…');
+
+    try {
+      if (!window.PublicKeyCredential || !navigator.credentials?.get) {
+        throw new Error('Ton navigateur ne prend pas en charge les clés d’accès Face ID.');
+      }
+
+      const { options, requestId } = await faceIdJson('/passkey-preview/login/options', {});
+      const prfSalt = new Uint8Array(await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode('MMA-Le-Rove|aides|FaceID|PRF|v1')
+      ));
+      const publicKey = {
+        ...options,
+        challenge: bytesFromBase64Url(options.challenge),
+        allowCredentials: (options.allowCredentials || []).map(c => ({
+          ...c, id: bytesFromBase64Url(c.id)
+        })),
+        extensions: {
+          ...(options.extensions || {}),
+          prf: { eval: { first: prfSalt } }
+        }
+      };
+
+      const credential = await navigator.credentials.get({ publicKey });
+      if (!credential) throw new Error('Authentification Face ID annulée.');
+
+      const signed = await faceIdJson('/passkey-preview/login/verify', {
+        requestId,
+        credential: serializeFaceIdAssertion(credential)
+      });
+      if (!signed.verified || !/^mma-fid1\.[A-Za-z0-9_-]{43}$/.test(signed.token || '')) {
+        throw new Error('La session Face ID n’a pas été validée.');
+      }
+
+      // Ne déverrouiller visuellement que si une vraie route admin répond.
+      const probe = await fetch(API_BASE + '/admin/mail/status', {
+        headers: { Authorization: 'Bearer ' + signed.token },
+        cache: 'no-store'
+      });
+      if (!probe.ok) throw new Error('La session Face ID n’a pas accès aux outils administratifs.');
+
+      const input = document.getElementById('admin-token');
+      const certButton = document.getElementById('admin-login-button');
+      if (input) input.value = signed.token;
+      certButton?.click();
+
+      document.body.classList.add('admin-club-unlocked');
+      protectedControlsEnabled(true);
+      if (masterInput) { masterInput.value = ''; masterInput.disabled = true; }
+      masterButton.hidden = true;
+      if (faceLoginButton) faceLoginButton.hidden = true;
+      if (faceLogoutButton) faceLogoutButton.hidden = false;
+      accessCard?.classList.add('is-unlocked');
+
+      const prf = credential.getClientExtensionResults?.()?.prf?.results?.first || null;
+      try {
+        const state = await window.MMAAidesBridge?.onVerifiedPRF(prf);
+        if (state?.ready) {
+          setMasterStatus('Face ID connecté : les quatre modules sont accessibles.');
+        } else if (state?.available) {
+          setMasterStatus('Face ID connecté. Dans « Aides à l’inscription », active une seule fois la passerelle avec ton code habituel.');
+        } else {
+          setMasterStatus('Face ID connecté aux outils Cloudflare. Les aides peuvent encore nécessiter le code habituel.');
+        }
+      } catch (_) {
+        setMasterStatus('Face ID connecté. Les aides peuvent encore nécessiter le code habituel.');
+      }
+
+      // Expirer aussi l'interface locale lorsque le jeton serveur expire.
+      const expires = Date.parse(signed.expiresAt || '');
+      if (Number.isFinite(expires)) {
+        const remaining = Math.max(0, expires - Date.now());
+        window.setTimeout(() => {
+          if (document.body.classList.contains('admin-club-unlocked') &&
+              document.getElementById('admin-token')?.value === signed.token) {
+            sessionStorage.removeItem('mma_cert_admin_token');
+            location.reload();
+          }
+        }, remaining);
+      }
+    } catch (error) {
+      const reason = error?.name === 'NotAllowedError'
+        ? 'Face ID annulé sur l’iPhone.'
+        : (error?.message || 'Échec de la connexion Face ID.');
+      setMasterStatus(reason, true);
+    } finally {
+      faceIdBusy = false;
+      if (faceLoginButton) faceLoginButton.disabled = false;
+      masterButton.disabled = false;
+    }
+  }
+
+  async function logoutFaceId() {
+    const token = sessionStorage.getItem('mma_cert_admin_token');
+    if (token?.startsWith('mma-fid1.')) {
+      try {
+        await faceIdJson('/passkey-preview/logout', {}, token);
+      } catch (_) { /* Reload always clears the browser token. */ }
+    }
+    sessionStorage.removeItem('mma_cert_admin_token');
+    location.reload();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     protectedControlsEnabled(false);
 
@@ -162,6 +345,9 @@
     });
 
     masterButton?.addEventListener('click', unlockAll);
+    faceLoginButton?.addEventListener('click', unlockWithFaceId);
+    faceLogoutButton?.addEventListener('click', logoutFaceId);
+    checkFaceIdAvailability();
     masterInput?.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') unlockAll();
     });
