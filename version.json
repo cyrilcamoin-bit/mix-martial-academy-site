@@ -1,5 +1,5 @@
 {
-  "version": "20261009-official-upload-logo-v1",
+  "version": "20261009-admin-header-clean-v1",
   "deployedFrom": "main",
-  "note": "Logo PNG exact déposé par le club utilisé sur site et administration. Favicon inchangé."
+  "note": "Suppression du texte descriptif sous Administration du club."
 }
