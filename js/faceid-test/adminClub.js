@@ -25,11 +25,12 @@
     return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
   };
   const serialize = credential => {
-    if(typeof credential.toJSON==="function")return credential.toJSON();
+    // Ne pas utiliser toJSON() : il pourrait inclure le secret WebAuthn
+    // PRF dans clientExtensionResults, qui doit rester sur l'iPhone.
     return {
       id:credential.id,rawId:b64(credential.rawId),type:credential.type,
       authenticatorAttachment:credential.authenticatorAttachment,
-      clientExtensionResults:credential.getClientExtensionResults()||{},
+      clientExtensionResults:{},
       response:{
         authenticatorData:b64(credential.response.authenticatorData),
         clientDataJSON:b64(credential.response.clientDataJSON),
@@ -113,9 +114,16 @@
         throw Error("Ton navigateur ne prend pas en charge Face ID. Essaie Safari.");
       }
       const {options,requestId}=await request("POST","/passkey-preview/login/options",{});
+      // Sel PRF stable, propre au chiffrement de la clé d'aides MMA.
+      // Un résultat PRF absent n'empêche jamais l'accès aux autres modules.
+      const salt=new Uint8Array(await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode("MMA-Le-Rove|aides|FaceID|PRF|v1")
+      ));
       const pub={
         ...options,challenge:bytes(options.challenge),
-        allowCredentials:(options.allowCredentials||[]).map(x=>({...x,id:bytes(x.id)}))
+        allowCredentials:(options.allowCredentials||[]).map(x=>({...x,id:bytes(x.id)})),
+        extensions:{...(options.extensions||{}),prf:{eval:{first:salt}}}
       };
       const credential=await navigator.credentials.get({publicKey:pub});
       if(!credential)throw Error("Connexion Face ID annulée.");
@@ -124,6 +132,19 @@
       // Vérifier le jeton sur une vraie route Admin, jamais sur un indicateur local.
       await request("GET","/admin/mail/status",null,result.token);
       markUnlocked("faceid",result.token);
+      const prf=credential.getClientExtensionResults?.()?.prf?.results?.first || null;
+      try {
+        const bridge=await window.MMAAidesBridge?.onVerifiedPRF(prf);
+        if(bridge?.ready) {
+          setStatus("✅ Face ID : les quatre modules sont déverrouillés, y compris les aides chiffrées.");
+        }else if(bridge?.available) {
+          setStatus("Face ID fonctionne. Pour ouvrir aussi les aides sans code, active une seule fois la passerelle dans l'onglet Aides.");
+        }else{
+          setStatus("Face ID fonctionne pour les trois modules Cloudflare. La clé actuelle ne fournit pas le PRF nécessaire aux aides : un réenregistrement sera peut-être requis.");
+        }
+      }catch{
+        setStatus("Face ID fonctionne pour les modules Cloudflare. Les aides peuvent toujours s'ouvrir avec le code habituel.");
+      }
     }catch(e) {
       setStatus(e.name==="NotAllowedError"?"Face ID annulé sur l'iPhone.":(e.message||"Échec Face ID."),true);
     }finally{
