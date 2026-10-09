@@ -83,6 +83,25 @@ function firstPresent(...parts) {
   return parts.map(str).find(Boolean) || "";
 }
 
+// Le montant d'un item sur un formulaire en 3 échéances peut ne
+// représenter qu'un prélèvement. Utiliser la somme des parts des
+// échéances lorsqu'elles sont renvoyées par l'API HelloAsso.
+function annualAmountCents(item, category) {
+  const shares = Array.isArray(item.payments)
+    ? item.payments.map((part) => Number(part?.shareAmount))
+        .filter((amount) => Number.isFinite(amount) && amount > 0)
+    : [];
+  const scheduled = shares.reduce((a, b) => a + b, 0);
+  const direct = Number(item.initialAmount ?? item.amount);
+  if (scheduled > direct && scheduled > 0) return scheduled;
+  // Spécifique au barème de la campagne 2026-2027 en 3 échéances.
+  // Les exports officiels de la campagne affichent 275,10 / 290,10 / 335,10 €.
+  const installment = { Enfant: 9170, Ado: 9670, Adulte: 11170 };
+  const expected = { Enfant: 27510, Ado: 29010, Adulte: 33510 };
+  if (direct === installment[category]) return expected[category];
+  return Number.isFinite(direct) ? direct : null;
+}
+
 export function rowsFromOrders(orders) {
   const members = [];
   const seen = new Set();
@@ -111,6 +130,7 @@ export function rowsFromOrders(orders) {
         firstName = "Mattis";
       }
       const address = firstPresent(
+        fieldValue(item, /^(ADRESSE|ADRESSE POSTALE|RUE|VOIE|DOMICILE)/),
         addressText(user.address), addressText(payer.address),
         user.addressLine1, payer.addressLine1, payer.address, user.address
       );
@@ -126,7 +146,7 @@ export function rowsFromOrders(orders) {
       const date = birthSerial(firstPresent(
         user.dateOfBirth, item.dateOfBirth, fieldValue(item, /DATE DE NAISSANCE/)
       ));
-      const amountCents = Number(item.initialAmount ?? item.amount);
+      const amountCents = annualAmountCents(item, category);
       members.push({
         lastName, firstName, email: payerEmail, category,
         amount: Number.isFinite(amountCents) ? amountCents / 100 : null,
