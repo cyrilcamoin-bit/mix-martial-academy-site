@@ -450,30 +450,41 @@ async function loadAides(password, facePrf=null){
  data.aides=result.sort((a,b)=>String(b.meta.createdAt||'').localeCompare(String(a.meta.createdAt||'')));
 }
 async function populate(password, facePrf=null){
- data.issues=[];sync('Connexion sécurisée aux sources officielles…');
+ data.issues=[];
+ sync('Connexion sécurisée aux sources officielles…');
  renderOverview();
- const jobs=[
-  {name:'Adhérents',run:loadMembers},
-  {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
-  {name:'Échéances',run:async()=>{data.payments=await get('/api/payments');}},
-  {name:'Aides',run:async()=>{await loadAides(password,facePrf);}}
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ // Aides Firebase indépendantes : démarrer immédiatement.
+ const aidsJob=(async()=>{
+   try{await loadAides(password,facePrf);}
+   catch(err){data.issues.push('Aides : '+err.message);}
+   finally{renderOverview();renderAides();}
+ })();
+ // Éviter plusieurs requêtes lourdes HelloAsso simultanées.
+ const cloudJobs=[
+   {name:'Adhérents',run:loadMembers},
+   {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
+   {name:'Échéances',run:async()=>{data.payments=await get('/api/payments');}}
  ];
- // Le listing est lu page à page. Les autres sources sont indépendantes.
- await Promise.all(jobs.map(async job=>{
-  try{await job.run();}
-  catch(err){data.issues.push(`${job.name} : ${err.message}`);}
-  finally{
-    // Mettre les compteurs à jour dès qu'une source répond, sans attendre
-    // la pagination HelloAsso ou le déchiffrement Firebase.
-    renderOverview();
-    if(state.view==='members')renderMembers();
-    if(state.view==='certificates')renderCertificates();
-    if(state.view==='payments')renderPayments();
-    if(state.view==='aides')renderAides();
-  }
- }));
- attachConnections();renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
- sync(data.issues.length?'Certaines sources ne sont pas complètes : '+data.issues.join(' | '):`Données du club chargées · ${data.summary?.total??data.people.length} adhérents · Lecture seule`,data.issues.length?'warning':'ok');
+ for(let i=0;i<cloudJobs.length;i++){
+   const job=cloudJobs[i];
+   sync('Lecture '+job.name.toLowerCase()+'… ('+(i+1)+'/3)');
+   let error=null;
+   for(let attempt=1;attempt<=2;attempt++){
+     if(!isAuthorized()){error=new Error('La session a expiré. Reconnecte-toi avec Face ID.');break;}
+     try{await job.run();error=null;break;}
+     catch(err){error=err;if(attempt===1){sync(job.name+' indisponible, nouvelle tentative…','warning');await wait(1000);}}
+   }
+   if(error)data.issues.push(job.name+' : '+error.message);
+   renderOverview();
+   if(job.name==='Adhérents')renderMembers();
+   if(job.name==='Certificats')renderCertificates();
+   if(job.name==='Échéances')renderPayments();
+ }
+ await aidsJob;
+ attachConnections();
+ renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
+ sync(data.issues.length?'Sources à vérifier : '+data.issues.join(' | '):'Données du club chargées · '+(data.summary?.total??data.people.length)+' adhérents · Lecture seule',data.issues.length?'warning':'ok');
 }
 
 const b64urlToBytes=value=>{const v=String(value).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(v+'='.repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));};
