@@ -64,13 +64,16 @@ async function consumeChallenge(env, purpose, requestId) {
 export async function handlePasskeyPreview(request, env, reply) {
   const route = new URL(request.url).pathname;
   if (route === "/passkey-preview/health" && request.method === "GET") {
+    const productionHost = new URL(request.url).hostname ===
+      "mma-lerove-api.cyril-camoin.workers.dev";
+    const writable = productionHost && env.PASSKEY_ADMIN_WRITE_ENABLED === "true";
     return reply({
       ok: true,
-      testOnly: true,
-      version: "passkey-web-authn-v1",
+      version: "faceid-full-admin-20261009-v1",
       storage: Boolean(env.CERTIFICATES),
       origin: "https://www.mma-lerove.fr",
-      productionAdminUnchanged: true
+      adminWritable: writable && Boolean(env.CERTIFICATES && env.ADMIN_API_TOKEN),
+      testOnly: !writable
     });
   }
 
