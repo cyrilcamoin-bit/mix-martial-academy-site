@@ -1,5 +1,5 @@
 {
-  "version": "20261009-mobile-summary-removed-v1",
+  "version": "20261009-mobile-nav-grid-v1",
   "deployedFrom": "main",
-  "note": "Accueil mobile : suppression des quatre cartes récapitulatives redondantes, desktop préservé."
+  "note": "Navigation mobile permanente à sept rubriques, suppression des boutons de doublon et cache actualisé."
 }
