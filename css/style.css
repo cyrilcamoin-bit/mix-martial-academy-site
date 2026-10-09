@@ -5107,3 +5107,19 @@ p {
   .admin-members-actions { flex-direction: column; }
   .admin-members-actions .button { width: 100%; }
 }
+
+
+/* Accueil mobile : cartes récapitulatives retirées, contenu conservé sur desktop */
+@media (max-width: 768px) {
+  #accueil .hero-panel.fight-card {
+    display: none;
+  }
+
+  #accueil .home-hero {
+    padding-bottom: 12px;
+  }
+
+  #accueil .home-trial-band {
+    padding-top: 18px;
+  }
+}
