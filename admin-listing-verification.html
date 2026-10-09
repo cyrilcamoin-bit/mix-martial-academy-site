@@ -128,7 +128,11 @@
     setBusy(true);
     status("Génération du listing Excel…");
     try {
+      const summaryResponse = await fetch(API + "/admin/members/summary", {headers, cache:"no-store"});
+      const expected = await summaryResponse.json().catch(() => ({}));
+      if (!summaryResponse.ok || !expected.ok) throw Error(description(summaryResponse, expected));
       const members = [];
+      const pageFingerprints = new Set();
       let finished = false;
       for (let page = 1; page <= 100 && !finished; page++) {
         status("Récupération des informations complètes, lot " + page + "…");
@@ -137,10 +141,27 @@
         if (!part.ok || !data.ok || !Array.isArray(data.members)) {
           throw Error(description(part, data));
         }
+        const ids = data.members.map(m => m.memberId || [m.lastName,m.firstName,m.birthDate].join("|")).join(",");
+        if (data.members.length && pageFingerprints.has(ids)) {
+          throw Error("Pagination HelloAsso répétée au lot " + page + ", export interrompu.");
+        }
+        pageFingerprints.add(ids);
         members.push(...data.members);
         finished = !data.hasMore;
       }
       if (!finished || !members.length) throw Error("Impossible de charger toutes les inscriptions.");
+      const unique = new Set(members.map(m => m.memberId || [m.lastName,m.firstName,m.birthDate].join("|")));
+      if (unique.size !== expected.total) {
+        throw Error("Fichier incomplet : " + unique.size + " / " + expected.total + " adhérents. Téléchargement bloqué.");
+      }
+      const counts = {
+        Enfant: members.filter(m => m.category === "Enfant").length,
+        Ado: members.filter(m => m.category === "Ado").length,
+        Adulte: members.filter(m => m.category === "Adulte").length
+      };
+      if (counts.Enfant !== expected.enfants || counts.Ado !== expected.ados || counts.Adulte !== expected.adultes) {
+        throw Error("Répartition des catégories différente de HelloAsso. Export bloqué.");
+      }
       status("Création du classeur Excel pour " + members.length + " adhérents…");
       const response = await fetch(API + "/admin/members/export.xlsx", {
         method:"POST",
