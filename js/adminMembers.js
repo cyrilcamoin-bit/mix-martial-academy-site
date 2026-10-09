@@ -1,6 +1,20 @@
 (() => {
   "use strict";
-  const API = "https://mma-lerove-api.cyril-camoin.workers.dev";
+  const PRODUCTION_API = "https://mma-lerove-api.cyril-camoin.workers.dev";
+  // Le listing passe par la version test tant que les routes n'ont pas
+  // été activées sur le Worker de production. Aides, certificats et
+  // échéances continuent à utiliser exclusivement PRODUCTION_API.
+  const VERIFIED_LISTING_PREVIEW = "https://feature-admin-listing-adherents-mma-lerove-api.cyril-camoin.workers.dev";
+  let listingApi = "";
+  async function resolveListingApi(password) {
+    if (listingApi) return listingApi;
+    const response = await fetch(PRODUCTION_API + "/admin/members/summary", {
+      headers: { Authorization: "Bearer " + password },
+      cache: "no-store"
+    });
+    if (response.status === 404) return (listingApi = VERIFIED_LISTING_PREVIEW);
+    return (listingApi = PRODUCTION_API);
+  }
   const status = document.getElementById("members-status");
   const refresh = document.getElementById("members-refresh");
   const download = document.getElementById("members-download");
@@ -43,7 +57,8 @@
     busy(true);
     message("Consultation des dernières inscriptions HelloAsso…");
     try {
-      const response = await fetch(API + "/admin/members/summary", {
+      const api = await resolveListingApi(password);
+      const response = await fetch(api + "/admin/members/summary", {
         headers: { Authorization: "Bearer " + password },
         cache: "no-store"
       });
@@ -68,7 +83,8 @@
     busy(true);
     message("Récupération des coordonnées complètes depuis HelloAsso…");
     try {
-      const expectedResponse = await fetch(API + "/admin/members/summary", {
+      const api = await resolveListingApi(password);
+      const expectedResponse = await fetch(api + "/admin/members/summary", {
         headers: { Authorization: "Bearer " + password }, cache: "no-store"
       });
       const expected = await expectedResponse.json().catch(() => ({}));
@@ -78,7 +94,7 @@
       let finished = false;
       for (let page = 1; page <= 100 && !finished; page++) {
         message("Lecture des commandes HelloAsso — lot " + page + "…");
-        const part = await fetch(API + "/admin/members/page?page=" + page, {
+        const part = await fetch(api + "/admin/members/page?page=" + page, {
           headers: { Authorization: "Bearer " + password },
           cache: "no-store"
         });
@@ -108,7 +124,7 @@
         throw new Error("Les catégories HelloAsso ne correspondent pas : téléchargement annulé.");
       }
       message("Mise en forme du fichier Excel pour " + members.length + " adhérents…");
-      const response = await fetch(API + "/admin/members/export.xlsx", {
+      const response = await fetch(api + "/admin/members/export.xlsx", {
         method: "POST",
         headers: { Authorization: "Bearer " + password, "Content-Type": "application/json" },
         body: JSON.stringify({ members }),
