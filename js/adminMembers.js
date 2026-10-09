@@ -16,7 +16,6 @@
     return (listingApi = PRODUCTION_API);
   }
   const status = document.getElementById("members-status");
-  const refresh = document.getElementById("members-refresh");
   const download = document.getElementById("members-download");
   let pending = false;
 
@@ -46,7 +45,6 @@
   function busy(value) {
     pending = value;
     const allowed = Boolean(token());
-    if (refresh) refresh.disabled = value || !allowed;
     if (download) download.disabled = value || !allowed;
   }
 
@@ -164,7 +162,6 @@
     }
   }
 
-  refresh?.addEventListener("click", loadSummary);
   download?.addEventListener("click", downloadExcel);
   document.querySelectorAll('[data-admin-view="adherents"]').forEach((button) => {
     button.addEventListener("click", () => {
