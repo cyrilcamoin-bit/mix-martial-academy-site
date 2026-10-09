@@ -1,5 +1,5 @@
 {
-  "version": "20261009-brand-type-v1",
+  "version": "20261009-header-brand-height-v1",
   "deployedFrom": "main",
-  "note": "Typographie du nom du club et Le Rove harmonisée sur mobile, logo intact."
+  "note": "Le Rove retiré de l'en-tête ; nom du club sur deux lignes à hauteur du logo sur mobile, logo inchangé."
 }
