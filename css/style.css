@@ -5256,3 +5256,40 @@ p {
     color: #fff;
   }
 }
+
+
+/* Ajustement typographique de l'identité mobile — logo inchangé */
+@media (max-width: 768px) {
+  .site-header .brand > span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    max-width: calc(100% - 55px);
+  }
+  .site-header .brand strong.club-name-font {
+    display: block;
+    width: 100%;
+    font-size: clamp(.72rem, 3vw, 1rem);
+    line-height: 1.16;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-align: left;
+  }
+  .site-header .brand small {
+    display: block;
+    font-size: clamp(.83rem, 3.2vw, .99rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: .015em;
+    color: rgba(255,255,255,.78);
+    text-align: left;
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.66rem, 2.85vw, .82rem);
+  }
+}
