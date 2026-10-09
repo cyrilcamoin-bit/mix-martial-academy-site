@@ -1970,7 +1970,23 @@ export default {
 
       return json(request, { error: "not_found" }, 404);
     } catch (error) {
-      console.error(error);
+      // Diagnostic volontairement limité : ni données personnelles, ni jetons,
+      // ni URL HelloAsso complète dans les journaux.
+      const path = new URL(request.url).pathname;
+      const label = path.startsWith("/admin/members/")
+        ? "members" : path.startsWith("/admin/certificates/")
+        ? "certificates" : path.startsWith("/admin/payments/")
+        ? "payments" : "other";
+      const errorName = String(error?.name || "Error").slice(0, 60);
+      const rawMessage = String(error?.message || "");
+      // Conserver seulement une erreur de transport / code HTTP, sans identifiants.
+      const httpCode = rawMessage.match(/\\b(?:4\\d\\d|5\\d\\d)\\b/)?.[0] || "unknown";
+      console.error("MMA_V2_DIAG", {
+        module: label,
+        method: request.method,
+        type: errorName,
+        upstreamHttpStatus: httpCode
+      });
       return json(request, { ok: false, error: "upstream_error" }, 502);
     }
   }
