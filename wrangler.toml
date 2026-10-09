@@ -6,6 +6,7 @@ compatibility_date = "2026-09-21"
 HELLOASSO_ORGANIZATION_SLUG = "mix-martial-academy"
 HELLOASSO_FORM_TYPE = "Membership"
 HELLOASSO_FORM_SLUG = "adhesion-mma-2026-2027"
+PASSKEY_ADMIN_WRITE_ENABLED = "true"
 
 [[r2_buckets]]
 binding = "CERTIFICATES"
