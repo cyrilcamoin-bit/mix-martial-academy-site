@@ -25,9 +25,10 @@
   <title>Administration du club — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
-  <script src="js/adminClub.js?v=20261009-members-export-v1" defer></script>
+  <script src="js/adminClub.js?v=20261009-faceid-production-ready-v1" defer></script>
   <script src="js/adminMembers.js?v=20261009-single-download-v3" defer></script>
-  <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
+  <script src="js/aides-admin.js?v=20261009-faceid-aides-v1" defer></script>
+  <script src="js/adminAidesFaceId.js?v=20261009-faceid-vault-v1" defer></script>
   <script src="js/adminCertificates.js?v=20261006-certificate-reminders-batch-v2" defer></script>
   <script src="js/adminPayments-20261008-v2.js" defer></script>
 </head>
@@ -57,8 +58,10 @@
         <p>Un seul mot de passe ouvre les aides, les certificats, les échéances refusées et le listing des adhérents.</p>
       </div>
       <div class="admin-club-access-actions">
+        <button id="admin-faceid-login" class="button" type="button" hidden>🔐 Se connecter avec Face ID</button>
         <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
         <button id="admin-club-unlock" class="button" type="button">Déverrouiller</button>
+        <button id="admin-faceid-logout" class="button button-outline" type="button" hidden>Se déconnecter</button>
       </div>
       <p id="admin-club-access-status" class="note" aria-live="polite">Saisissez votre mot de passe administrateur.</p>
     </section>
@@ -124,6 +127,16 @@
         <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
       </div>
 
+      <section class="admin-aids-panel" id="aides-faceid-bridge" hidden>
+        <p class="card-kicker">Clé d'accès Face ID</p>
+        <h3>Aides financières sécurisées</h3>
+        <p class="note">Activation unique sur cet iPhone : saisis ton code habituel pour protéger la clé des aides avec Face ID. Le code et la clé privée ne sont pas envoyés à Cloudflare.</p>
+        <div class="admin-aids-actions">
+          <input id="aides-faceid-once-code" type="password" autocomplete="off" placeholder="Code administrateur (une seule fois)" aria-label="Code pour configurer les aides Face ID">
+          <button id="aides-faceid-activate" class="button" type="button" disabled>Activer Face ID pour les aides</button>
+        </div>
+        <p class="note" id="aides-faceid-bridge-status" role="status" aria-live="polite"></p>
+      </section>
       <section class="admin-aids-panel admin-club-internal-login">
         <h2>Accès aux demandes</h2>
         <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
