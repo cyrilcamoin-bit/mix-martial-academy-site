@@ -25,7 +25,7 @@
   <title>Test administration Face ID — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
-  <script src="js/faceid-test/adminClub.js?v=20261009-prf-check-v2" defer></script>
+  <script src="js/faceid-test/adminClub.js?v=20261009-prf-bridge-v1" defer></script>
   <script src="js/faceid-test/adminMembers.js?v=20261009-passkey-admin-preview-v1" defer></script>
   <script src="js/faceid-test/aides-admin.js?v=20261009-prf-bridge-v1" defer></script>
   <script src="js/faceid-test/aidesBridge.js?v=20261009-prf-bridge-v1" defer></script>
@@ -128,6 +128,16 @@
         <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
       </div>
 
+      <section class="admin-aids-panel" id="aides-faceid-bridge" hidden>
+        <p class="card-kicker">Passerelle Face ID</p>
+        <h3>Activer les aides financières avec Face ID</h3>
+        <p class="note">Une seule fois : après Face ID, saisis ton code Admin habituel. La clé de déchiffrement sera protégée localement sur cet iPhone. Elle ne sera jamais envoyée à Cloudflare.</p>
+        <div class="admin-aids-actions">
+          <input id="aides-faceid-once-code" type="password" autocomplete="off" placeholder="Code Admin (une seule fois)" aria-label="Code Admin de configuration Face ID">
+          <button class="button" id="aides-faceid-activate" type="button" disabled>Activer la passerelle Face ID</button>
+        </div>
+        <p class="note" id="aides-faceid-bridge-status" role="status" aria-live="polite">Connecte-toi avec Face ID pour lancer la vérification.</p>
+      </section>
       <section class="admin-aids-panel admin-club-internal-login">
         <h2>Accès aux demandes</h2>
         <p>Saisissez votre code personnel pour ouvrir le tableau de suivi.</p>
