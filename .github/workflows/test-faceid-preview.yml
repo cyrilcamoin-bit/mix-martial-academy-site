@@ -1,0 +1,23 @@
+name: Test Face ID (isolated preview)
+on:
+  push:
+    branches: [feature/faceid-passkey-test]
+  pull_request:
+    paths:
+      - "backend/helloasso-worker/**"
+      - "package.json"
+      - "wrangler.toml"
+jobs:
+  webauthn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test passkey server security checks
+        run: node --test backend/helloasso-worker/tests/passkeyPreview.test.mjs
+      - name: Verify Cloudflare Worker build without deploy
+        run: npx wrangler deploy --dry-run --outdir ./build-preview
