@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-members-clean-v2",
+  "version": "20261009-admin-members-single-download-v3",
   "deployedFrom": "main",
-  "note": "Administration MMA : retrait des textes superflus sous le listing adhérents, affichage des erreurs uniquement."
+  "note": "Administration : uniquement le téléchargement Excel sous les effectifs automatiquement chargés."
 }
