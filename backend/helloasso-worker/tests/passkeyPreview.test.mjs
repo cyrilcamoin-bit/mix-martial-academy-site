@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { handlePasskeyPreview } from "../src/passkeyPreview.js";
+import { issuePasskeySession, verifyPasskeySession, revokePasskeySession } from "../src/passkeySession.js";
 
 class MemoryR2 {
   constructor(){ this.files = new Map(); }
@@ -52,4 +53,42 @@ test("attestation without valid one-time challenge is rejected",async()=>{
   const e=env();
   const r=await call("register/verify",{requestId:"d4d73c2e-3544-4527-9ea3-2a440b21c331",credential:{}},e,{bearer:"test-secret"});
   assert.equal(r.status,400);
+});
+
+
+test("a correctly issued passkey session grants access without revealing admin password", async() => {
+  const e = env();
+  const sess = await issuePasskeySession(e);
+  assert.match(sess.token, /^mma-fid1\.[A-Za-z0-9_-]{43}$/);
+  assert.ok(sess.expiresIn <= 1200);
+  assert.ok(!sess.token.includes(e.ADMIN_API_TOKEN));
+  const req = new Request("https://worker.example/admin/mail/status", {
+    headers: { Authorization: "Bearer " + sess.token }
+  });
+  assert.equal(await verifyPasskeySession(req, e), true);
+  assert.equal(await verifyPasskeySession(new Request(req.url), e), false);
+  assert.equal(await verifyPasskeySession(new Request(req.url, {headers: {Authorization:"Bearer test-secret"}}), e), false);
+  await revokePasskeySession(req, e);
+  assert.equal(await verifyPasskeySession(req, e), false);
+});
+
+test("expired sessions fail closed", async () => {
+  const e = env();
+  const sess = await issuePasskeySession(e);
+  const key = [...e.CERTIFICATES.files.keys()][0];
+  const record = JSON.parse(e.CERTIFICATES.files.get(key));
+  record.expiresAt = Date.now() - 1000;
+  e.CERTIFICATES.files.set(key, JSON.stringify(record));
+  const request = new Request("https://worker.example/admin/mail/status", {
+    headers: {Authorization: "Bearer " + sess.token}
+  });
+  assert.equal(await verifyPasskeySession(request,e),false);
+});
+
+test("admin middleware protects routes with passkey session, while original password access remains", async () => {
+  const {readFileSync} = await import("node:fs");
+  const worker = readFileSync(new URL("../src/worker.js", import.meta.url), "utf8");
+  assert.match(worker,/await isAdmin\(request, env\)/);
+  assert.match(worker,/verifyPasskeySession\(request, env\)/);
+  assert.match(worker,/request\.headers\.get\("Authorization"\) ===/);
 });
