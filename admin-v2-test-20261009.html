@@ -267,6 +267,7 @@ function navigation(view,{scroll=true,hash=true}={}){
  state.view=view;
  document.querySelectorAll('[data-page]').forEach(page=>page.hidden=page.dataset.page!==view);
  document.querySelectorAll('[data-view]').forEach(b=>{const selected=b.dataset.view===view;b.classList.toggle('active',selected);b.setAttribute('aria-current',selected?'page':'false');});
+ if(view==='dashboard')renderOverview();
  if(view==='members')renderMembers();
  if(view==='certificates')renderCertificates();
  if(view==='payments')renderPayments();
@@ -450,6 +451,7 @@ async function loadAides(password, facePrf=null){
 }
 async function populate(password, facePrf=null){
  data.issues=[];sync('Connexion sécurisée aux sources officielles…');
+ renderOverview();
  const jobs=[
   {name:'Adhérents',run:loadMembers},
   {name:'Certificats',run:async()=>{data.certificates=await get('/api/certificates');}},
@@ -457,7 +459,19 @@ async function populate(password, facePrf=null){
   {name:'Aides',run:async()=>{await loadAides(password,facePrf);}}
  ];
  // Le listing est lu page à page. Les autres sources sont indépendantes.
- await Promise.all(jobs.map(async job=>{try{await job.run();}catch(err){data.issues.push(`${job.name} : ${err.message}`);}}));
+ await Promise.all(jobs.map(async job=>{
+  try{await job.run();}
+  catch(err){data.issues.push(`${job.name} : ${err.message}`);}
+  finally{
+    // Mettre les compteurs à jour dès qu'une source répond, sans attendre
+    // la pagination HelloAsso ou le déchiffrement Firebase.
+    renderOverview();
+    if(state.view==='members')renderMembers();
+    if(state.view==='certificates')renderCertificates();
+    if(state.view==='payments')renderPayments();
+    if(state.view==='aides')renderAides();
+  }
+ }));
  attachConnections();renderOverview();renderMembers();renderCertificates();renderPayments();renderAides();
  sync(data.issues.length?'Certaines sources ne sont pas complètes : '+data.issues.join(' | '):`Données du club chargées · ${data.summary?.total??data.people.length} adhérents · Lecture seule`,data.issues.length?'warning':'ok');
 }
@@ -489,6 +503,7 @@ async function connectFaceIdV2(){
   const prf=c.getClientExtensionResults?.()?.prf?.results?.first||null;
   activeToken=signed.token;authDeadline=Date.now()+20*60*1000;
   state.loggedIn=true;$('auth-gate').hidden=true;$('app').hidden=false;$('mobile-nav').hidden=false;
+  navigation('dashboard',{scroll:false,hash:false});
   await populate(null,prf);
   if(prf instanceof ArrayBuffer)new Uint8Array(prf).fill(0);
   navigation('dashboard',{scroll:false,hash:false});
@@ -521,6 +536,7 @@ function eventHandlers(){
    const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw Error(response.status===401?'Code refusé par Cloudflare (401). Essaie Face ID.':'Connexion Cloudflare indisponible ('+response.status+'). Essaie Face ID.');
    activeToken=password;authDeadline=Date.now()+20*60*1000;
    state.loggedIn=true;field.value='';$('auth-gate').hidden=true;$('app').hidden=false;$('mobile-nav').hidden=false;
+   navigation('dashboard',{scroll:false,hash:false});
    await populate(password);
    navigation('dashboard',{scroll:false,hash:false});
    setTimeout(()=>{if(state.loggedIn){toast('La session de 20 minutes est expirée.');setTimeout(()=>location.reload(),1400);}},20*60*1000);
