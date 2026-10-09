@@ -68,7 +68,13 @@
     busy(true);
     message("Récupération des coordonnées complètes depuis HelloAsso…");
     try {
+      const expectedResponse = await fetch(API + "/admin/members/summary", {
+        headers: { Authorization: "Bearer " + password }, cache: "no-store"
+      });
+      const expected = await expectedResponse.json().catch(() => ({}));
+      if (!expectedResponse.ok || !expected.ok) throw new Error("Impossible de vérifier l'effectif total HelloAsso.");
       const members = [];
+      const fingerprints = new Set();
       let finished = false;
       for (let page = 1; page <= 100 && !finished; page++) {
         message("Lecture des commandes HelloAsso — lot " + page + "…");
@@ -80,10 +86,27 @@
         if (!part.ok || !data.ok || !Array.isArray(data.members)) {
           throw new Error("Impossible de charger toutes les commandes (lot " + page + ").");
         }
+        const fingerprint = data.members.map(m => m.memberId || [m.lastName,m.firstName,m.birthDate].join("|")).join(",");
+        if (data.members.length && fingerprints.has(fingerprint)) {
+          throw new Error("Pagination HelloAsso répétée : téléchargement annulé.");
+        }
+        fingerprints.add(fingerprint);
         members.push(...data.members);
         finished = !data.hasMore;
       }
       if (!finished || !members.length) throw new Error("Export incomplet : impossible de récupérer tous les adhérents.");
+      const unique = new Set(members.map(m => m.memberId || [m.lastName,m.firstName,m.birthDate].join("|")));
+      if (unique.size !== expected.total) {
+        throw new Error("Export interrompu : " + unique.size + " adhérents récupérés sur " + expected.total + ". Aucun fichier incomplet ne sera téléchargé.");
+      }
+      const groupCount = {
+        Enfant: members.filter(m => m.category === "Enfant").length,
+        Ado: members.filter(m => m.category === "Ado").length,
+        Adulte: members.filter(m => m.category === "Adulte").length
+      };
+      if (groupCount.Enfant !== expected.enfants || groupCount.Ado !== expected.ados || groupCount.Adulte !== expected.adultes) {
+        throw new Error("Les catégories HelloAsso ne correspondent pas : téléchargement annulé.");
+      }
       message("Mise en forme du fichier Excel pour " + members.length + " adhérents…");
       const response = await fetch(API + "/admin/members/export.xlsx", {
         method: "POST",
