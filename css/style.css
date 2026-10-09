@@ -5293,3 +5293,34 @@ p {
     font-size: clamp(.66rem, 2.85vw, .82rem);
   }
 }
+
+
+/* Identité mobile : nom du club à hauteur du logo, sans sous-titre. Logo intact. */
+@media (max-width: 768px) {
+  .site-header .brand > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 43px;
+    max-width: calc(100% - 55px);
+  }
+  .site-header .brand strong.club-name-font {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    font-size: clamp(1.05rem, 4vw, 1.34rem);
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-align: left;
+    white-space: normal;
+  }
+  .site-header .brand .brand-title-line {
+    display: block;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.94rem, 3.85vw, 1.12rem);
+  }
+}
