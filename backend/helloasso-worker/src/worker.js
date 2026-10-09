@@ -1,4 +1,5 @@
 import { connect } from "cloudflare:sockets";
+import { rowsFromOrders, makeXlsx } from "./membersExport.js";
 
 const HELLOASSO_API = "https://api.helloasso.com";
 const ORGANIZATION_SLUG = "mix-martial-academy";
@@ -72,7 +73,7 @@ function corsHeaders(request) {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Expose-Headers": "Content-Disposition",
+    "Access-Control-Expose-Headers": "Content-Disposition, X-Members-Total, X-Members-Enfants, X-Members-Ados, X-Members-Adultes, X-Members-Incomplete",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
   };
@@ -1353,6 +1354,30 @@ async function downloadMembersZip(request, env, memberIds) {
   });
 }
 
+
+async function fetchMembershipOrdersForExport(env) {
+  const token = await getAccessToken(env);
+  const orders = [];
+  const pageSize = 100;
+  for (let pageIndex = 1; pageIndex <= 50; pageIndex += 1) {
+    const url = new URL(
+      HELLOASSO_API + "/v5/organizations/" + ORGANIZATION_SLUG
+      + "/forms/" + FORM_TYPE + "/" + FORM_SLUG + "/orders"
+    );
+    url.searchParams.set("pageIndex", String(pageIndex));
+    url.searchParams.set("pageSize", String(pageSize));
+    url.searchParams.set("withDetails", "true");
+    const payload = await fetchHelloAssoJson(url, token, "HelloAsso members orders");
+    const page = Array.isArray(payload?.data) ? payload.data : [];
+    orders.push(...page);
+    const totalPages = Number(payload?.pagination?.totalPages || 0);
+    if (!page.length || (totalPages && pageIndex >= totalPages) || page.length < pageSize) {
+      return orders;
+    }
+  }
+  throw new Error("HelloAsso pagination limit reached; refusing an incomplete export");
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -1459,6 +1484,56 @@ export default {
 
       if (url.pathname.startsWith("/admin/certificates/") && !storageReady(env)) {
         return json(request, { ok: false, error: "storage_not_configured" }, 503);
+      }
+
+
+      if (request.method === "GET" && (
+        url.pathname === "/admin/members/summary" ||
+        url.pathname === "/admin/members/export.xlsx"
+      )) {
+        // Autorisation contrôlée plus haut pour l'ensemble des routes /admin/.
+        // Lire HelloAsso à chaque action : aucune mise en cache de la liste nominative.
+        const orders = await fetchMembershipOrdersForExport(env);
+        const members = rowsFromOrders(orders);
+        const counts = {
+          Enfant: members.filter((member) => member.category === "Enfant").length,
+          Ado: members.filter((member) => member.category === "Ado").length,
+          Adulte: members.filter((member) => member.category === "Adulte").length
+        };
+        const incomplete = members.filter((member) =>
+          !member.address || !member.postal || !member.phone
+        ).length;
+        if (url.pathname === "/admin/members/summary") {
+          return json(request, {
+            ok: true,
+            campaign: FORM_SLUG,
+            total: members.length,
+            enfants: counts.Enfant,
+            ados: counts.Ado,
+            adultes: counts.Adulte,
+            incomplete
+          });
+        }
+        const book = makeXlsx(members, createZip);
+        const date = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit"
+        }).format(new Date());
+        const fileName = "listing_adherents_Mix_Martial_Academy_2026-2027_" + date + ".xlsx";
+        return new Response(book.bytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders(request),
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Content-Disposition": 'attachment; filename="' + fileName + '"',
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+            "X-Members-Total": String(book.total),
+            "X-Members-Enfants": String(book.counts.Enfant),
+            "X-Members-Ados": String(book.counts.Ado),
+            "X-Members-Adultes": String(book.counts.Adulte),
+            "X-Members-Incomplete": String(book.missing)
+          }
+        });
       }
 
       if (request.method === "GET" && url.pathname === "/admin/mail/status") {
