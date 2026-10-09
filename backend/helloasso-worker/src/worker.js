@@ -942,14 +942,21 @@ function storageReady(env) {
 }
 
 async function isAdmin(request, env) {
-  // Isolation forte du Worker de TEST : aucune route Admin d'écriture,
-  // même avec le mot de passe historique. Exception : génération XLSX
-  // qui ne modifie aucune donnée distante.
-  const path = new URL(request.url).pathname;
-  if (!["GET", "HEAD"].includes(request.method) &&
-      !(request.method === "POST" && path === "/admin/members/export.xlsx")) return false;
+  const { hostname, pathname } = new URL(request.url);
+  const productionHostname = hostname === "mma-lerove-api.cyril-camoin.workers.dev";
+  const adminWriteEnabled =
+    productionHostname && env.PASSKEY_ADMIN_WRITE_ENABLED === "true";
+  const readOnly = ["GET", "HEAD"].includes(request.method) ||
+    (request.method === "POST" && pathname === "/admin/members/export.xlsx");
+  // Protect real member records on ALL preview aliases, for every auth mode.
+  // On production, the password retains existing behavior, and after explicit
+  // release activation, a short-lived Face ID session may authorize writes.
+  if (!readOnly && !productionHostname) return false;
   if (env.ADMIN_API_TOKEN &&
-    request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) return true;
+      request.headers.get("Authorization") === `Bearer ${env.ADMIN_API_TOKEN}`) {
+    return true;
+  }
+  if (!readOnly && !adminWriteEnabled) return false;
   return verifyPasskeySession(request, env);
 }
 
