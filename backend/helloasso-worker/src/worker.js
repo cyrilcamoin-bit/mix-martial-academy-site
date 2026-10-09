@@ -1447,7 +1447,8 @@ export default {
           certificateDeletion: true,
           certificateReminders: true,
           refusedPayments: true,
-          refusedPaymentsScope: "campaign"
+          refusedPaymentsScope: "campaign",
+          membersExportRevision: "20261009-complete-pagination-v2"
         });
       }
 
