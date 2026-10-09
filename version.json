@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-members-single-download-v3",
+  "version": "20261009-admin-faceid-production-v1",
   "deployedFrom": "main",
-  "note": "Administration : uniquement le téléchargement Excel sous les effectifs automatiquement chargés."
+  "note": "Face ID sur l'administration officielle; activation conditionnée à la disponibilité sécurisée du Worker Cloudflare; mot de passe de secours conservé."
 }
