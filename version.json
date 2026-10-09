@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-faceid-production-v1",
+  "version": "20261009-mobile-summary-removed-v1",
   "deployedFrom": "main",
-  "note": "Face ID sur l'administration officielle; activation conditionnée à la disponibilité sécurisée du Worker Cloudflare; mot de passe de secours conservé."
+  "note": "Accueil mobile : suppression des quatre cartes récapitulatives redondantes, desktop préservé."
 }
