@@ -24,8 +24,9 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Administration du club — Mix Martial Academy</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="css/style.css?v=20261008-iphone-sms-v1">
-  <script src="js/adminClub.js?v=20261007-admin-unlock-racefix-v1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
+  <script src="js/adminClub.js?v=20261009-members-export-v1" defer></script>
+  <script src="js/adminMembers.js?v=20261009-members-export-v1" defer></script>
   <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
   <script src="js/adminCertificates.js?v=20261006-certificate-reminders-batch-v2" defer></script>
   <script src="js/adminPayments-20261008-v2.js" defer></script>
@@ -46,13 +47,14 @@
       <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
       <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
       <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected disabled>Échéances refusées</button>
+      <button class="admin-club-tab" type="button" data-admin-view="adherents" data-admin-protected disabled>Listing adhérents</button>
     </nav>
 
     <section id="admin-club-access" class="admin-club-access-card">
       <div>
         <p class="eyebrow">Accès administrateur</p>
         <h2>Déverrouiller l'administration</h2>
-        <p>Un seul mot de passe ouvre les aides à l'inscription, les certificats médicaux et les échéances refusées.</p>
+        <p>Un seul mot de passe ouvre les aides, les certificats, les échéances refusées et le listing des adhérents.</p>
       </div>
       <div class="admin-club-access-actions">
         <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
@@ -65,7 +67,7 @@
       <div class="admin-club-dashboard-intro">
         <p class="eyebrow">Gestion administrative</p>
         <h2>Que souhaitez-vous gérer ?</h2>
-        <p>Les trois outils restent sécurisés et sont accessibles depuis cette même interface.</p>
+        <p>Les quatre outils restent sécurisés et sont accessibles depuis cette même interface.</p>
       </div>
 
       <div class="admin-club-dashboard-grid">
@@ -98,9 +100,18 @@
           </div>
           <button class="button admin-club-open" type="button" data-admin-view="paiements" data-admin-protected disabled>Voir les refus</button>
         </article>
+
+        <article class="admin-club-card">
+          <div class="admin-club-card-icon" aria-hidden="true">≡</div>
+          <div>
+            <p class="card-kicker">HelloAsso — Saison 2026-2027</p>
+            <h3>Listing adhérents</h3>
+            <p>Retrouvez les effectifs actualisés et téléchargez le listing Excel officiel mis en forme, directement depuis HelloAsso.</p>
+          </div>
+          <button class="button admin-club-open" type="button" data-admin-view="adherents" data-admin-protected disabled>Ouvrir le listing</button>
+        </article>
       </div>
 
-      <p class="admin-club-legacy-note">Les deux anciennes pages d'administration restent actives pendant la phase de validation.</p>
     </section>
 
     <section id="admin-club-aides" class="admin-club-view" hidden>
@@ -336,6 +347,32 @@
             </tbody>
           </table>
         </div>
+      </section>
+    </section>
+
+    <section id="admin-club-adherents" class="admin-club-view admin-members-page" hidden>
+      <div class="admin-club-module-head">
+        <div>
+          <p class="eyebrow">HelloAsso — Campagne officielle</p>
+          <h2>Listing adhérents</h2>
+          <p>Adhésion MMA 2026-2027 — récupération sécurisée des inscriptions à la demande.</p>
+        </div>
+        <button class="button button-outline admin-club-back" type="button" data-admin-view="dashboard">Retour à l'accueil admin</button>
+      </div>
+      <section class="admin-aids-panel admin-members-panel">
+        <p class="card-kicker">Effectifs de la saison</p>
+        <div class="admin-members-metrics" aria-label="Effectifs par catégorie">
+          <div><span>Enfants</span><strong id="members-count-enfants">—</strong></div>
+          <div><span>Ados</span><strong id="members-count-ados">—</strong></div>
+          <div><span>Adultes</span><strong id="members-count-adultes">—</strong></div>
+          <div><span>Total</span><strong id="members-count-total">—</strong></div>
+        </div>
+        <div class="admin-members-actions">
+          <button class="button button-outline" type="button" id="members-refresh" data-admin-protected disabled>Actualiser les effectifs</button>
+          <button class="button" type="button" id="members-download" data-admin-protected disabled>Télécharger le listing Excel à jour</button>
+        </div>
+        <p class="note" id="members-status" role="status" aria-live="polite">Déverrouillez l’administration pour récupérer votre listing.</p>
+        <p class="note">Le fichier est généré depuis HelloAsso lors du téléchargement, avec les trois sections Enfants / Ados / Adultes, les noms en majuscules et la correction SEGUIN Mattis. Aucun fichier nominatif n’est publié sur le site.</p>
       </section>
     </section>
   </main>
