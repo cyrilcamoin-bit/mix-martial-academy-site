@@ -5424,3 +5424,43 @@ p {
     font-size: clamp(.73rem, 3.6vw, .88rem);
   }
 }
+
+
+/* Bandeau mobile : mise à l'échelle et centrage optique du titre Dream MMA.
+   Ne change ni la taille ni la position du logo. */
+@media (max-width: 768px) {
+  .site-header .brand {
+    align-items: center;
+    gap: .45rem;
+  }
+  .site-header .brand > span {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    max-width: none;
+    min-height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .site-header .brand strong.club-name-font {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(.86rem, 4.28vw, 1.55rem);
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-align: left;
+    transform: translateY(14px);
+    transform-origin: left center;
+  }
+}
+@media (max-width: 370px) {
+  .site-header .brand strong.club-name-font {
+    font-size: clamp(.76rem, 4.05vw, .95rem);
+    transform: translateY(12px);
+  }
+}
