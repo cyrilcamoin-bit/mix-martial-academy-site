@@ -1980,7 +1980,7 @@ export default {
       const errorName = String(error?.name || "Error").slice(0, 60);
       const rawMessage = String(error?.message || "");
       // Conserver seulement une erreur de transport / code HTTP, sans identifiants.
-      const httpCode = rawMessage.match(/\\b(?:4\\d\\d|5\\d\\d)\\b/)?.[0] || "unknown";
+      const httpCode = rawMessage.match(/\b(?:4\d\d|5\d\d)\b/)?.[0] || "unknown";
       console.error("MMA_V2_DIAG", {
         module: label,
         method: request.method,
