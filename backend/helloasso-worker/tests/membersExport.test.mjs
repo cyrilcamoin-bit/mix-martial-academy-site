@@ -103,3 +103,13 @@ test("prefers all scheduled payment shares and custom address fields when suppli
   assert.equal(results[0].address, "8 rue des tests");
   assert.equal(results[0].memberId, "21");
 });
+
+
+test("pagination of detailed HelloAsso orders continues past misleading totalPages", () => {
+  const worker = readFileSync(new URL("../src/worker.js", import.meta.url), "utf8");
+  const client = readFileSync(new URL("../../../js/adminMembers.js", import.meta.url), "utf8");
+  assert.match(worker, /hasMore:\s*orders\.length\s*>\s*0/);
+  assert.match(client, /unique\.size\s*!==\s*expected\.total/);
+  assert.match(client, /groupCount\.Enfant\s*!==\s*expected\.enfants/);
+  assert.match(client, /fingerprints\.has\(fingerprint\)/);
+});
