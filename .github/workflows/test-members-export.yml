@@ -1,0 +1,33 @@
+name: Vérification listing adhérents
+on:
+  push:
+    branches:
+      - feature/admin-listing-adherents
+    paths:
+      - "backend/helloasso-worker/src/membersExport.js"
+      - "backend/helloasso-worker/src/worker.js"
+      - "backend/helloasso-worker/tests/**"
+      - ".github/workflows/test-members-export.yml"
+  pull_request:
+    paths:
+      - "backend/helloasso-worker/src/membersExport.js"
+      - "backend/helloasso-worker/src/worker.js"
+      - "backend/helloasso-worker/tests/**"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntaxe du Worker et du module export
+        run: |
+          node --check backend/helloasso-worker/src/worker.js
+          node --check backend/helloasso-worker/src/membersExport.js
+          node --check js/adminClub.js
+          node --check js/adminMembers.js
+      - name: Tests XLSX et protection
+        run: node --test backend/helloasso-worker/tests/membersExport.test.mjs
