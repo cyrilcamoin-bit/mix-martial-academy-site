@@ -148,6 +148,7 @@ export function rowsFromOrders(orders) {
       ));
       const amountCents = annualAmountCents(item, category);
       members.push({
+        memberId: itemId,
         lastName, firstName, email: payerEmail, category,
         amount: Number.isFinite(amountCents) ? amountCents / 100 : null,
         birthDate: date,
