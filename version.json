@@ -1,5 +1,5 @@
 {
-  "version": "20261009-mobile-nav-grid-v1",
+  "version": "20261009-home-seo-card-removed-v1",
   "deployedFrom": "main",
-  "note": "Navigation mobile permanente à sept rubriques, suppression des boutons de doublon et cache actualisé."
+  "note": "Suppression de l'encadré de communes visible sur l'accueil ; référencement géographique structuré conservé."
 }
