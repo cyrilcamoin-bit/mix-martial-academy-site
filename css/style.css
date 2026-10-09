@@ -3693,7 +3693,7 @@ p {
   top: 10px;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   margin: 0 0 24px;
   padding: 8px;
@@ -5080,4 +5080,30 @@ p {
   .home-trial-schedule-time {
     min-width: 136px;
   }
+}
+
+
+/* Export HelloAsso — listing des adhérents réservé à l'administration. */
+.admin-members-panel { display: grid; gap: 20px; }
+.admin-members-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.admin-members-metrics > div {
+  min-width: 0;
+  padding: 18px 12px;
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,.035);
+}
+.admin-members-metrics span { display: block; font-size: .9rem; color: var(--muted); }
+.admin-members-metrics strong { display: block; margin-top: 5px; font-size: clamp(1.6rem,4vw,2.2rem); color: #fff; }
+.admin-members-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.admin-members-actions .button { min-height: 50px; }
+@media (max-width: 760px) {
+  .admin-members-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-members-actions { flex-direction: column; }
+  .admin-members-actions .button { width: 100%; }
 }
