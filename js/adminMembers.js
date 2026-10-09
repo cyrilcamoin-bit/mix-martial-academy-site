@@ -27,9 +27,12 @@
 
   function message(text, error = false) {
     if (!status) return;
-    status.textContent = text;
+    // Ne rien afficher sous les boutons pour les réussites ou le chargement.
+    // Seules les erreurs doivent rester visibles et accessibles.
+    status.textContent = error ? text : "";
+    status.hidden = !error;
     status.classList.toggle("is-error", error);
-    status.classList.toggle("is-success", !error);
+    status.classList.remove("is-success");
   }
 
   function setCounts(counts) {
