@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-members-integrated-v1",
+  "version": "20261009-admin-members-clean-v2",
   "deployedFrom": "main",
-  "note": "Ajout sécurisé du listing adhérents automatique à l'administration du club. Les modules préexistants restent inchangés."
+  "note": "Administration MMA : retrait des textes superflus sous le listing adhérents, affichage des erreurs uniquement."
 }
