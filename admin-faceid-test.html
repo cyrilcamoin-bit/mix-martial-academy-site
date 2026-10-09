@@ -168,8 +168,13 @@
       const credential = await navigator.credentials.get({publicKey:pub});
       if (!credential) throw new Error("L'authentification a été annulée.");
       const result = await request("login/verify", {requestId, credential:serialized(credential, "get")});
-      if (!result.verified) throw new Error("La clé d'accès a été rejetée.");
-      msg("✅ Face ID a été vérifié par Cloudflare. Le test est réussi !\n\nTon administration n'a pas été déverrouillée : la connexion finale aux modules viendra après validation.", "ok");
+      if (!result.verified || !result.token) throw new Error("Cloudflare n'a pas remis de session valide.");
+      const test = await fetch(API + "/admin/mail/status", {
+        headers: {Authorization:"Bearer " + result.token},
+        cache:"no-store"
+      });
+      if (!test.ok) throw new Error("Face ID validé, mais l'accès Admin de test n'a pas été accepté (" + test.status + ").");
+      msg("✅ Face ID reconnu !\n\n✅ Session Admin Cloudflare vérifiée sans mot de passe (20 minutes).\n\nCe test n'active pas encore l'administration en production. Les aides chiffrées nécessitent une adaptation supplémentaire.", "ok");
     } catch (error) {
       msg(error.name === "NotAllowedError" ? "Demande Face ID annulée ou refusée." : (error.message || "Échec de la connexion."), "error");
     } finally { busy(false); }
