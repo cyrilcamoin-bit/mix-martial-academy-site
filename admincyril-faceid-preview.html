@@ -377,5 +377,24 @@
       </section>
     </section>
   </main>
+  <script>
+    // Cette page est une copie de validation : aucun changement Firebase
+    // ne doit pouvoir partir des aides, même après saisie du code de secours.
+    document.addEventListener("change", function(event) {
+      if (event.target.matches("#admin-club-aides input[type=checkbox]")) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.target.checked = !event.target.checked;
+        window.alert("Version test en lecture seule : ouvre l'administration habituelle pour modifier les aides.");
+      }
+    }, true);
+    document.addEventListener("click", function(event) {
+      if (event.target.closest("#admin-club-aides .admin-aids-delete")) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.alert("Suppression désactivée dans la version Face ID de test.");
+      }
+    }, true);
+  </script>
 </body>
 </html>
