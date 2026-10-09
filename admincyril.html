@@ -26,7 +26,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
   <script src="js/adminClub.js?v=20261009-members-export-v1" defer></script>
-  <script src="js/adminMembers.js?v=20261009-members-export-v1" defer></script>
+  <script src="js/adminMembers.js?v=20261009-members-clean-v2" defer></script>
   <script src="js/aides-admin.js?v=20260921-admin-action-v2" defer></script>
   <script src="js/adminCertificates.js?v=20261006-certificate-reminders-batch-v2" defer></script>
   <script src="js/adminPayments-20261008-v2.js" defer></script>
@@ -371,8 +371,7 @@
           <button class="button button-outline" type="button" id="members-refresh" data-admin-protected disabled>Actualiser les effectifs</button>
           <button class="button" type="button" id="members-download" data-admin-protected disabled>Télécharger le listing Excel à jour</button>
         </div>
-        <p class="note" id="members-status" role="status" aria-live="polite">Déverrouillez l’administration pour récupérer votre listing.</p>
-        <p class="note">Le fichier est généré depuis HelloAsso lors du téléchargement, avec les trois sections Enfants / Ados / Adultes, les noms en majuscules et la correction SEGUIN Mattis. Aucun fichier nominatif n’est publié sur le site.</p>
+        <p class="note" id="members-status" role="alert" aria-live="assertive" hidden></p>
       </section>
     </section>
   </main>
