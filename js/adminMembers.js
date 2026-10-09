@@ -50,8 +50,7 @@
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.ok) throw new Error(response.status === 401 ? "Accès administrateur expiré ou incorrect." : "Impossible de lire la campagne HelloAsso.");
       setCounts(result);
-      message(result.total + " adhérents actualisés depuis HelloAsso."
-        + (result.incomplete ? " Attention : " + result.incomplete + " fiche(s) sans adresse, téléphone ou code postal complet." : ""));
+      message(result.total + " adhérents actualisés. Les coordonnées complètes seront vérifiées lors du téléchargement.");
     } catch (error) {
       message(error.message || "Erreur de connexion à HelloAsso.", true);
     } finally {
@@ -67,10 +66,29 @@
       return;
     }
     busy(true);
-    message("Génération du fichier Excel à jour…");
+    message("Récupération des coordonnées complètes depuis HelloAsso…");
     try {
+      const members = [];
+      let finished = false;
+      for (let page = 1; page <= 100 && !finished; page++) {
+        message("Lecture des commandes HelloAsso — lot " + page + "…");
+        const part = await fetch(API + "/admin/members/page?page=" + page, {
+          headers: { Authorization: "Bearer " + password },
+          cache: "no-store"
+        });
+        const data = await part.json().catch(() => ({}));
+        if (!part.ok || !data.ok || !Array.isArray(data.members)) {
+          throw new Error("Impossible de charger toutes les commandes (lot " + page + ").");
+        }
+        members.push(...data.members);
+        finished = !data.hasMore;
+      }
+      if (!finished || !members.length) throw new Error("Export incomplet : impossible de récupérer tous les adhérents.");
+      message("Mise en forme du fichier Excel pour " + members.length + " adhérents…");
       const response = await fetch(API + "/admin/members/export.xlsx", {
-        headers: { Authorization: "Bearer " + password },
+        method: "POST",
+        headers: { Authorization: "Bearer " + password, "Content-Type": "application/json" },
+        body: JSON.stringify({ members }),
         cache: "no-store"
       });
       if (!response.ok) throw new Error(response.status === 401
