@@ -1,0 +1,45 @@
+name: Validation passerelle Face ID — aides
+on:
+  push:
+    branches: [main]
+    paths:
+      - "admincyril-faceid-preview.html"
+      - "js/faceid-test/adminClub.js"
+      - "js/faceid-test/aides-admin.js"
+      - "js/faceid-test/aidesBridge.js"
+      - ".github/workflows/test-faceid-local-aides.yml"
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérifier la syntaxe JavaScript
+        run: |
+          node --check js/faceid-test/adminClub.js
+          node --check js/faceid-test/aides-admin.js
+          node --check js/faceid-test/aidesBridge.js
+      - name: Vérifier le branchement local chiffré
+        run: |
+          node --input-type=module <<'EOF'
+          import {readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const html = readFileSync('admincyril-faceid-preview.html','utf8');
+          const bridge = readFileSync('js/faceid-test/aidesBridge.js','utf8');
+          const auth = readFileSync('js/faceid-test/adminClub.js','utf8');
+          const aides = readFileSync('js/faceid-test/aides-admin.js','utf8');
+          assert.match(html, /id="aides-faceid-bridge"/);
+          assert.match(html, /src="js\/faceid-test\/aides-admin\.js\?/);
+          assert.match(html, /src="js\/faceid-test\/aidesBridge\.js\?/);
+          assert.match(auth, /window\.MMAAidesBridge\.onVerifiedPRF\(prf\)/);
+          assert.match(auth, /clientExtensionResults:\{\}/);
+          assert.match(bridge, /indexedDB\.open/);
+          assert.match(bridge, /AES-GCM/);
+          assert.match(bridge, /additionalData:AAD/);
+          assert.match(aides, /window\.MMAAidesPreview/);
+          assert.match(aides, /await loadRequests\(\)/);
+          assert.doesNotMatch(html, /<script src="js\/aides-admin\.js/);
+          console.log('PASS: Passerelle Face ID localement chiffrée, modules reliés');
+          EOF
