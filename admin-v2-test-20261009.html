@@ -565,12 +565,12 @@ async function v2CertDownload(id){
 async function v2CertRemind(id){
  const person=data.certificates?.members.find(m=>String(m.memberId)===String(id));if(!person)throw Error('Adhérent introuvable');
  if(!confirmAction('ENVOYER UNE RELANCE CERTIFICAT PAR E-MAIL',String(person.lastName||'')+' '+String(person.firstName||'')))return;
- await v2Write('/admin/certificates/reminders/send',{memberIds:[id]});toast('Relance envoyée.');data.certificates=await get('/admin/certificates');renderCertificates();
+ const result=await v2Write('/admin/certificates/reminders/send',{memberIds:[id]});if(!Number(result.sent))throw Error('E-mail non envoyé : '+String(result.results?.[0]?.status||'vérifie le destinataire'));toast('Relance envoyée.');data.certificates=await get('/admin/certificates');renderCertificates();
 }
 async function v2PayMail(id){
  const payment=data.payments?.payments.find(p=>String(p.paymentId)===String(id));if(!payment)throw Error('Échéance introuvable');
  if(!confirmAction('ENVOYER UNE RELANCE DE PAIEMENT PAR E-MAIL',paymentMembers(payment)))return;
- await v2Write('/admin/payments/refused/send',{paymentIds:[id]});toast('Relance envoyée.');data.payments=await get('/admin/payments');renderPayments();
+ const result=await v2Write('/admin/payments/refused/send',{paymentIds:[id]});if(!Number(result.sent))throw Error('E-mail non envoyé : '+String(result.results?.[0]?.status||'vérifie la date et le destinataire'));toast('Relance envoyée.');data.payments=await get('/admin/payments');renderPayments();
 }
 function v2PaySms(id){
  const p=data.payments?.payments.find(x=>String(x.paymentId)===String(id));if(!p)return;
@@ -584,8 +584,8 @@ function v2PaySms(id){
 async function v2CertBatch(){
  const all=(data.certificates?.members||[]).filter(m=>!m.received&&m.email);if(!all.length){toast('Aucune relance possible.');return;}
  if(!confirmAction('ENVOYER '+all.length+' RELANCES CERTIFICATS',all.length+' destinataires'))return;
- let sent=0;for(let i=0;i<all.length;i+=20){await v2Write('/admin/certificates/reminders/send',{memberIds:all.slice(i,i+20).map(m=>m.memberId)});sent+=Math.min(20,all.length-i);}
- toast(sent+' relances envoyées.');data.certificates=await get('/admin/certificates');renderCertificates();
+ let sent=0;for(let i=0;i<all.length;i+=20){const result=await v2Write('/admin/certificates/reminders/send',{memberIds:all.slice(i,i+20).map(m=>m.memberId)});sent+=Number(result.sent||0);}
+ toast(sent+' relances effectivement envoyées sur '+all.length+' sélectionnées.');data.certificates=await get('/admin/certificates');renderCertificates();
 }
 async function v2CertHistory(){
  const d=await v2Api('/admin/certificates/reminders?limit=200');const rows=d.reminders||[];
