@@ -286,11 +286,11 @@ function renderOverview(){
  $('cert-missing').textContent=cert?`${cert.missing} manquants`:'Données non chargées';
  const pct=cert&&cert.total>0?Math.round(cert.received/cert.total*100):0;
  $('cert-donut').style.setProperty('--pct',pct+'%');$('cert-pct').textContent=cert?.total?pct+'%':'—';
- $('count-payments').textContent=pay?.total??'—';$('payment-total').textContent=pay?`${money(pay.totalAmount)} à régulariser`:'Données non chargées';
+ $('count-payments').textContent=pay?.total??'—';$('payment-total').textContent=pay?`${money(Number(pay.totalAmount)/100)} à régulariser`:'Données non chargées';
  $('count-aides').textContent=aid?.length??'—';$('aides-total').textContent=aid?`${money(aid.reduce((n,r)=>n+Number(r.data.montant||0),0))} déclarés`:'Données non chargées';
  const items=[
   {view:'certificates',ico:'file-heart',title:cert?`${cert.missing} certificats manquants`:'Certificats en cours de lecture',sub:'Accéder aux dossiers concernés'},
-  {view:'payments',ico:'credit-card',title:pay?`${pay.total} échéances refusées`:'Paiements en cours de lecture',sub:pay?`Montant total : ${money(pay.totalAmount)}`:'Chargement…'},
+  {view:'payments',ico:'credit-card',title:pay?`${pay.total} échéances refusées`:'Paiements en cours de lecture',sub:pay?`Montant total : ${money(Number(pay.totalAmount)/100)}`:'Chargement…'},
   {view:'aides',ico:'hand-coins',title:aid?`${aid.filter(x=>!x.meta.refunded).length} aide(s) non remboursée(s)`:'Aides chiffrées en cours de lecture',sub:aid?`${aid.length} demandes reçues, toutes dates confondues`:'Chargement…'}
  ];
  $('priority-list').innerHTML=items.map(r=>`<button type="button" class="priority-item" data-view="${r.view}"><span class="priority-icon">${icon(r.ico)}</span><span class="priority-text"><strong>${safe(r.title)}</strong><small>${safe(r.sub)}</small></span><span class="priority-chevron">${icon('chevron-right')}</span></button>`).join('');
@@ -325,11 +325,11 @@ function renderCertificates(){
 }
 function paymentMembers(pay){const names=(pay.members||[]).map(m=>[m.lastName,m.firstName].filter(Boolean).join(' ')).filter(Boolean);return names.length?names.join(', '):[pay.payer?.lastName,pay.payer?.firstName].filter(Boolean).join(' ')||'Adhérent non identifié';}
 function renderPayments(){
- const info=data.payments;$('module-payment-sum').textContent=info?money(info.totalAmount):'Indisponible';
+ const info=data.payments;$('module-payment-sum').textContent=info?money(Number(info.totalAmount)/100):'Indisponible';
  if(!info){$('payment-list').innerHTML=empty('Échéances indisponibles.');return;}
  $('payment-list').innerHTML=(info.payments||[]).map(f=>{
   const person=data.people.find(p=>p.failedPayments?.some(x=>x.paymentId===f.paymentId));
-  return moduleItem({ico:'credit-card',title:paymentMembers(f),sub:`Refus ${prettyDate(f.date)} · ${f.reminder?.sentAt?'Relance envoyée':'Relance non confirmée'}`,right:`<strong class="sum">${money(f.amount)}</strong>`,id:person?.id,kind:'red-text'});
+  return moduleItem({ico:'credit-card',title:paymentMembers(f),sub:`Refus ${prettyDate(f.date)} · ${f.reminder?.sentAt?'Relance envoyée':'Relance non confirmée'}`,right:`<strong class="sum">${money(Number(f.amount)/100)}</strong>`,id:person?.id,kind:'red-text'});
  }).join('')||empty('Aucune échéance refusée actuellement.');
 }
 function renderAides(){
