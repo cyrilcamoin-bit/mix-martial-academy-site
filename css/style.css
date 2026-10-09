@@ -5383,3 +5383,29 @@ p {
     font-size: clamp(.73rem, 3.6vw, .88rem);
   }
 }
+
+
+/* Correctif final header : alignement vertical stable et taille maîtrisée. Logo non modifié. */
+@media (max-width: 768px) {
+  .site-header .brand {
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .site-header .brand > span {
+    align-self: center;
+    min-height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .site-header .brand strong.club-name-font {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(.77rem, 3.2vw, 1.06rem);
+    line-height: 1.15;
+    white-space: nowrap;
+    text-align: left;
+  }
+}
