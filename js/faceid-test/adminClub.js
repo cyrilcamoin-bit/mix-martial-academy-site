@@ -134,16 +134,26 @@
       markUnlocked("faceid",result.token);
       const prf=credential.getClientExtensionResults?.()?.prf?.results?.first || null;
       try {
-        const bridge=await window.MMAAidesBridge?.onVerifiedPRF(prf);
-        if(bridge?.ready) {
-          setStatus("✅ Face ID : les quatre modules sont déverrouillés, y compris les aides chiffrées.");
-        }else if(bridge?.available) {
-          setStatus("Face ID fonctionne. Pour ouvrir aussi les aides sans code, active une seule fois la passerelle dans l'onglet Aides.");
-        }else{
-          setStatus("Face ID fonctionne pour les trois modules Cloudflare. La clé actuelle ne fournit pas le PRF nécessaire aux aides : un réenregistrement sera peut-être requis.");
+        if (!window.MMAAidesBridge) {
+          if (prf && prf.byteLength === 32) {
+            setStatus("✅ Face ID fonctionne. ✅ Ton iPhone fournit également la fonction de chiffrement PRF : la passerelle locale des aides est techniquement possible. Elle n'est pas encore activée.");
+            // Effacer le secret de vérification du tampon accessible au JS.
+            new Uint8Array(prf).fill(0);
+          } else {
+            setStatus("✅ Face ID fonctionne. La clé d'accès actuelle ne fournit pas encore le chiffrement PRF. Un réenregistrement compatible pourrait être nécessaire pour les aides.");
+          }
+        } else {
+          const bridge=await window.MMAAidesBridge.onVerifiedPRF(prf);
+          if(bridge?.ready) {
+            setStatus("✅ Face ID : les quatre modules sont déverrouillés, y compris les aides chiffrées.");
+          }else if(bridge?.available) {
+            setStatus("Face ID fonctionne. Pour les aides, une activation locale avec le code habituel reste nécessaire.");
+          }else{
+            setStatus("Face ID fonctionne pour les modules Cloudflare. Cette clé d'accès ne fournit pas le chiffrement PRF requis pour les aides.");
+          }
         }
       }catch{
-        setStatus("Face ID fonctionne pour les modules Cloudflare. Les aides peuvent toujours s'ouvrir avec le code habituel.");
+        setStatus("Face ID fonctionne pour les modules Cloudflare. Les aides conservent leur accès par code habituel.");
       }
     }catch(e) {
       setStatus(e.name==="NotAllowedError"?"Face ID annulé sur l'iPhone.":(e.message||"Échec Face ID."),true);
