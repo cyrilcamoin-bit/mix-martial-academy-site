@@ -1,0 +1,56 @@
+name: Validate Face ID Admin integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - "admincyril.html"
+      - "js/adminClub.js"
+      - "js/aides-admin.js"
+      - "js/adminAidesFaceId.js"
+      - ".github/workflows/validate-faceid-admin-integration.yml"
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check js/adminClub.js
+          node --check js/aides-admin.js
+          node --check js/adminAidesFaceId.js
+          node --check js/adminMembers.js
+          node --check js/adminCertificates.js
+          node --check js/adminPayments-20261008-v2.js
+      - name: Verify feature is gated and existing authentication remains available
+        run: |
+          node --input-type=module <<'EOF'
+          import {readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const html = readFileSync('admincyril.html','utf8');
+          const club = readFileSync('js/adminClub.js','utf8');
+          const aides = readFileSync('js/aides-admin.js','utf8');
+          const bridge = readFileSync('js/adminAidesFaceId.js','utf8');
+          assert.match(html,/id="admin-faceid-login"[^>]*hidden/);
+          assert.match(html,/id="admin-faceid-logout"[^>]*hidden/);
+          assert.match(html,/id="admin-club-unlock"/);
+          assert.match(html,/id="aides-faceid-bridge" hidden/);
+          assert.match(html,/js\/adminAidesFaceId\.js/);
+          assert.match(club,/state\.adminWritable === true/);
+          assert.match(club,/state\.storage === true/);
+          assert.match(club,/unlockWithFaceId/);
+          assert.match(club,/masterButton\?\.addEventListener\('click', unlockAll\)/);
+          assert.match(club,/faceLoginButton\?\.addEventListener\('click', unlockWithFaceId\)/);
+          assert.match(club,/clientExtensionResults: \{\}/);
+          assert.match(club,/\/admin\/mail\/status/);
+          assert.match(club,/sessionStorage\.removeItem\('mma_cert_admin_token'\)/);
+          assert.match(aides,/window\.MMAAidesPreview/);
+          assert.match(aides,/async unlockWithPem\(pem\)/);
+          assert.match(bridge,/indexedDB\.open/);
+          assert.match(bridge,/AES-GCM/);
+          assert.match(bridge,/additionalData:AAD/);
+          assert.match(bridge,/window\.MMAAidesBridge=/);
+          console.log('PASS: guarded Face ID, existing code login preserved, encrypted aid vault wired');
+          EOF
