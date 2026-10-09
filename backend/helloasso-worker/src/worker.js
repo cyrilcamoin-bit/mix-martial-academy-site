@@ -248,13 +248,28 @@ function paymentDateKey(value) {
 }
 
 function normalizeSmsPhone(value) {
-  let phone = String(value || "").trim();
-  if (!phone) return "";
-  phone = phone.replace(/[^\d+]/g, "");
-  if (phone.startsWith("00")) phone = "+" + phone.slice(2);
-  if (/^0\d{9}$/.test(phone)) phone = "+33" + phone.slice(1);
-  if (!/^\+?\d{8,15}$/.test(phone)) return "";
-  return phone;
+  let digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+
+  // HelloAsso peut contenir des numéros français saisis avec +33 / 0033
+  // ou avec des chiffres ajoutés par erreur. On reconstruit d'abord le
+  // format national, puis on conserve uniquement les 10 premiers chiffres.
+  if (digits.startsWith("0033")) {
+    digits = digits.slice(4);
+    if (digits.startsWith("0")) digits = digits.slice(1);
+    digits = "0" + digits;
+  } else if (digits.startsWith("33")) {
+    digits = digits.slice(2);
+    if (digits.startsWith("0")) digits = digits.slice(1);
+    digits = "0" + digits;
+  } else if (!digits.startsWith("0") && digits.length >= 9) {
+    digits = "0" + digits;
+  }
+
+  if (digits.length < 10 || !digits.startsWith("0")) return "";
+  digits = digits.slice(0, 10);
+
+  return /^0\d{9}$/.test(digits) ? digits : "";
 }
 
 function phoneFromCustomFields(fields) {
