@@ -26,7 +26,7 @@
   <link rel="icon" type="image/png" href="/assets/icons/admin-mma-touch.png?v=20261009-admin-icon">
   <link rel="apple-touch-icon" href="/assets/icons/admin-mma-touch.png?v=20261009-admin-icon">
   <link rel="stylesheet" href="css/style.css?v=20261009-members-export-v1">
-  <script src="js/adminClub.js?v=20261009-faceid-production-ready-v1" defer></script>
+  <script src="js/adminClub-login-gate-v1.js" defer></script>
   <script src="js/adminMembers.js?v=20261009-single-download-v3" defer></script>
   <script src="js/aides-admin.js?v=20261009-faceid-aides-v1" defer></script>
   <script src="js/adminAidesFaceId.js?v=20261009-faceid-vault-v1" defer></script>
@@ -44,75 +44,27 @@
     </header>
 
     <nav class="admin-club-tabs" aria-label="Gestion du club">
-      <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">Vue d'ensemble</button>
-      <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected disabled>Aides à l'inscription</button>
-      <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected disabled>Certificats médicaux</button>
-      <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected disabled>Échéances refusées</button>
-      <button class="admin-club-tab" type="button" data-admin-view="adherents" data-admin-protected disabled>Listing adhérents</button>
+      <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">LOGIN</button>
+      <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected hidden disabled>Aides à l'inscription</button>
+      <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected hidden disabled>Certificats médicaux</button>
+      <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected hidden disabled>Échéances refusées</button>
+      <button class="admin-club-tab" type="button" data-admin-view="adherents" data-admin-protected hidden disabled>Listing adhérents</button>
     </nav>
 
-    <section id="admin-club-access" class="admin-club-access-card">
-      <div>
-        <p class="eyebrow">Accès administrateur</p>
-        <h2>Déverrouiller l'administration</h2>
-      </div>
-      <div class="admin-club-access-actions">
-        <button id="admin-faceid-login" class="button" type="button" hidden>🔐 Se connecter avec Face ID</button>
-        <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
-        <button id="admin-club-unlock" class="button" type="button">Déverrouiller</button>
-        <button id="admin-faceid-logout" class="button button-outline" type="button" hidden>Se déconnecter</button>
-      </div>
-      <p id="admin-club-access-status" class="note" aria-live="polite">Saisissez votre mot de passe administrateur.</p>
-    </section>
-
     <section id="admin-club-dashboard" class="admin-club-view">
-      <div class="admin-club-dashboard-intro">
-        <p class="eyebrow">Gestion administrative</p>
-        <h2>Que souhaitez-vous gérer ?</h2>
-      </div>
-
-      <div class="admin-club-dashboard-grid">
-        <article class="admin-club-card">
-          <div class="admin-club-card-icon" aria-hidden="true">€</div>
-          <div>
-            <p class="card-kicker">Aides à l'inscription</p>
-            <h3>Aides de l'État & organismes</h3>
-            <p>Consultez les demandes, vérifiez les codes, suivez les remboursements et exportez le suivi en CSV.</p>
-          </div>
-          <button class="button admin-club-open" type="button" data-admin-view="aides" data-admin-protected disabled>Gérer les aides</button>
-        </article>
-
-        <article class="admin-club-card">
-          <div class="admin-club-card-icon" aria-hidden="true">+</div>
-          <div>
-            <p class="card-kicker">Documents médicaux</p>
-            <h3>Certificats médicaux</h3>
-            <p>Suivez les certificats reçus ou manquants, téléchargez-les, gérez les sélections et supprimez un dépôt si nécessaire.</p>
-          </div>
-          <button class="button admin-club-open" type="button" data-admin-view="certificats" data-admin-protected disabled>Gérer les certificats</button>
-        </article>
-
-        <article class="admin-club-card">
-          <div class="admin-club-card-icon" aria-hidden="true">!</div>
-          <div>
-            <p class="card-kicker">HelloAsso</p>
-            <h3>Échéances refusées</h3>
-            <p>Repérez les paiements refusés par date, retrouvez le payeur et envoyez une relance personnalisée directement depuis l’adresse iCloud du club.</p>
-          </div>
-          <button class="button admin-club-open" type="button" data-admin-view="paiements" data-admin-protected disabled>Voir les refus</button>
-        </article>
-
-        <article class="admin-club-card">
-          <div class="admin-club-card-icon" aria-hidden="true">≡</div>
-          <div>
-            <p class="card-kicker">HelloAsso — Saison 2026-2027</p>
-            <h3>Listing adhérents</h3>
-            <p>Retrouvez les effectifs actualisés et téléchargez le listing Excel officiel mis en forme, directement depuis HelloAsso.</p>
-          </div>
-          <button class="button admin-club-open" type="button" data-admin-view="adherents" data-admin-protected disabled>Ouvrir le listing</button>
-        </article>
-      </div>
-
+      <section id="admin-club-access" class="admin-club-access-card">
+        <div>
+          <p class="eyebrow">Accès administrateur</p>
+          <h2>Déverrouiller l'administration</h2>
+        </div>
+        <div class="admin-club-access-actions">
+          <button id="admin-faceid-login" class="button" type="button" hidden>🔐 Se connecter avec Face ID</button>
+          <input id="admin-club-code" type="password" autocomplete="current-password" placeholder="Mot de passe administrateur">
+          <button id="admin-club-unlock" class="button" type="button">Déverrouiller</button>
+          <button id="admin-faceid-logout" class="button button-outline" type="button" hidden>Se déconnecter</button>
+        </div>
+        <p id="admin-club-access-status" class="note" aria-live="polite">Saisissez votre mot de passe administrateur.</p>
+      </section>
     </section>
 
     <section id="admin-club-aides" class="admin-club-view" hidden>
