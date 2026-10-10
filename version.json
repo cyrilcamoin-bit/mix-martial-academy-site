@@ -1,5 +1,5 @@
 {
-  "version": "20261009-admin-clean-text-v2",
+  "version": "20261010-admin-login-gate-v1",
   "deployedFrom": "main",
-  "note": "Suppression des deux textes explicatifs de l'interface administration."
+  "note": "LOGIN devient l’écran d’authentification unique ; les quatre menus apparaissent uniquement après déverrouillage."
 }
