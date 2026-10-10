@@ -3863,6 +3863,15 @@ p {
 }
 
 
+/* LOGIN admin : avant authentification, seul le bouton LOGIN est visible. */
+.admin-club-page:not(.admin-club-unlocked) .admin-club-tabs {
+  grid-template-columns: 1fr;
+}
+
+#admin-club-dashboard .admin-club-access-card {
+  margin-bottom: 0;
+}
+
 /* ── Déverrouillage unique de l'administration ───────────── */
 .admin-club-access-card {
   display: grid;
