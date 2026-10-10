@@ -1,5 +1,5 @@
 {
-  "version": "20261010-aides-faceid-clean-v1",
+  "version": "20261010-admin-login-gate-v2",
   "deployedFrom": "main",
-  "note": "Le bloc Face ID des aides reste caché quand aucune action n’est nécessaire."
+  "note": "Suppression de l’onglet LOGIN : avant connexion seul le formulaire est visible, puis les quatre menus apparaissent après déverrouillage."
 }
