@@ -1,5 +1,5 @@
 {
-  "version": "20261010-admin-login-gate-v1",
+  "version": "20261010-aides-faceid-clean-v1",
   "deployedFrom": "main",
-  "note": "LOGIN devient l’écran d’authentification unique ; les quatre menus apparaissent uniquement après déverrouillage."
+  "note": "Le bloc Face ID des aides reste caché quand aucune action n’est nécessaire."
 }
