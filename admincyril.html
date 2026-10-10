@@ -25,8 +25,8 @@
   <title>Administration du club — Mix Martial Academy</title>
   <link rel="icon" type="image/png" href="/assets/icons/admin-mma-touch.png?v=20261009-admin-icon">
   <link rel="apple-touch-icon" href="/assets/icons/admin-mma-touch.png?v=20261009-admin-icon">
-  <link rel="stylesheet" href="css/style.css?v=20261010-admin-login-gate-v1">
-  <script src="js/adminClub-login-gate-v1.js" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=20261010-admin-login-gate-v2">
+  <script src="js/adminClub-login-gate-v2.js" defer></script>
   <script src="js/adminMembers.js?v=20261009-single-download-v3" defer></script>
   <script src="js/aides-admin.js?v=20261009-faceid-aides-v1" defer></script>
   <script src="js/adminAidesFaceId-clean-v1.js" defer></script>
@@ -43,8 +43,7 @@
       <img src="assets/logo/C13ECC5F-E84A-4698-A675-8B5F10C7E587.png" alt="Logo Mix Martial Academy">
     </header>
 
-    <nav class="admin-club-tabs" aria-label="Gestion du club">
-      <button class="admin-club-tab is-active" type="button" data-admin-view="dashboard">LOGIN</button>
+    <nav class="admin-club-tabs" id="admin-club-tabs" aria-label="Gestion du club" hidden>
       <button class="admin-club-tab" type="button" data-admin-view="aides" data-admin-protected hidden disabled>Aides à l'inscription</button>
       <button class="admin-club-tab" type="button" data-admin-view="certificats" data-admin-protected hidden disabled>Certificats médicaux</button>
       <button class="admin-club-tab" type="button" data-admin-view="paiements" data-admin-protected hidden disabled>Échéances refusées</button>
