@@ -463,7 +463,9 @@ async function fetchRefusedPayments(env) {
 
     const paymentDate = payment?.date || payment?.meta?.updatedAt || null;
     const payerEmail = String(payer?.email || "").trim();
-    let smsPhone = phoneFromOrder(order, orderItems);
+    const manualContact = payerEmail ? await readContactOverride(env, payerEmail) : null;
+    let smsPhone = manualContact?.phone || "";
+    if (!smsPhone) smsPhone = phoneFromOrder(order, orderItems);
     if (!smsPhone && payerEmail) {
       smsPhone = await findHistoricalPhone(payerEmail, orderId);
     }
@@ -969,6 +971,102 @@ function storageReady(env) {
   return Boolean(env.CERTIFICATES && typeof env.CERTIFICATES.put === "function");
 }
 
+function normalizeContactEmail(value) {
+  const email = String(value || "").trim().toLowerCase();
+  return validEmail(email) ? email : "";
+}
+
+async function contactOverrideKey(email) {
+  const normalized = normalizeContactEmail(email);
+  if (!normalized) return "";
+  const digest = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normalized))
+  );
+  const hex = Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `contact-overrides/${hex}.json`;
+}
+
+async function readContactOverride(env, email) {
+  if (!storageReady(env)) return null;
+  const normalizedEmail = normalizeContactEmail(email);
+  if (!normalizedEmail) return null;
+  const key = await contactOverrideKey(normalizedEmail);
+  if (!key) return null;
+  const object = await env.CERTIFICATES.get(key);
+  if (!object) return null;
+  try {
+    const data = JSON.parse(await object.text());
+    if (normalizeContactEmail(data?.email) !== normalizedEmail) return null;
+    const phone = normalizeSmsPhone(data?.phone);
+    if (!phone) return null;
+    return {
+      email: normalizedEmail,
+      phone,
+      updatedAt: data?.updatedAt || null
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function writeContactOverride(env, email, phone) {
+  if (!storageReady(env)) throw new Error("storage_not_configured");
+  const normalizedEmail = normalizeContactEmail(email);
+  const normalizedPhone = normalizeSmsPhone(phone);
+  if (!normalizedEmail || !normalizedPhone) throw new Error("invalid_contact");
+  const key = await contactOverrideKey(normalizedEmail);
+  const record = {
+    email: normalizedEmail,
+    phone: normalizedPhone,
+    updatedAt: new Date().toISOString()
+  };
+  await env.CERTIFICATES.put(key, JSON.stringify(record), {
+    httpMetadata: { contentType: "application/json" },
+    customMetadata: { updatedAt: record.updatedAt }
+  });
+  return record;
+}
+
+async function contactOverrideIndex(env) {
+  const index = new Map();
+  if (!storageReady(env)) return index;
+
+  let cursor;
+  do {
+    const listed = await env.CERTIFICATES.list({
+      prefix: "contact-overrides/",
+      limit: 1000,
+      cursor
+    });
+    for (const object of listed.objects || []) {
+      const stored = await env.CERTIFICATES.get(object.key);
+      if (!stored) continue;
+      try {
+        const data = JSON.parse(await stored.text());
+        const email = normalizeContactEmail(data?.email);
+        const phone = normalizeSmsPhone(data?.phone);
+        if (email && phone) index.set(email, phone);
+      } catch {}
+    }
+    cursor = listed.truncated ? listed.cursor : undefined;
+  } while (cursor);
+
+  return index;
+}
+
+async function applyContactOverridesToMembers(env, members) {
+  const rows = Array.isArray(members) ? members : [];
+  if (!rows.length) return rows;
+  const overrides = await contactOverrideIndex(env);
+  if (!overrides.size) return rows;
+
+  return rows.map((member) => {
+    const email = normalizeContactEmail(member?.email);
+    const phone = email ? overrides.get(email) : "";
+    return phone ? { ...member, phone } : member;
+  });
+}
+
 async function isAdmin(request, env) {
   const { hostname, pathname } = new URL(request.url);
   const productionHostname = hostname === "mma-lerove-api.cyril-camoin.workers.dev";
@@ -1469,8 +1567,9 @@ async function fetchMembersExportPage(env, index) {
   // pour connaître la fin. Continuer même après une page incomplète et
   // arrêter seulement sur une page vide. L'interface bloque ensuite tout
   // export dont le nombre et la répartition ne correspondent pas au total.
+  const members = await applyContactOverridesToMembers(env, rowsFromOrders(hydrated));
   return {
-    members: rowsFromOrders(hydrated),
+    members,
     page: index,
     ordersCount: orders.length,
     hasMore: orders.length > 0, // Ne jamais se fier à totalPages : continuer jusqu’à une page vide.
@@ -1600,6 +1699,35 @@ export default {
       }
 
 
+      if (request.method === "POST" && url.pathname === "/admin/contact-overrides") {
+        if (!storageReady(env)) {
+          return json(request, { ok: false, error: "storage_not_configured" }, 503);
+        }
+        const body = await request.json().catch(() => null);
+        try {
+          const contact = await writeContactOverride(env, body?.email, body?.phone);
+          invalidateAdminReadCache();
+          return json(request, {
+            ok: true,
+            saved: true,
+            contact: {
+              email: contact.email,
+              phone: contact.phone,
+              updatedAt: contact.updatedAt
+            }
+          });
+        } catch (error) {
+          const code = String(error?.message || "");
+          if (code === "invalid_contact") {
+            return json(request, { ok: false, error: "invalid_contact" }, 400);
+          }
+          if (code === "storage_not_configured") {
+            return json(request, { ok: false, error: "storage_not_configured" }, 503);
+          }
+          throw error;
+        }
+      }
+
       if (request.method === "GET" && url.pathname === "/admin/members/page") {
         const pageIndex = Number(url.searchParams.get("page") || 1);
         if (!Number.isSafeInteger(pageIndex) || pageIndex < 1 || pageIndex > 100) {
@@ -1613,7 +1741,7 @@ export default {
         // Autorisation contrôlée plus haut pour l'ensemble des routes /admin/.
         // Lire HelloAsso à chaque action : aucune mise en cache de la liste nominative.
         const orders = await fetchMembershipOrdersForExport(env);
-        const members = rowsFromOrders(orders);
+        const members = await applyContactOverridesToMembers(env, rowsFromOrders(orders));
         const counts = {
           Enfant: members.filter((member) => member.category === "Enfant").length,
           Ado: members.filter((member) => member.category === "Ado").length,
@@ -1644,13 +1772,14 @@ export default {
           String(m.lastName).length > 255 || String(m.firstName).length > 255
         )) return json(request, { ok: false, error: "invalid_member_data" }, 400);
         const seen = new Set();
-        const members = submitted.filter((m) => {
+        const dedupedMembers = submitted.filter((m) => {
           const key = String(m.memberId || "")
             || [m.lastName,m.firstName,m.birthDate].join("|");
           if (seen.has(key)) return false;
           seen.add(key);
           return true;
         });
+        const members = await applyContactOverridesToMembers(env, dedupedMembers);
         const positions = { Enfant: 0, Ado: 1, Adulte: 2 };
         members.sort((a, b) =>
           positions[a.category] - positions[b.category]
