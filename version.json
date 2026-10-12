@@ -1,5 +1,5 @@
 {
-  "version": "20261010-admin-login-gate-v2",
+  "version": "20261012-private-contact-import-v1",
   "deployedFrom": "main",
-  "note": "Suppression de l’onglet LOGIN : avant connexion seul le formulaire est visible, puis les quatre menus apparaissent après déverrouillage."
+  "note": "Ajout d’un enregistrement privé et persistant des corrections de téléphone administrateur."
 }
