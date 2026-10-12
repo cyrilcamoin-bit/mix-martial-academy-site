@@ -1600,6 +1600,7 @@ export default {
           certificateReminders: true,
           refusedPayments: true,
           refusedPaymentsScope: "campaign",
+          contactOverrides: true,
           membersExportRevision: "20261009-complete-pagination-v2"
         });
       }
