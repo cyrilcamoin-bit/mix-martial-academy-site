@@ -539,6 +539,7 @@ p {
 }
 
 .hero-logo {
+  justify-self: center;
   width: min(190px, 44vw);
   height: auto;
   object-fit: contain;
