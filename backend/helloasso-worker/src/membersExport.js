@@ -284,10 +284,14 @@ export function makeXlsx(people, createZip) {
   }
   const sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
     + '<worksheet xmlns="' + XMLNS + '" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    + '<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>'
     + '<sheetViews><sheetView workbookViewId="0"><pane ySplit="5" topLeftCell="A6" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
     + '<sheetFormatPr defaultRowHeight="20"/>'
     + '<cols>' + [21,21,35,15,13,21,40,15,18].map((w,i) => '<col min="' + (i+1) + '" max="' + (i+1) + '" width="' + w + '" customWidth="1"/>').join("") + '</cols>'
     + '<sheetData>' + rows.join("") + '</sheetData>'
+    + '<printOptions horizontalCentered="1"/>'
+    + '<pageMargins left="0.25" right="0.25" top="0.45" bottom="0.45" header="0.2" footer="0.2"/>'
+    + '<pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/>'
     + '<mergeCells count="' + merged.length + '">' + merged.map((ref) => '<mergeCell ref="' + ref + '"/>').join("") + '</mergeCells>'
     + (tables.length ? '<tableParts count="' + tables.length + '">'
       + tables.map((t) => '<tablePart r:id="rId' + t.id + '"/>').join("") + '</tableParts>' : "")
