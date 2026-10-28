@@ -1,30 +1,39 @@
-/* Habillage temporaire Halloween : visible uniquement du 28/10 au 02/11/2026. */
-.halloween-2026 #accueil {
- position:relative;isolation:isolate;
- background:radial-gradient(ellipse at 70% 6%,rgba(151,24,27,.32),transparent 40%),#090607;
-}
-.halloween-2026 #accueil .home-hero,
-.halloween-2026 #accueil .home-trial-band {position:relative;z-index:1}
-.halloween-2026 #accueil .home-hero:before {
- content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
- background-image:url("../assets/halloween/halloween-cinema-2026.webp");
- background-size:cover;background-position:top center;opacity:.42;
- mask-image:linear-gradient(to bottom,#000 0%,#000 62%,transparent 100%);
-}
-.halloween-2026 .halloween-return-banner {
- position:relative;isolation:isolate;z-index:2;
- display:grid;gap:8px;align-items:center;justify-items:center;
- margin:18px auto 0;width:min(1120px,calc(100% - 32px));padding:22px 16px;
- border:1px solid rgba(235,80,59,.6);border-radius:22px;
- background:linear-gradient(135deg,rgba(60,11,13,.94),rgba(12,7,9,.94));
- box-shadow:0 14px 45px rgba(0,0,0,.35),0 0 33px rgba(180,21,21,.17);
- text-align:center;color:#fff
-}
+/* MMA Halloween 2026. L'accueil seul est habillé, du 28 oct. au 2 nov. inclus. */
+.halloween-2026 #accueil{position:relative;isolation:isolate;background:radial-gradient(ellipse at 52% 0%,rgba(151,21,26,.34),transparent 55%),#090607;}
+.halloween-2026 #accueil .home-hero,.halloween-2026 #accueil .home-trial-band{position:relative;z-index:1}
+.halloween-2026 #accueil .home-hero{overflow:hidden;isolation:isolate}
+.halloween-2026 #accueil .home-hero .hero-grid{position:relative;z-index:3}
+.halloween-2026 #accueil .hero-copy{filter:drop-shadow(0 3px 9px rgba(0,0,0,.85))}
+.halloween-2026 #accueil .home-hero:before{content:"";pointer-events:none;position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 80% 17%,rgba(232,44,42,.34),transparent 24%),linear-gradient(90deg,rgba(0,0,0,.45),transparent 50%,rgba(0,0,0,.4)),repeating-linear-gradient(135deg,transparent 0 32px,rgba(160,31,38,.026) 32px 34px)}
+.halloween-2026 .halloween-cinema{pointer-events:none;position:absolute;inset:0;overflow:hidden;z-index:1}
+.halloween-2026 .halloween-cinema .moon{position:absolute;right:5%;top:5%;width:clamp(130px,25vw,310px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd6b6,#d64b48 42%,#7d111c 70%);box-shadow:0 0 100px rgba(213,37,49,.45),0 0 180px rgba(185,19,35,.2);opacity:.66}
+.halloween-2026 .halloween-character{position:absolute;width:clamp(115px,20vw,230px);height:clamp(335px,60vw,675px);background-image:url("../assets/halloween/film-characters-2026.webp");background-size:100% 300%;background-repeat:no-repeat;opacity:.9;filter:drop-shadow(0 0 25px #090407);will-change:transform}
+.halloween-2026 .halloween-ghostface{left:-12px;top:3%;background-position:center top;transform:rotate(-5deg)}
+.halloween-2026 .halloween-dracula{right:-25px;top:1%;background-position:center center;transform:rotate(5deg)}
+.halloween-2026 .halloween-chucky{right:5%;bottom:-14%;background-position:center bottom;opacity:.82}
+.halloween-2026 .halloween-bats{position:absolute;left:34%;top:8%;font-size:clamp(23px,4vw,46px);color:#080405;text-shadow:18px 24px 3px #0a0508,60px -10px 2px #100709}
+.halloween-2026 .halloween-return-banner{position:relative;isolation:isolate;z-index:2;display:grid;gap:7px;align-items:center;justify-items:center;margin:14px auto 0;width:min(1120px,calc(100% - 28px));padding:21px 16px;border:1px solid rgba(235,80,59,.62);border-radius:20px;background:linear-gradient(135deg,rgba(80,14,17,.96),rgba(15,7,10,.96));box-shadow:0 14px 45px #0008,0 0 33px #a8151540;text-align:center;color:#fff}
 .halloween-2026 .halloween-return-banner strong{font-size:clamp(18px,4.5vw,31px);line-height:1.2}
-.halloween-2026 .halloween-return-kicker{color:#ffac73;text-transform:uppercase;letter-spacing:.1em;font-weight:800;font-size:.8rem}
+.halloween-2026 .halloween-return-kicker{color:#ffac73;text-transform:uppercase;letter-spacing:.09em;font-weight:800;font-size:.79rem}
 .halloween-2026 .halloween-return-banner span:last-child{color:#eadadd}
-@media(prefers-reduced-motion:no-preference){
- .halloween-2026 .halloween-return-banner{animation:halloween-in .7s ease both}
- @keyframes halloween-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:768px){
+.halloween-2026 .halloween-return-banner{margin-top:8px}
+.halloween-2026 .halloween-cinema .moon{right:-18%;top:1%;width:190px;opacity:.52}
+.halloween-2026 .halloween-character{width:122px;height:422px;opacity:.64}
+.halloween-2026 .halloween-ghostface{left:-62px;top:2%}
+.halloween-2026 .halloween-dracula{right:-65px;top:8%}
+.halloween-2026 .halloween-chucky{right:-70px;bottom:-12%}
+.halloween-2026 .halloween-bats{left:26%;top:6%}
 }
-@media(max-width:768px){.halloween-2026 .halloween-return-banner{margin-top:8px}}
+@media(prefers-reduced-motion:no-preference){
+.halloween-2026 .halloween-return-banner{animation:hall-appear .75s ease both,hall-glow 5s ease-in-out infinite alternate}
+.halloween-2026 .halloween-ghostface{animation:hall-float-a 6s ease-in-out infinite alternate}
+.halloween-2026 .halloween-dracula{animation:hall-float-b 7s ease-in-out infinite alternate}
+.halloween-2026 .halloween-chucky{animation:hall-float-a 5s ease-in-out infinite alternate}
+.halloween-2026 .halloween-bats{animation:hall-bats 9s ease-in-out infinite alternate}
+@keyframes hall-appear{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hall-glow{to{box-shadow:0 14px 45px #0008,0 0 50px #d531316e}}
+@keyframes hall-float-a{to{translate:0 -13px}}
+@keyframes hall-float-b{to{translate:0 11px}}
+@keyframes hall-bats{to{translate:38px -18px}}
+}
