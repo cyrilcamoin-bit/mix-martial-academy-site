@@ -1,0 +1,24 @@
+/* MMA Le Rove — habillage Halloween du 28 octobre au 2 novembre 2026, inclus. */
+.mma-halloween-final #accueil .home-hero{display:none!important}
+.mma-halloween-final #accueil{background:radial-gradient(ellipse at 50% 0,#300a10 0%,#090609 82%)}
+.mma-halloween-final .mma-halloween-film{
+ position:relative;isolation:isolate;width:100%;max-width:768px;margin:0 auto;
+ overflow:hidden;background:#10070b;box-shadow:0 10px 52px rgba(166,23,35,.3);
+}
+.mma-halloween-final .mma-halloween-film img{display:block;width:100%;height:auto;aspect-ratio:768/731;object-fit:contain}
+.mma-halloween-final .mma-halloween-film::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(ellipse 38% 32% at 61% 29%,rgba(234,38,38,.11),transparent)}
+.mma-halloween-final .mma-halloween-fog{position:absolute;left:-23%;right:-23%;bottom:-7%;height:24%;z-index:2;pointer-events:none;background:radial-gradient(ellipse,rgba(230,169,169,.14),transparent 70%);filter:blur(14px)}
+.mma-halloween-final #accueil .home-trial-band{padding-top:18px}
+@media(max-width:768px){
+ .mma-halloween-final .mma-halloween-film{box-shadow:none}
+ .mma-halloween-final #accueil .home-trial-band{padding-top:12px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .mma-halloween-final .mma-halloween-fog{animation:mma-fog-drift 12s ease-in-out infinite alternate}
+ .mma-halloween-final .mma-halloween-film::before{animation:mma-film-glow 6s ease-in-out infinite alternate}
+ @keyframes mma-fog-drift{to{transform:translateX(15%);opacity:.45}}
+ @keyframes mma-film-glow{to{opacity:.35}}
+}
+@media(prefers-reduced-motion:reduce){
+ .mma-halloween-final .mma-halloween-fog{display:none}
+}
