@@ -1,5 +1,5 @@
 {
-  "version": "20261104-novembre26-single-banner-helloasso-v2",
+  "version": "20261104-remove-helloasso-external-button-v3",
   "deployedFrom": "main",
-  "note": "Bandeau promo unique NOVEMBRE26 et hauteur HelloAsso bornée sur mobile."
+  "note": "Suppression du bouton externe HelloAsso redondant, formulaire intégré inchangé."
 }
