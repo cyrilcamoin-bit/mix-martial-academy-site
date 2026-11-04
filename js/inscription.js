@@ -40,15 +40,6 @@
       var card = el("article", "price-card" + (index === 1 ? " price-card-featured" : ""));
       card.appendChild(el("h3", "", price.section + " - " + price.age));
       card.appendChild(el("span", "price", price.price));
-      var promo = el("div", "promo-novembre");
-      promo.setAttribute("aria-label", "Offre de novembre : 20 % de réduction sur l'adhésion avec le code NOVEMBRE26");
-      promo.appendChild(el("span", "promo-novembre-label", "OFFRE NOVEMBRE · -20 % SUR L'ADHÉSION"));
-      var codeLine = el("div", "promo-novembre-code-line");
-      codeLine.appendChild(el("span", "promo-novembre-code-caption", "CODE PROMO"));
-      codeLine.appendChild(el("strong", "promo-novembre-code", "NOVEMBRE26"));
-      promo.appendChild(codeLine);
-      promo.appendChild(el("span", "promo-novembre-detail", "À saisir lors de l'inscription sur HelloAsso · licence de 37 € non incluse."));
-      card.appendChild(promo);
       card.appendChild(el("p", "price-note", "Licence : " + data.prices.license));
       card.appendChild(el("p", "price-note", data.prices.paymentRule));
       container.appendChild(card);
@@ -129,35 +120,27 @@
     });
   }
 
-  var helloAssoResizeReady = false;
-
-  function setupHelloAssoResize() {
-    if (helloAssoResizeReady) return;
-    helloAssoResizeReady = true;
-    window.addEventListener("message", function (event) {
-      if (event.origin && event.origin !== "https://www.helloasso.com") return;
-      var height = event.data && Number(event.data.height);
-      var iframe = document.getElementById("haWidget");
-      if (!iframe || !Number.isFinite(height)) return;
-      iframe.style.height = Math.max(750, height) + "px";
-    });
-  }
-
+  // L'iframe conserve une hauteur contrôlée : les messages de redimensionnement
+  // de HelloAsso ne doivent pas produire des milliers de pixels blancs sur iOS.
   function loadHelloAssoWidget(data, container) {
     if (!container || container.querySelector("#haWidget")) return;
-    setupHelloAssoResize();
-    var label = el("p", "helloasso-secure-label", "Formulaire s\u00e9curis\u00e9 HelloAsso");
+    var label = el("p", "helloasso-secure-label", "Formulaire sécurisé HelloAsso");
     var iframe = document.createElement("iframe");
     iframe.id = "haWidget";
     iframe.title = "Formulaire d'inscription HelloAsso Mix Martial Academy";
     iframe.allowTransparency = "true";
-    iframe.scrolling = "auto";
+    iframe.setAttribute("scrolling", "yes");
     iframe.src = data.signup.helloAssoWidgetUrl;
     iframe.style.width = "100%";
-    iframe.style.height = "750px";
     iframe.style.border = "none";
     container.appendChild(label);
     container.appendChild(iframe);
+
+    var link = el("a", "button button-outline helloasso-external-link", "Ouvrir l'inscription sur HelloAsso");
+    link.href = data.signup.helloAssoUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    container.appendChild(link);
   }
 
   function setupSignup(data) {
