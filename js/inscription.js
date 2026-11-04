@@ -136,11 +136,6 @@
     container.appendChild(label);
     container.appendChild(iframe);
 
-    var link = el("a", "button button-outline helloasso-external-link", "Ouvrir l'inscription sur HelloAsso");
-    link.href = data.signup.helloAssoUrl;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    container.appendChild(link);
   }
 
   function setupSignup(data) {
