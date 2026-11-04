@@ -781,6 +781,61 @@ p {
   letter-spacing: -0.04em;
 }
 
+/* Promotion de novembre 2026 : encart visible sur chaque catégorie d'adhésion. */
+.promo-novembre {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  margin: 1.15rem 0;
+  border: 2px solid #f04449;
+  border-radius: 16px;
+  background: linear-gradient(130deg, #7a101d, #350b12 70%, #17090e);
+  color: #fff;
+  box-shadow: 0 6px 22px rgba(192, 20, 35, .28), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.promo-novembre-label {
+  font-weight: 900;
+  font-size: clamp(.87rem, 1.55vw, 1.02rem);
+  letter-spacing: .045em;
+  line-height: 1.35;
+  color: #fff;
+}
+.promo-novembre-code-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .55rem;
+  flex-wrap: wrap;
+  padding: .65rem .75rem;
+  border: 1px dashed #ff8888;
+  border-radius: 10px;
+  background: rgba(0,0,0,.34);
+}
+.promo-novembre-code-caption {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: #ffd5d5;
+}
+.promo-novembre-code {
+  font-size: clamp(1.15rem, 2.3vw, 1.5rem);
+  line-height: 1.2;
+  font-weight: 950;
+  letter-spacing: .035em;
+  color: #fff;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.promo-novembre-detail {
+  font-size: .78rem;
+  line-height: 1.45;
+  color: #ffdadb;
+}
+@media (max-width: 780px) {
+  .promo-novembre { margin: 1rem 0; padding: 1.05rem; }
+  .promo-novembre-code { font-size: 1.4rem; }
+}
+
 .price-note {
   margin: 0.45rem 0;
   color: var(--muted);
