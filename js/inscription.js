@@ -133,9 +133,23 @@
     iframe.src = data.signup.helloAssoWidgetUrl;
     iframe.style.width = "100%";
     iframe.style.border = "none";
+    iframe.style.height = "1650px";
     container.appendChild(label);
     container.appendChild(iframe);
 
+    // HelloAsso communique la hauteur réelle via postMessage.
+    // On suit aussi les diminutions de hauteur lors du changement d'étape.
+    // Validation stricte de l'émetteur pour éviter les messages sans rapport.
+    window.addEventListener("message", function (event) {
+      if (event.origin !== "https://www.helloasso.com") return;
+      if (event.source !== iframe.contentWindow) return;
+      var height = Number(event.data && event.data.height);
+      if (!Number.isFinite(height) || height < 300 || height > 20000) return;
+      // Un plafond protège la page des grandes zones blanches parfois
+      // envoyées par le widget. Au-delà, le formulaire défile en interne.
+      var target = Math.max(750, Math.min(3600, Math.ceil(height + 24)));
+      iframe.style.height = target + "px";
+    });
   }
 
   function setupSignup(data) {
