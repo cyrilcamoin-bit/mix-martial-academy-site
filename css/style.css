@@ -781,59 +781,28 @@ p {
   letter-spacing: -0.04em;
 }
 
-/* Promotion de novembre 2026 : encart visible sur chaque catégorie d'adhésion. */
-.promo-novembre {
-  display: grid;
-  gap: .65rem;
-  padding: 1rem;
-  margin: 1.15rem 0;
-  border: 2px solid #f04449;
-  border-radius: 16px;
-  background: linear-gradient(130deg, #7a101d, #350b12 70%, #17090e);
-  color: #fff;
-  box-shadow: 0 6px 22px rgba(192, 20, 35, .28), inset 0 1px 0 rgba(255,255,255,.12);
+/* Bandeau unique pour l'offre de novembre, avant les trois tarifs. */
+.november-promo-global{
+ display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+ width:100%;margin:0 0 1.2rem;padding:1.05rem 1.3rem;
+ border:1px solid #e8444a;border-radius:17px;
+ background:linear-gradient(115deg,#60101c 0%,#260d15 68%,#12090f 100%);
+ box-shadow:0 8px 26px rgba(137,12,26,.24);color:#fff;
 }
-.promo-novembre-label {
-  font-weight: 900;
-  font-size: clamp(.87rem, 1.55vw, 1.02rem);
-  letter-spacing: .045em;
-  line-height: 1.35;
-  color: #fff;
+.november-promo-global-copy{display:grid;gap:.24rem;flex:1 1 235px;min-width:0}
+.november-promo-global-eyebrow{font-size:.74rem;font-weight:900;letter-spacing:.11em;color:#ffc2c2}
+.november-promo-global-copy>strong{font-size:clamp(1.24rem,2.8vw,1.75rem);line-height:1.15}
+.november-promo-global-copy>small{color:#e8d4d7;font-size:.77rem;line-height:1.45}
+.november-promo-global-code{
+ display:grid;gap:.18rem;justify-items:center;flex:0 0 auto;
+ padding:.65rem .9rem;border:1px dashed #f58e92;border-radius:11px;
+ background:rgba(0,0,0,.34);text-align:center;
 }
-.promo-novembre-code-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .55rem;
-  flex-wrap: wrap;
-  padding: .65rem .75rem;
-  border: 1px dashed #ff8888;
-  border-radius: 10px;
-  background: rgba(0,0,0,.34);
-}
-.promo-novembre-code-caption {
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .08em;
-  color: #ffd5d5;
-}
-.promo-novembre-code {
-  font-size: clamp(1.15rem, 2.3vw, 1.5rem);
-  line-height: 1.2;
-  font-weight: 950;
-  letter-spacing: .035em;
-  color: #fff;
-  overflow-wrap: anywhere;
-  user-select: all;
-}
-.promo-novembre-detail {
-  font-size: .78rem;
-  line-height: 1.45;
-  color: #ffdadb;
-}
-@media (max-width: 780px) {
-  .promo-novembre { margin: 1rem 0; padding: 1.05rem; }
-  .promo-novembre-code { font-size: 1.4rem; }
+.november-promo-global-code>span{font-size:.66rem;letter-spacing:.09em;font-weight:850;color:#ffcccc}
+.november-promo-global-code>strong{font-size:clamp(1.15rem,2.5vw,1.5rem);letter-spacing:.045em;user-select:all}
+@media(max-width:640px){
+ .november-promo-global{gap:.75rem;padding:1rem}
+ .november-promo-global-code{width:100%;padding:.55rem}
 }
 
 .price-note {
@@ -1261,7 +1230,7 @@ p {
 
 .helloasso-widget-card {
   overflow: hidden;
-  min-height: 750px;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
   margin-top: 1.15rem;
@@ -1290,10 +1259,21 @@ p {
   display: block;
   width: 100%;
   max-width: 100%;
-  min-height: 750px;
+  height: 900px;
+  min-height: 0;
+  max-height: 900px;
   border: none;
-  background: var(--text);
+  background: #fff;
   border-radius: 14px;
+  overflow: auto;
+}
+.helloasso-external-link {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: 1rem auto .1rem;
+  text-align: center;
+  justify-content: center;
 }
 
 .rules {
@@ -2059,7 +2039,9 @@ p {
   }
 
   .helloasso-widget-container iframe {
-    min-height: 750px;
+    height: min(780px, 78svh);
+    min-height: 0;
+    max-height: 780px;
     border-radius: 12px;
   }
 
