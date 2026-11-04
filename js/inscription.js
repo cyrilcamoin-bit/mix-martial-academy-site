@@ -40,6 +40,15 @@
       var card = el("article", "price-card" + (index === 1 ? " price-card-featured" : ""));
       card.appendChild(el("h3", "", price.section + " - " + price.age));
       card.appendChild(el("span", "price", price.price));
+      var promo = el("div", "promo-novembre");
+      promo.setAttribute("aria-label", "Offre de novembre : 20 % de réduction sur l'adhésion avec le code NOVEMBRE26");
+      promo.appendChild(el("span", "promo-novembre-label", "OFFRE NOVEMBRE · -20 % SUR L'ADHÉSION"));
+      var codeLine = el("div", "promo-novembre-code-line");
+      codeLine.appendChild(el("span", "promo-novembre-code-caption", "CODE PROMO"));
+      codeLine.appendChild(el("strong", "promo-novembre-code", "NOVEMBRE26"));
+      promo.appendChild(codeLine);
+      promo.appendChild(el("span", "promo-novembre-detail", "À saisir lors de l'inscription sur HelloAsso · licence de 37 € non incluse."));
+      card.appendChild(promo);
       card.appendChild(el("p", "price-note", "Licence : " + data.prices.license));
       card.appendChild(el("p", "price-note", data.prices.paymentRule));
       container.appendChild(card);
