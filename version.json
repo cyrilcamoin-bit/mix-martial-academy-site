@@ -1,5 +1,5 @@
 {
-  "version": "20261104-remove-helloasso-external-button-v3",
+  "version": "20261104-helloasso-autoheight-v4",
   "deployedFrom": "main",
-  "note": "Suppression du bouton externe HelloAsso redondant, formulaire intégré inchangé."
+  "note": "Hauteur HelloAsso adaptative, trois formules d'inscription visibles et contrôle des messages pour limiter les espaces blancs."
 }
