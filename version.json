@@ -1,5 +1,5 @@
 {
-  "version": "20261104-novembre26-promo-v1",
+  "version": "20261104-novembre26-single-banner-helloasso-v2",
   "deployedFrom": "main",
-  "note": "Mise en avant du code NOVEMBRE26 (-20 % sur l'adhésion) sur les trois catégories tarifaires."
+  "note": "Bandeau promo unique NOVEMBRE26 et hauteur HelloAsso bornée sur mobile."
 }
