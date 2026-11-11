@@ -1,5 +1,5 @@
 {
-  "version": "20261104-helloasso-autoheight-v4",
+  "version": "20261111-order-contact-v1",
   "deployedFrom": "main",
-  "note": "Hauteur HelloAsso adaptative, trois formules d'inscription visibles et contrôle des messages pour limiter les espaces blancs."
+  "note": "Ajout d'une recherche sécurisée des coordonnées par numéro de commande HelloAsso."
 }
