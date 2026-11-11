@@ -268,6 +268,61 @@ async function fetchHelloAssoJson(url, token, label) {
   return response.json();
 }
 
+async function fetchOrderContactById(env, orderId) {
+  const id = String(orderId || "").trim();
+  if (!/^\d+$/.test(id)) throw new Error("invalid_order_id");
+
+  const token = await getAccessToken(env);
+  const url = new URL(`${HELLOASSO_API}/v5/orders/${encodeURIComponent(id)}`);
+  url.searchParams.set("withFormData", "true");
+  const order = await fetchHelloAssoJson(url, token, "HelloAsso order");
+
+  const payer = order?.payer || {};
+  const items = Array.isArray(order?.items) ? order.items : [];
+  const payerEmail = String(payer?.email || "").trim();
+  const manual = payerEmail ? await readContactOverride(env, payerEmail) : null;
+  const phone = manual?.phone || phoneFromOrder(order, items) || "";
+
+  const address = payer?.address || {};
+  const members = items
+    .filter((item) => String(item?.type || "").toLowerCase() === "membership")
+    .map((item) => ({
+      itemId: item?.id ?? null,
+      firstName: String(item?.user?.firstName || "").trim(),
+      lastName: String(item?.user?.lastName || "").trim(),
+      email: String(item?.user?.email || "").trim(),
+      phone: normalizeSmsPhone(
+        item?.user?.phone || item?.user?.phoneNumber || item?.user?.mobile || ""
+      )
+    }))
+    .filter((member) => member.firstName || member.lastName);
+
+  return {
+    orderId: order?.id ?? id,
+    payer: {
+      firstName: String(payer?.firstName || "").trim(),
+      lastName: String(payer?.lastName || "").trim(),
+      email: payerEmail,
+      phone,
+      address: [
+        address?.address,
+        address?.addressLine1,
+        address?.street,
+        address?.line1,
+        payer?.addressLine1
+      ].map((value) => String(value || "").trim()).find(Boolean) || "",
+      postalCode: String(
+        address?.zipCode || address?.postalCode || payer?.zipCode || payer?.postalCode || ""
+      ).trim(),
+      city: String(address?.city || payer?.city || "").trim()
+    },
+    members,
+    amount: Number(order?.amount || order?.totalAmount || 0),
+    date: order?.date || order?.meta?.createdAt || null,
+    formSlug: String(order?.formSlug || order?.form?.slug || "")
+  };
+}
+
 function paymentDateKey(value) {
   const match = String(value || "").match(/^(\d{4}-\d{2}-\d{2})/);
   return match ? match[1] : "";
@@ -1601,6 +1656,7 @@ export default {
           refusedPayments: true,
           refusedPaymentsScope: "campaign",
           contactOverrides: true,
+          orderContactLookup: true,
           membersExportRevision: "20261009-complete-pagination-v2"
         });
       }
@@ -1724,6 +1780,22 @@ export default {
           }
           if (code === "storage_not_configured") {
             return json(request, { ok: false, error: "storage_not_configured" }, 503);
+          }
+          throw error;
+        }
+      }
+
+      if (request.method === "GET" && url.pathname === "/admin/orders/contact") {
+        try {
+          const contact = await fetchOrderContactById(env, url.searchParams.get("orderId"));
+          return json(request, { ok: true, contact });
+        } catch (error) {
+          const code = String(error?.message || "");
+          if (code === "invalid_order_id") {
+            return json(request, { ok: false, error: "invalid_order_id" }, 400);
+          }
+          if (/HelloAsso order 404/.test(code)) {
+            return json(request, { ok: false, error: "order_not_found" }, 404);
           }
           throw error;
         }
