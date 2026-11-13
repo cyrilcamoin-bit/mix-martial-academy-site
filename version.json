@@ -1,5 +1,5 @@
 {
-  "version": "20261111-order-contact-v1",
+  "version": "20261113-admin-clean-order-search-v1",
   "deployedFrom": "main",
-  "note": "Ajout d'une recherche sécurisée des coordonnées par numéro de commande HelloAsso."
+  "note": "Suppression complète du bloc Recherche d'une commande dans l'administration."
 }
